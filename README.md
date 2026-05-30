@@ -1,0 +1,1 @@
+## Leitnix (leitner box for learing + AI for generating flashcards for your topics)
