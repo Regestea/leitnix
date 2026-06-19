@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "tsc -b && vite build && npx cap sync android && concurrently \"vite\" \"npx cap run android",
-    "live": "tsc -b && vite build && npx cap sync android && concurrently \"vite\" \"npx cap run android -l --host localhost --port 5173 --forwardPorts 5173:5173\"",
+    "live": "adb reverse tcp:5173 tcp:5173 && tsc -b && vite build && npx cap sync android && concurrently \"vite --host 0.0.0.0\" \"npx cap run android -l --host localhost --port 5173 --forwardPorts 5173:5173\"",
     "build": "tsc -b && vite build && npx cap sync android",
     "lint": "eslint .",
     "preview": "vite preview"
