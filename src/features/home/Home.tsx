@@ -1,28 +1,75 @@
-import { faBell, faCheck, faHome } from "@fortawesome/free-solid-svg-icons";
-import { useEffect } from "react";
+import { useEffect, useCallback } from "react";
+import {
+  faHome,
+  faCog,
+  faSearch,
+  faBookOpen,
+  faEnvelope,
+  faStar,
+  faGear,
+  faRotateBack,
+  faSchool,
+  faPaintBrush,
+} from "@fortawesome/free-solid-svg-icons";
+import { useThemeStore, type ThemeName } from "../../shared/store/themeStore";
 import LearningProgress from "../../shared/components/LearningProgress";
 import ProgressCircle from "../../shared/components/ProgressCircle";
-import { useNavStore } from "../../shared/store/navStore";
+import { useNavStore, type NavItem } from "../../shared/store/navStore";
+import Modal from "../../shared/components/Modal";
+import useModal from "../../shared/hooks/useModal";
 
 export default function Home() {
+  const { theme, setTheme } = useThemeStore();
+  const { isOpen: isThemeOpen, open: openThemeModal, close: closeThemeModal } = useModal();
+
+  const setIsShowing = useNavStore((s) => s.setIsShowing);
   const setItems = useNavStore((s) => s.setItems);
 
+  const openThemeModalCb = useCallback(() => openThemeModal(), [openThemeModal]);
+
   useEffect(() => {
-    setItems([
+    const HOME_NAV_ITEMS: NavItem[] = [
       {
         icon: faHome,
         title: "Home",
-        onClick: () => console.log("Home"),
+        onClick: () => console.log("Home clicked"),
       },
       {
-        icon: faBell,
-        title: "Alerts",
+        icon: faBookOpen,
+        title: "Learn",
         children: [
-          { icon: faCheck, title: "Mark all read", onClick: () => {} },
+          { icon: faSearch, title: "Search",    onClick: () => console.log("Search") },
+          { icon: faStar,   title: "Favorites", onClick: () => console.log("Favorites") },
+          { icon: faSchool, title: "School",    onClick: () => console.log("School") },
         ],
       },
-    ]);
-  }, [setItems]);
+      {
+        icon: faCog,
+        title: "Settings",
+        children: [
+          { icon: faPaintBrush, title: "Theme",         onClick: openThemeModalCb },
+          { icon: faGear,       title: "Preferences",   onClick: () => console.log("Preferences") },
+          { icon: faEnvelope,   title: "Notifications", onClick: () => console.log("Notifications") },
+          { icon: faStar,       title: "Favorites",     onClick: () => console.log("Favorites") },
+          { icon: faSearch,     title: "Search",        onClick: () => console.log("Search") },
+          { icon: faBookOpen,   title: "Docs",          onClick: () => console.log("Docs") },
+          { icon: faHome,       title: "Home",          onClick: () => console.log("Home") },
+        ],
+      },
+      {
+        icon: faRotateBack,
+        title: "Back",
+        onClick: () => console.log("Back clicked"),
+      },
+    ];
+
+    setItems(HOME_NAV_ITEMS);
+    setIsShowing(true);
+  }, [openThemeModalCb, setItems, setIsShowing]);
+
+  useEffect(() => {
+    setIsShowing(!isThemeOpen);
+  }, [isThemeOpen, setIsShowing]);
 
   return (
     <>
@@ -58,6 +105,24 @@ export default function Home() {
           <LearningProgress />
         </div>
       </div>
+
+      <Modal isOpen={isThemeOpen} onClose={closeThemeModal} title="Theme">
+        <div style={{ marginBottom: "1rem" }}>
+          <div style={{ overflow: "auto" }}>
+            <div className="settings-field">
+              <label className="settings-label">Theme</label>
+              <select
+                className="custom-select"
+                value={theme}
+                onChange={(e) => setTheme(e.target.value as ThemeName)}
+              >
+                <option value="Dark">Dark</option>
+                <option value="Light">Light</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </Modal>
     </>
   );
 }

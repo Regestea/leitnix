@@ -18,7 +18,8 @@ function calcAngles(count: number): string[] {
 }
 
 export default function Nav() {
-  const items = useNavStore((s: NavState) => s.items);
+  const items      = useNavStore((s: NavState) => s.items);
+  const isShowing  = useNavStore((s: NavState) => s.isShowing);
 
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
 
@@ -31,7 +32,7 @@ export default function Nav() {
   }
 
   const isAnyExpanded = expandedIndex !== null;
-  
+
   useEffect(() => {
     function handleOutsideClick(e: MouseEvent) {
       if (
@@ -44,6 +45,8 @@ export default function Nav() {
     document.addEventListener("click", handleOutsideClick);
     return () => document.removeEventListener("click", handleOutsideClick);
   }, []);
+
+  if (!isShowing) return null;
 
   function handleParentClick(e: React.MouseEvent, index: number) {
     e.stopPropagation();

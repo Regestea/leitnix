@@ -66,11 +66,30 @@
     outline: none !important;
 }
 
-button,
 input[type="checkbox"] {
     outline: none;
     -webkit-tap-highlight-color: transparent;
     user-select: none;
+}
+
+.glass-button {
+    background: rgba(255, 255, 255, 0.1) ;
+    border: 1px solid rgba(255, 255, 255, 0.55) !important;
+    font-weight: bold;
+    color: #fff ;
+    padding: 0.5rem 1rem ;
+    border-radius: 20px ;
+    transition: all 0.3s ease ;
+}
+
+.glass-button:hover {
+    background: rgba(255, 255, 255, 0.15);
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
+}
+
+.w-full{
+    width: 100%;
 }
 
 /* ─── Base ────────────────────────────────────────────────── */
@@ -165,101 +184,6 @@ input[type="checkbox"]:checked {
 
 .btn-bordered { border: 1px solid rgba(255, 255, 255, 0.1); }
 
-/* ─── Corner Buttons ──────────────────────────────────────── */
-.home-btn,
-.settings-toggle {
-    position: fixed;
-    top: 1.25rem;
-    display: flex;
-    width: 50px;
-    height: 50px;
-    cursor: pointer;
-    align-items: center;
-    justify-content: center;
-    border-radius: 9999px;
-    border: none;
-    background-color: rgba(30, 41, 59, 0.8);
-    font-size: 1.25rem;
-    backdrop-filter: blur(10px);
-    transition: transform 300ms, background-color 300ms;
-}
-
-.home-btn {
-    left: 1.25rem;
-    z-index: 9;
-    color: white;
-}
-
-.home-btn:hover {
-    transform: scale(1.1);
-    background-color: var(--background);
-}
-
-.settings-toggle {
-    right: 1.25rem;
-    z-index: 1000;
-    color: var(--text);
-}
-
-.settings-toggle:hover {
-    transform: scale(1.1) rotate(180deg);
-    background-color: var(--primary);
-}
-
-/* ─── Settings Sidebar ────────────────────────────────────── */
-.settings-sidebar {
-    position: fixed;
-    top: 0;
-    right: -300px;
-    z-index: 999;
-    height: 100%;
-    width: 300px;
-    overflow-y: auto;
-    background: rgba(30, 41, 59, 0.25);
-    padding: 2rem;
-    backdrop-filter: blur(20px);
-    transition: transform 300ms cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.settings-sidebar--bordered {
-    border-left: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.settings-sidebar.active {
-    transform: translateX(-300px);
-}
-
-.settings-header {
-    margin-bottom: 2rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
-
-.settings-title {
-    font-size: 1.5rem;
-    background: linear-gradient(45deg, var(--primary), var(--secondary));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-}
-
-.settings-field { margin-bottom: 1.5rem; }
-
-.settings-label {
-    display: block;
-    margin-bottom: 0.5rem;
-    color: var(--secondary);
-}
-
-@media (max-width: 768px) {
-    .settings-sidebar {
-        right: -100%;
-        width: 100%;
-    }
-    .settings-sidebar.active {
-        transform: translateX(-100%);
-    }
-}
 
 /* ─── Custom Select ───────────────────────────────────────── */
 .custom-select {

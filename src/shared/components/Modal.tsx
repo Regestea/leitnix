@@ -32,6 +32,7 @@ const Modal: React.FC<ModalProps> = ({
         document.body.style.overflow = isOpen ? "hidden" : "";
         return () => { document.body.style.overflow = ""; };
     }, [isOpen]);
+    
 
     const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
         if (e.target === overlayRef.current) onClose();
