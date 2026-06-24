@@ -3,7 +3,8 @@
     position: fixed;
     inset: 0;
     z-index: 1000;
-    backdrop-filter: blur(18px);
+    background: rgba(0, 0, 0, 0.35);
+    backdrop-filter: blur(25px);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -18,9 +19,11 @@
 
 /* ── Dialog ── */
 .modal-dialog {
+    font-weight: bold;
     position: relative;
     width: 100%;
-    backdrop-filter: blur(24px);
+    background: rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(20px);
     border-radius: 20px;
     border: 1px solid rgba(255, 255, 255, 0.12);
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35), 0 2px 8px rgba(0, 0, 0, 0.2);
@@ -83,7 +86,7 @@
     line-height: 1.6;
     overflow-y: scroll;
     overflow-x: hidden;
-    height: 80vh;
+    height: 65vh;
 }
 
 /* ── Form Elements ── */
