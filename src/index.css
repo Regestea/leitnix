@@ -1,4 +1,4 @@
-/* ─── Themes ─────────────────────────────────────────────── */
+
 :root,
 [data-theme="Dark"] {
     --background-image: url("assets/images/night.png");
@@ -36,7 +36,6 @@
     --accent: #66cccc;
 }
 
-/* ─── Fonts ───────────────────────────────────────────────── */
 @font-face {
     font-family: 'comic';
     src: url("assets/fonts/comicsans.otf") format('truetype');
@@ -53,7 +52,6 @@
     font-display: swap;
 }
 
-/* ─── Reset ───────────────────────────────────────────────── */
 *,
 *::before,
 *::after {

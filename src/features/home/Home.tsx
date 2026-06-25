@@ -1,15 +1,18 @@
 import { useEffect, useCallback } from "react";
 import {
-  faHome,
   faCog,
   faSearch,
-  faBookOpen,
-  faEnvelope,
+  faRobot,
   faStar,
-  faGear,
-  faRotateBack,
+  faBell,
   faSchool,
   faPaintBrush,
+  faCode,
+  faList,
+  faCircleQuestion,
+  faPlus,
+  faGraduationCap,
+  faClipboardCheck,
 } from "@fortawesome/free-solid-svg-icons";
 import { useThemeStore, type ThemeName } from "../../shared/store/themeStore";
 import LearningProgress from "../../shared/components/LearningProgress";
@@ -30,12 +33,12 @@ export default function Home() {
   useEffect(() => {
     const HOME_NAV_ITEMS: NavItem[] = [
       {
-        icon: faHome,
+        icon: faPlus,
         title: "Home",
         onClick: () => console.log("Home clicked"),
       },
       {
-        icon: faBookOpen,
+        icon: faGraduationCap,
         title: "Learn",
         children: [
           { icon: faSearch, title: "Search",    onClick: () => console.log("Search") },
@@ -44,23 +47,23 @@ export default function Home() {
         ],
       },
       {
+        icon: faClipboardCheck,
+        title: "Review",
+        onClick: () => console.log("Review clicked"),
+      },
+      {
         icon: faCog,
         title: "Settings",
         children: [
           { icon: faPaintBrush, title: "Theme",         onClick: openThemeModalCb },
-          { icon: faGear,       title: "Preferences",   onClick: () => console.log("Preferences") },
-          { icon: faEnvelope,   title: "Notifications", onClick: () => console.log("Notifications") },
-          { icon: faStar,       title: "Favorites",     onClick: () => console.log("Favorites") },
-          { icon: faSearch,     title: "Search",        onClick: () => console.log("Search") },
-          { icon: faBookOpen,   title: "Docs",          onClick: () => console.log("Docs") },
-          { icon: faHome,       title: "Home",          onClick: () => console.log("Home") },
+          { icon: faCode,       title: "User Prompt",   onClick: () => console.log("Preferences") },
+          { icon: faBell,       title: "Notifications", onClick: () => console.log("Notifications") },
+          { icon: faRobot,       title: "AI Models",     onClick: () => console.log("Favorites") },
+          { icon: faList,     title: "Edit list of words",        onClick: () => console.log("Search") },
+          { icon: faCircleQuestion ,       title: "Help",          onClick: () => console.log("Home") },
         ],
       },
-      {
-        icon: faRotateBack,
-        title: "Back",
-        onClick: () => console.log("Back clicked"),
-      },
+      
     ];
 
     setItems(HOME_NAV_ITEMS);
