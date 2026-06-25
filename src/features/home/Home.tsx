@@ -1,11 +1,8 @@
 import { useEffect, useCallback } from "react";
 import {
   faCog,
-  faSearch,
   faRobot,
-  faStar,
   faBell,
-  faSchool,
   faPaintBrush,
   faCode,
   faList,
@@ -34,17 +31,13 @@ export default function Home() {
     const HOME_NAV_ITEMS: NavItem[] = [
       {
         icon: faPlus,
-        title: "Home",
-        onClick: () => console.log("Home clicked"),
+        title: "Add New Topic To Learn",
+        onClick: () => console.log("Add New Topic To Learn"),
       },
       {
         icon: faGraduationCap,
         title: "Learn",
-        children: [
-          { icon: faSearch, title: "Search",    onClick: () => console.log("Search") },
-          { icon: faStar,   title: "Favorites", onClick: () => console.log("Favorites") },
-          { icon: faSchool, title: "School",    onClick: () => console.log("School") },
-        ],
+        onClick: () => console.log("Learn clicked"),
       },
       {
         icon: faClipboardCheck,
