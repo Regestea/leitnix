@@ -1,19 +1,16 @@
-// src/components/ProgressCircle.tsx
-
 interface ProgressCircleProps {
   current: number;
   total: number;
 }
 
-export default function ProgressCircle({ current, total }: ProgressCircleProps) {
+export default function ProgressCircle({
+  current,
+  total,
+}: ProgressCircleProps) {
   const radius = 90;
   const circumference = 2 * Math.PI * radius; // 565.48
-
-  // کنترل مقدار برای جلوگیری از ارور یا مقادیر منفی و بزرگتر از حد مجاز
   const safeCurrent = Math.min(Math.max(current, 0), total);
   const percentage = total > 0 ? safeCurrent / total : 0;
-
-  // محاسبه مقداری از دایره که باید خالی بمونه
   const strokeDashoffset = circumference * (1 - percentage);
 
   return (
@@ -30,7 +27,6 @@ export default function ProgressCircle({ current, total }: ProgressCircleProps) 
         </linearGradient>
       </defs>
 
-      {/* دایره خاکستری پس‌زمینه */}
       <circle
         cx="110"
         cy="110"
@@ -40,7 +36,6 @@ export default function ProgressCircle({ current, total }: ProgressCircleProps) 
         strokeWidth="12"
       />
 
-      {/* دایره اصلی پیشرفت */}
       <circle
         cx="110"
         cy="110"
@@ -55,7 +50,6 @@ export default function ProgressCircle({ current, total }: ProgressCircleProps) 
         style={{ transition: "stroke-dashoffset 0.3s ease-in-out" }}
       />
 
-      {/* متن وسط دایره */}
       <text
         x="110"
         y="110"

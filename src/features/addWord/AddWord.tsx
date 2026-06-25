@@ -1,6 +1,3 @@
-
 export default function AddWord() {
-  return (
-    <div>AddWord</div>
-  )
+  return <div>AddWord</div>;
 }

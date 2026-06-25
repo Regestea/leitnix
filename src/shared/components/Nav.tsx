@@ -2,7 +2,12 @@ import { useState, useEffect, useRef, type CSSProperties } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import "./Nav.css";
-import { useNavStore, type NavState, type NavItem, type NavChild } from "../store/navStore.ts";
+import {
+  useNavStore,
+  type NavState,
+  type NavItem,
+  type NavChild,
+} from "../store/navStore.ts";
 
 function calcAngles(count: number): string[] {
   const MAX_SPREAD = 180;
@@ -18,8 +23,8 @@ function calcAngles(count: number): string[] {
 }
 
 export default function Nav() {
-  const items      = useNavStore((s: NavState) => s.items);
-  const isShowing  = useNavStore((s: NavState) => s.isShowing);
+  const items = useNavStore((s: NavState) => s.items);
+  const isShowing = useNavStore((s: NavState) => s.isShowing);
 
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
 

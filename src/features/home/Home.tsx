@@ -20,12 +20,19 @@ import useModal from "../../shared/hooks/useModal";
 
 export default function Home() {
   const { theme, setTheme } = useThemeStore();
-  const { isOpen: isThemeOpen, open: openThemeModal, close: closeThemeModal } = useModal();
+  const {
+    isOpen: isThemeOpen,
+    open: openThemeModal,
+    close: closeThemeModal,
+  } = useModal();
 
   const setIsShowing = useNavStore((s) => s.setIsShowing);
   const setItems = useNavStore((s) => s.setItems);
 
-  const openThemeModalCb = useCallback(() => openThemeModal(), [openThemeModal]);
+  const openThemeModalCb = useCallback(
+    () => openThemeModal(),
+    [openThemeModal],
+  );
 
   useEffect(() => {
     const HOME_NAV_ITEMS: NavItem[] = [
@@ -48,15 +55,34 @@ export default function Home() {
         icon: faCog,
         title: "Settings",
         children: [
-          { icon: faPaintBrush, title: "Theme",         onClick: openThemeModalCb },
-          { icon: faCode,       title: "User Prompt",   onClick: () => console.log("Preferences") },
-          { icon: faBell,       title: "Notifications", onClick: () => console.log("Notifications") },
-          { icon: faRobot,       title: "AI Models",     onClick: () => console.log("Favorites") },
-          { icon: faList,     title: "Edit list of words",        onClick: () => console.log("Search") },
-          { icon: faCircleQuestion ,       title: "Help",          onClick: () => console.log("Home") },
+          { icon: faPaintBrush, title: "Theme", onClick: openThemeModalCb },
+          {
+            icon: faCode,
+            title: "User Prompt",
+            onClick: () => console.log("Preferences"),
+          },
+          {
+            icon: faBell,
+            title: "Notifications",
+            onClick: () => console.log("Notifications"),
+          },
+          {
+            icon: faRobot,
+            title: "AI Models",
+            onClick: () => console.log("Favorites"),
+          },
+          {
+            icon: faList,
+            title: "Edit list of words",
+            onClick: () => console.log("Search"),
+          },
+          {
+            icon: faCircleQuestion,
+            title: "Help",
+            onClick: () => console.log("Home"),
+          },
         ],
       },
-      
     ];
 
     setItems(HOME_NAV_ITEMS);
