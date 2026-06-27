@@ -12,12 +12,12 @@ import {
   faGraduationCap,
   faClipboardCheck,
 } from "@fortawesome/free-solid-svg-icons";
-import LearningProgress from "../../shared/components/LearningProgress";
-import ProgressCircle from "../../shared/components/ProgressCircle";
 import { useNavStore, type NavItem } from "../../shared/store/navStore";
 import Modal from "../../shared/components/Modal";
 import useModal from "../../shared/hooks/useModal";
 import ThemeForm from "../../shared/components/ThemeForm";
+import ProgressCircle from "./ProgressCircle";
+import LearningProgress from "./LearningProgress";
 
 export default function Home() {
   const {
