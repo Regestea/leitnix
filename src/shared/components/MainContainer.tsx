@@ -1,6 +1,5 @@
 import type { ReactNode } from "react";
 import "./MainContainer.css";
-import { Button } from "./controls/Button";
 
 interface MainContainerProps {
   children: ReactNode;

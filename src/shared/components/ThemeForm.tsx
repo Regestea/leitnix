@@ -5,10 +5,7 @@ import {
   type FontSize,
   type FontWeight,
 } from "../store/themeStore";
-import { Button } from "./controls/Button";
-import { Input } from "./controls/Input";
 import { Select } from "./controls/Select";
-import { Textarea } from "./controls/Textarea";
 
 const THEME_OPTIONS = [
   { value: "Dark", label: "Dark" },

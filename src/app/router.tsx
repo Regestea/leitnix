@@ -3,6 +3,7 @@ import App from "./App.tsx";
 import NotFound from "../features/notFound/NotFound.tsx";
 import AddTopic from "../features/addTopic/AddTopic.tsx";
 import Home from "../features/home/Home.tsx";
+import StudyTopic from "../features/learnTopic/learnTopic.tsx";
 
 
 export const router = createBrowserRouter([
@@ -18,6 +19,10 @@ export const router = createBrowserRouter([
       {
         path: "add-topic",
         element: <AddTopic />,
+      },
+      {
+        path: "learn-topic",
+        element: <StudyTopic />,
       },
     ],
   },

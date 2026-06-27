@@ -46,7 +46,7 @@ export default function Home() {
       {
         icon: faGraduationCap,
         title: "Learn",
-        onClick: () => console.log("Learn clicked"),
+        onClick: () => navigate("/learn-topic"),
       },
       {
         icon: faClipboardCheck,
