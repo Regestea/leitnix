@@ -7,6 +7,7 @@
     "dev": "tsc -b && vite build && npx cap sync android && concurrently \"vite\" \"npx cap run android",
     "live": "adb reverse tcp:5173 tcp:5173 && tsc -b && vite build && npx cap sync android && concurrently \"vite --host 0.0.0.0\" \"npx cap run android -l --host localhost --port 5173 --forwardPorts 5173:5173 --target Samsung_A15\"",
     "build": "tsc -b && vite build && npx cap sync android",
+    "find-unused-css": "node find-unused-css.mjs",
     "lint": "eslint .",
     "preview": "vite preview"
   },
@@ -45,11 +46,14 @@
     "@vitejs/plugin-react": "^6.0.1",
     "concurrently": "^10.0.0",
     "eslint": "^10.3.0",
+    "eslint-plugin-css-modules": "^2.12.0",
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-react-refresh": "^0.5.2",
     "globals": "^17.6.0",
+    "purgecss": "^8.0.0",
     "typescript": "~6.0.2",
     "typescript-eslint": "^8.59.2",
-    "vite": "^8.0.12"
+    "vite": "^8.0.12",
+    "vite-plugin-purgecss": "^0.2.13"
   }
 }

@@ -8,6 +8,7 @@ import rehypeKatex from "rehype-katex";
 import rehypeRaw from "rehype-raw";
 import "./MarkdownRender.css";
 
+
 // RTL helper
 function extractText(node: React.ReactNode): string {
   if (typeof node === "string") return node;
@@ -29,7 +30,7 @@ function getDir(node: React.ReactNode): "rtl" | "ltr" | undefined {
       (cp >= 0x0600 && cp <= 0x06ff) || // Arabic / Persian
       (cp >= 0x0750 && cp <= 0x077f) || // Arabic Supplement
       (cp >= 0xfb50 && cp <= 0xfdff) || // Arabic Presentation A
-      (cp >= 0xfe70 && cp <= 0xfeff) // Arabic Presentation B
+      (cp >= 0xfe70 && cp <= 0xfeff)    // Arabic Presentation B
     ) {
       return "rtl";
     }

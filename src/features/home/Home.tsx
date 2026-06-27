@@ -1,4 +1,5 @@
 import { useEffect, useCallback } from "react";
+import { useNavigate } from "react-router";
 import {
   faCog,
   faRobot,
@@ -11,15 +12,14 @@ import {
   faGraduationCap,
   faClipboardCheck,
 } from "@fortawesome/free-solid-svg-icons";
-import { useThemeStore, type ThemeName } from "../../shared/store/themeStore";
 import LearningProgress from "../../shared/components/LearningProgress";
 import ProgressCircle from "../../shared/components/ProgressCircle";
 import { useNavStore, type NavItem } from "../../shared/store/navStore";
 import Modal from "../../shared/components/Modal";
 import useModal from "../../shared/hooks/useModal";
+import ThemeForm from "../../shared/components/ThemeForm";
 
 export default function Home() {
-  const { theme, setTheme } = useThemeStore();
   const {
     isOpen: isThemeOpen,
     open: openThemeModal,
@@ -34,12 +34,14 @@ export default function Home() {
     [openThemeModal],
   );
 
+  const navigate = useNavigate();
+
   useEffect(() => {
     const HOME_NAV_ITEMS: NavItem[] = [
       {
         icon: faPlus,
         title: "Add New Topic To Learn",
-        onClick: () => console.log("Add New Topic To Learn"),
+        onClick: () => navigate("/add-topic"),
       },
       {
         icon: faGraduationCap,
@@ -129,21 +131,7 @@ export default function Home() {
       </div>
 
       <Modal isOpen={isThemeOpen} onClose={closeThemeModal} title="Theme">
-        <div style={{ marginBottom: "1rem" }}>
-          <div style={{ overflow: "auto" }}>
-            <div className="settings-field">
-              <label className="settings-label">Theme</label>
-              <select
-                className="custom-select"
-                value={theme}
-                onChange={(e) => setTheme(e.target.value as ThemeName)}
-              >
-                <option value="Dark">Dark</option>
-                <option value="Light">Light</option>
-              </select>
-            </div>
-          </div>
-        </div>
+        <ThemeForm />
       </Modal>
     </>
   );
