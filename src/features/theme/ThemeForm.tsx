@@ -4,8 +4,8 @@ import {
   type FontFamily,
   type FontSize,
   type FontWeight,
-} from "../store/themeStore";
-import { Select } from "./controls/Select";
+} from "../../shared/store/themeStore";
+import { Select } from "../../shared/components/controls/Select";
 
 const THEME_OPTIONS = [
   { value: "Dark", label: "Dark" },
