@@ -15,9 +15,9 @@ import {
 import { useNavStore, type NavItem } from "../../shared/store/navStore";
 import Modal from "../../shared/components/Modal";
 import useModal from "../../shared/hooks/useModal";
-import ThemeForm from "../theme/ThemeForm";
 import ProgressCircle from "./ProgressCircle";
 import LearningProgress from "./LearningProgress";
+import ThemeForm from "../theme/ThemeForm";
 
 export default function Home() {
   const {
@@ -89,7 +89,7 @@ export default function Home() {
 
     setItems(HOME_NAV_ITEMS);
     setIsShowing(true);
-  }, [openThemeModalCb, setItems, setIsShowing]);
+  }, [openThemeModalCb, setItems, setIsShowing, navigate]);
 
   useEffect(() => {
     setIsShowing(!isThemeOpen);

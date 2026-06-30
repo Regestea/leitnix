@@ -1,18 +1,15 @@
 ﻿import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-export type ThemeName = "Light" | "Dark" | "TomorrowNight";
+export type ThemeName = "Light" | "Dark";
 
 // ─── Font Family ──────────────────────────────────────────────────────────────
 export type FontFamily =
-  // Custom (Leitnix @font-face)
   | "comic"
   | "angelina"
-  // Generic stacks
   | "sans"
   | "serif"
   | "mono"
-  // Common web fonts
   | "inter"
   | "poppins"
   | "vazirmatn"
@@ -42,14 +39,14 @@ const FONT_FAMILY_VAR: Record<FontFamily, string> = {
 
 // ─── Font Size ────────────────────────────────────────────────────────────────
 export type FontSize =
-  | "xx-small"   // 0.5rem   (~8px)
-  | "x-small"    // 0.625rem (~10px)
-  | "small"      // 0.75rem  (~12px)
-  | "medium"     // 1rem     (~16px) ← browser default
-  | "large"      // 1.125rem (~18px)
-  | "x-large"    // 1.5rem   (~24px)
-  | "xx-large"   // 2rem     (~32px)
-  | "xxx-large"; // 3rem     (~48px)
+  | "xx-small"
+  | "x-small"
+  | "small"
+  | "medium"
+  | "large"
+  | "x-large"
+  | "xx-large"
+  | "xxx-large";
 
 const FONT_SIZE_VAR: Record<FontSize, string> = {
   "xx-small":  "--fs-xx-small",
@@ -64,15 +61,15 @@ const FONT_SIZE_VAR: Record<FontSize, string> = {
 
 // ─── Font Weight ──────────────────────────────────────────────────────────────
 export type FontWeight =
-  | "thin"         // 100
-  | "extra-light"  // 200
-  | "light"        // 300
-  | "normal"       // 400 ← browser default
-  | "medium"       // 500
-  | "semi-bold"    // 600
-  | "bold"         // 700
-  | "extra-bold"   // 800
-  | "black";       // 900
+  | "thin"
+  | "extra-light"
+  | "light"
+  | "normal"
+  | "medium"
+  | "semi-bold"
+  | "bold"
+  | "extra-bold"
+  | "black";
 
 const FONT_WEIGHT_VAR: Record<FontWeight, string> = {
   "thin":        "--fw-thin",
@@ -97,6 +94,9 @@ interface ThemeState {
   setFontFamily: (family: FontFamily) => void;
   setFontSize:   (size: FontSize)     => void;
   setFontWeight: (weight: FontWeight) => void;
+
+  /** Re-applies the current state to the DOM. Call once on app startup. */
+  initialize: () => void;
 }
 
 // ─── DOM helpers ──────────────────────────────────────────────────────────────
@@ -114,7 +114,7 @@ const applyCssVar = (targetProp: string, sourceProp: string) => {
 // ─── Zustand store ────────────────────────────────────────────────────────────
 export const useThemeStore = create<ThemeState>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       theme:      "Dark",
       fontFamily: "comic",
       fontSize:   "medium",
@@ -139,15 +139,20 @@ export const useThemeStore = create<ThemeState>()(
         applyCssVar("--app-font-weight", FONT_WEIGHT_VAR[fontWeight]);
         set({ fontWeight });
       },
+
+      initialize: () => {
+        const { theme, fontFamily, fontSize, fontWeight } = get();
+        applyTheme(theme);
+        applyCssVar("--app-font-family", FONT_FAMILY_VAR[fontFamily]);
+        applyCssVar("--app-font-size",   FONT_SIZE_VAR[fontSize]);
+        applyCssVar("--app-font-weight", FONT_WEIGHT_VAR[fontWeight]);
+      },
     }),
     {
       name: "leitnix-theme",
       onRehydrateStorage: () => (state) => {
         if (!state) return;
-        applyTheme(state.theme);
-        applyCssVar("--app-font-family", FONT_FAMILY_VAR[state.fontFamily]);
-        applyCssVar("--app-font-size",   FONT_SIZE_VAR[state.fontSize]);
-        applyCssVar("--app-font-weight", FONT_WEIGHT_VAR[state.fontWeight]);
+        state.initialize();
       },
     },
   ),

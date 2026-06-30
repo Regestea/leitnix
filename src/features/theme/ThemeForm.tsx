@@ -1,11 +1,6 @@
-import {
-  useThemeStore,
-  type ThemeName,
-  type FontFamily,
-  type FontSize,
-  type FontWeight,
-} from "../../shared/store/themeStore";
 import { Select } from "../../shared/components/controls/Select";
+import { useThemeStore, type FontFamily, type FontSize, type FontWeight, type ThemeName } from "../../shared/store/themeStore";
+
 
 const THEME_OPTIONS = [
   { value: "Dark", label: "Dark" },

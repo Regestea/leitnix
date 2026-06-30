@@ -17,13 +17,11 @@
 
 /* ─── Themes ────────────────────────────────────────────────────────────────── */
 :root {
-  --background-image: url("assets/images/night.png");
-  --primary: #1c3e6b;
-  --secondary: #c2d1e6;
-  --accent: #ddf4fc;
+  /* ─── Shared (theme-independent) ────────────────────────────── */
   --background: #0f172a;
   --surface: #1e293b;
   --text: #f8fafc;
+  --angle: "";
   --color-bg1: #0f172a;
   --color-bg2: #0a1120;
   --color1: 205, 122, 255;
@@ -81,6 +79,21 @@
   --app-font-family: "comic", sans-serif;
   --app-font-size: 1rem;
   --app-font-weight: 400;
+}
+
+/* ─── Theme-specific ───────────────────────────────────────────── */
+[data-theme="Dark"] {
+  --background-image: url("assets/images/night.png");
+  --primary: #1c3e6b;
+  --secondary: #c2d1e6;
+  --accent: #ddf4fc;
+}
+
+[data-theme="Light"] {
+  --background-image: url("assets/images/day.png");
+  --primary: #0093f3;
+  --secondary: #fce9bf;
+  --accent: #c2d1e6;
 }
 
 /* ─── Reset ─────────────────────────────────────────────────────────────────── */
