@@ -15,7 +15,7 @@ import {
 import { useNavStore, type NavItem } from "../../shared/store/navStore";
 import Modal from "../../shared/components/Modal";
 import useModal from "../../shared/hooks/useModal";
-import ThemeForm from "../../shared/components/ThemeForm";
+import ThemeForm from "../theme/ThemeForm";
 import ProgressCircle from "./ProgressCircle";
 import LearningProgress from "./LearningProgress";
 
