@@ -1,6 +1,12 @@
 import { Select } from "../../shared/components/controls/Select";
-import { useThemeStore, type FontFamily, type FontSize, type FontWeight, type ThemeName } from "../../shared/store/themeStore";
-
+import MainContainer from "../../shared/components/MainContainer";
+import {
+  useThemeStore,
+  type FontFamily,
+  type FontSize,
+  type FontWeight,
+  type ThemeName,
+} from "../../shared/store/themeStore";
 
 const THEME_OPTIONS = [
   { value: "Dark", label: "Dark" },
@@ -65,7 +71,7 @@ const FONT_WEIGHT_OPTIONS = [
   { value: "black", label: "Black (900)" },
 ] satisfies { value: FontWeight; label: string }[];
 
-export default function ThemeForm() {
+export default function Theme() {
   const {
     theme,
     setTheme,
@@ -78,33 +84,35 @@ export default function ThemeForm() {
   } = useThemeStore();
 
   return (
-    <div style={{ marginBottom: "1rem" }}>
-      <div style={{ overflow: "auto" }}>
-        <Select
-          label="Theme"
-          value={theme}
-          items={THEME_OPTIONS}
-          onChange={setTheme}
-        />
-        <Select
-          label="Font Family"
-          value={fontFamily}
-          items={FONT_FAMILY_OPTIONS}
-          onChange={setFontFamily}
-        />
-        <Select
-          label="Font Size"
-          value={fontSize}
-          items={FONT_SIZE_OPTIONS}
-          onChange={setFontSize}
-        />
-        <Select
-          label="Font Weight"
-          value={fontWeight}
-          items={FONT_WEIGHT_OPTIONS}
-          onChange={setFontWeight}
-        />
+    <MainContainer>
+      <div style={{ marginBottom: "1rem" }}>
+        <div style={{ overflow: "auto" }}>
+          <Select
+            label="Theme"
+            value={theme}
+            items={THEME_OPTIONS}
+            onChange={setTheme}
+          />
+          <Select
+            label="Font Family"
+            value={fontFamily}
+            items={FONT_FAMILY_OPTIONS}
+            onChange={setFontFamily}
+          />
+          <Select
+            label="Font Size"
+            value={fontSize}
+            items={FONT_SIZE_OPTIONS}
+            onChange={setFontSize}
+          />
+          <Select
+            label="Font Weight"
+            value={fontWeight}
+            items={FONT_WEIGHT_OPTIONS}
+            onChange={setFontWeight}
+          />
+        </div>
       </div>
-    </div>
+    </MainContainer>
   );
 }

@@ -1,4 +1,4 @@
-import { useEffect, useCallback } from "react";
+import { useEffect } from "react";
 import { useNavigate } from "react-router";
 import {
   faCog,
@@ -13,26 +13,12 @@ import {
   faClipboardCheck,
 } from "@fortawesome/free-solid-svg-icons";
 import { useNavStore, type NavItem } from "../../shared/store/navStore";
-import Modal from "../../shared/components/Modal";
-import useModal from "../../shared/hooks/useModal";
 import ProgressCircle from "./ProgressCircle";
 import LearningProgress from "./LearningProgress";
-import ThemeForm from "../theme/ThemeForm";
 
 export default function Home() {
-  const {
-    isOpen: isThemeOpen,
-    open: openThemeModal,
-    close: closeThemeModal,
-  } = useModal();
-
   const setIsShowing = useNavStore((s) => s.setIsShowing);
   const setItems = useNavStore((s) => s.setItems);
-
-  const openThemeModalCb = useCallback(
-    () => openThemeModal(),
-    [openThemeModal],
-  );
 
   const navigate = useNavigate();
 
@@ -57,7 +43,11 @@ export default function Home() {
         icon: faCog,
         title: "Settings",
         children: [
-          { icon: faPaintBrush, title: "Theme", onClick: openThemeModalCb },
+          {
+            icon: faPaintBrush,
+            title: "Theme",
+            onClick: () => navigate("/theme"),
+          },
           {
             icon: faCode,
             title: "User Prompt",
@@ -89,11 +79,7 @@ export default function Home() {
 
     setItems(HOME_NAV_ITEMS);
     setIsShowing(true);
-  }, [openThemeModalCb, setItems, setIsShowing, navigate]);
-
-  useEffect(() => {
-    setIsShowing(!isThemeOpen);
-  }, [isThemeOpen, setIsShowing]);
+  }, [setItems, setIsShowing, navigate]);
 
   return (
     <>
@@ -129,10 +115,6 @@ export default function Home() {
           <LearningProgress />
         </div>
       </div>
-
-      <Modal isOpen={isThemeOpen} onClose={closeThemeModal} title="Theme">
-        <ThemeForm />
-      </Modal>
     </>
   );
 }

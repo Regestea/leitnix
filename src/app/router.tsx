@@ -4,6 +4,7 @@ import NotFound from "../features/notFound/NotFound.tsx";
 import AddTopic from "../features/addTopic/AddTopic.tsx";
 import Home from "../features/home/Home.tsx";
 import StudyTopic from "../features/learnTopic/learnTopic.tsx";
+import Theme from "../features/theme/Theme.tsx";
 
 
 export const router = createBrowserRouter([
@@ -23,6 +24,10 @@ export const router = createBrowserRouter([
       {
         path: "learn-topic",
         element: <StudyTopic />,
+      },
+      {
+        path: "theme",
+        element: <Theme />,
       },
     ],
   },
