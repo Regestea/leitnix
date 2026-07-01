@@ -1,9 +1,11 @@
 import MainContainer from "../../shared/components/MainContainer";
 
-export default function learnTopic() {
+export default function LearnTopic() {
   return (
     <MainContainer>
-      <div>learnTopic</div>
+      <div>
+        <h2>Users</h2>
+      </div>
     </MainContainer>
   );
 }
