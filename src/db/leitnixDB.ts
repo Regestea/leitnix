@@ -34,7 +34,8 @@ export async function initializeDatabase() {
       FontFamily TEXT,
       FontSize   TEXT,
       FontWeight TEXT,
-      Theme      TEXT
+      Theme      TEXT,
+      AndroidNavigation TEXT
     );
   `);
 

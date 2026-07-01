@@ -24,10 +24,11 @@ export function Checkbox({
   }
 
   return (
-    <div className="settings-field">
+    <div>
       <label htmlFor={checkboxId}>
         {label}
       </label>
+      <br/>
       <input
         id={checkboxId}
         type="checkbox"

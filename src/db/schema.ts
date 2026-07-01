@@ -4,6 +4,7 @@ export interface Setting {
   FontSize: string | null;
   FontWeight: string | null;
   Theme: string | null;
+  AndroidNavigation: boolean | null;
 }
 
 export interface AiModel {

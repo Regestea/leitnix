@@ -1,3 +1,4 @@
+import { Checkbox } from "../../shared/components/controls/CheckBox";
 import { Select } from "../../shared/components/controls/Select";
 import MainContainer from "../../shared/components/MainContainer";
 import {
@@ -81,12 +82,21 @@ export default function Theme() {
     setFontSize,
     fontWeight,
     setFontWeight,
+    androidNavigationVisible,
+    setAndroidNavigationVisible,
   } = useThemeStore();
 
   return (
     <MainContainer>
       <div style={{ marginBottom: "1rem" }}>
-        <div style={{ overflow: "auto" }}>
+        <div
+          style={{
+            overflow: "auto",
+            display: "flex",
+            flexDirection: "column",
+            gap: "1rem",
+          }}
+        >
           <Select
             label="Theme"
             value={theme}
@@ -110,6 +120,11 @@ export default function Theme() {
             value={fontWeight}
             items={FONT_WEIGHT_OPTIONS}
             onChange={setFontWeight}
+          />
+          <Checkbox
+            label="Show android navigation bar"
+            defaultChecked={androidNavigationVisible}
+            onChange={setAndroidNavigationVisible}
           />
         </div>
       </div>

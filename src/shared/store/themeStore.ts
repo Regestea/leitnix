@@ -5,6 +5,7 @@ import {
   type StateStorage,
 } from "zustand/middleware";
 import { SettingRepository } from "../../repositories/SettingRepository";
+import { SystemBars, SystemBarType } from "@capacitor/core";
 
 export type ThemeName = "Light" | "Dark";
 
@@ -90,11 +91,13 @@ interface ThemeState {
   fontFamily: FontFamily;
   fontSize: FontSize;
   fontWeight: FontWeight;
+  androidNavigationVisible: boolean;
 
   setTheme: (theme: ThemeName) => void;
   setFontFamily: (family: FontFamily) => void;
   setFontSize: (size: FontSize) => void;
   setFontWeight: (weight: FontWeight) => void;
+  setAndroidNavigationVisible: (visible: boolean) => void;
   initialize: () => void;
 }
 
@@ -108,6 +111,18 @@ const applyCssVar = (targetProp: string, sourceProp: string) => {
   root().style.setProperty(targetProp, resolved);
 };
 
+const applySystemBars = async (visible: boolean) => {
+  try {
+    if (visible) {
+      await SystemBars.show({ bar: SystemBarType.NavigationBar });
+    } else {
+      await SystemBars.hide({ bar: SystemBarType.NavigationBar });
+    }
+  } catch (error) {
+    console.error("there is no option for hide/show navigationBar", error);
+  }
+};
+
 const sqliteStorage: StateStorage = {
   getItem: async (name) => {
     void name;
@@ -119,7 +134,9 @@ const sqliteStorage: StateStorage = {
       fontFamily: row.FontFamily as FontFamily,
       fontSize: row.FontSize as FontSize,
       fontWeight: row.FontWeight as FontWeight,
+      androidNavigationVisible: row.AndroidNavigation ?? true,
     };
+
     return JSON.stringify({ state, version: 0 });
   },
 
@@ -127,11 +144,13 @@ const sqliteStorage: StateStorage = {
     void name;
 
     const { state } = JSON.parse(value);
+
     await SettingRepository.upsert({
       FontFamily: state.fontFamily,
       FontSize: state.fontSize,
       FontWeight: state.fontWeight,
       Theme: state.theme,
+      AndroidNavigation: state.androidNavigationVisible,
     });
   },
 
@@ -147,6 +166,7 @@ export const useThemeStore = create<ThemeState>()(
       fontFamily: "comic",
       fontSize: "medium",
       fontWeight: "normal",
+      androidNavigationVisible: true,
 
       setTheme: (theme) => {
         applyTheme(theme);
@@ -168,12 +188,25 @@ export const useThemeStore = create<ThemeState>()(
         set({ fontWeight });
       },
 
+      setAndroidNavigationVisible: (androidNavigationVisible) => {
+        void applySystemBars(androidNavigationVisible);
+        set({ androidNavigationVisible });
+      },
+
       initialize: () => {
-        const { theme, fontFamily, fontSize, fontWeight } = get();
+        const {
+          theme,
+          fontFamily,
+          fontSize,
+          fontWeight,
+          androidNavigationVisible,
+        } = get();
+
         applyTheme(theme);
         applyCssVar("--app-font-family", FONT_FAMILY_VAR[fontFamily]);
         applyCssVar("--app-font-size", FONT_SIZE_VAR[fontSize]);
         applyCssVar("--app-font-weight", FONT_WEIGHT_VAR[fontWeight]);
+        void applySystemBars(androidNavigationVisible);
       },
     }),
     {

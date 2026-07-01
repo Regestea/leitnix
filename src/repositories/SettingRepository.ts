@@ -8,6 +8,7 @@ const DEFAULT_SETTINGS: Omit<Setting, "Id"> = {
   FontSize: "medium",
   FontWeight: "normal",
   Theme: "Dark",
+  AndroidNavigation: true,
 };
 
 export const SettingRepository = {
@@ -15,24 +16,32 @@ export const SettingRepository = {
     const result = await db.query("SELECT * FROM Setting WHERE Id = ?;", [
       SETTINGS_ID,
     ]);
-    return (result.values?.[0] as Setting) ?? null;
+    const row = result.values?.[0];
+    if (!row) return null;
+
+    return {
+      ...(row as Setting),
+      AndroidNavigation: !!row.AndroidNavigation,
+    };
   },
 
   async upsert(setting: Omit<Setting, "Id">): Promise<void> {
     await db.run(
-      `INSERT INTO Setting (Id, FontFamily, FontSize, FontWeight, Theme)
-       VALUES (?, ?, ?, ?, ?)
+      `INSERT INTO Setting (Id, FontFamily, FontSize, FontWeight, Theme, AndroidNavigation)
+       VALUES (?, ?, ?, ?, ?, ?)
        ON CONFLICT(Id) DO UPDATE SET
          FontFamily = excluded.FontFamily,
          FontSize   = excluded.FontSize,
          FontWeight = excluded.FontWeight,
-         Theme      = excluded.Theme;`,
+         Theme      = excluded.Theme,
+         AndroidNavigation = excluded.AndroidNavigation;`,
       [
         SETTINGS_ID,
         setting.FontFamily,
         setting.FontSize,
         setting.FontWeight,
         setting.Theme,
+        setting.AndroidNavigation ? 1 : 0,
       ],
     );
   },
