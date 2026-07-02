@@ -240,6 +240,7 @@ button {
   background: rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.55) !important;
   font-weight: var(--app-font-weight);
+  font-family: var(--app-font-family);
   color: #fff;
   padding: 0.5rem 1rem;
   border-radius: 20px;

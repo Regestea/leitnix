@@ -61,7 +61,7 @@ export default function Home() {
           {
             icon: faRobot,
             title: "AI Models",
-            onClick: () => console.log("Favorites"),
+            onClick: () => navigate("/ai-models"),
           },
           {
             icon: faList,

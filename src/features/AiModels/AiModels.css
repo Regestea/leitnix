@@ -1,0 +1,38 @@
+.ai-model-form {
+  padding: 1rem;
+  overflow-y: auto;
+  height:50vh;
+  border-radius: 1.5rem;
+  border: 1px solid rgba(245, 224, 186, 0.5);
+  box-shadow:
+  inset 0 20px 20px -20px rgba(0, 0, 0, 0.5),
+  inset 0 -20px 20px -20px rgba(0, 0, 0, 0.5);
+}
+
+.model-item {
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border-radius: 1.5rem;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(245, 224, 186, 0.5);
+  display: flex;
+  justify-content: space-between;
+}
+
+.model-control-menu {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.form-add-new-model {
+  margin-top: 2rem;
+  width: 50%;
+  align-self: center;
+  border-radius: 0.8rem;
+}
+
+Input {
+  width: 100%;
+}

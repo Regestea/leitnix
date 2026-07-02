@@ -5,7 +5,7 @@ import AddTopic from "../features/addTopic/AddTopic.tsx";
 import Home from "../features/home/Home.tsx";
 import StudyTopic from "../features/learnTopic/learnTopic.tsx";
 import Theme from "../features/theme/Theme.tsx";
-
+import AiModels from "../features/AiModels/AiModels.tsx";
 
 export const router = createBrowserRouter([
   {
@@ -14,7 +14,7 @@ export const router = createBrowserRouter([
     errorElement: <NotFound />,
     children: [
       {
-        index: true, 
+        index: true,
         element: <Home />,
       },
       {
@@ -24,6 +24,10 @@ export const router = createBrowserRouter([
       {
         path: "learn-topic",
         element: <StudyTopic />,
+      },
+      {
+        path: "ai-models",
+        element: <AiModels />,
       },
       {
         path: "theme",
