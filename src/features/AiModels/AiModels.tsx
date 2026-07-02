@@ -3,11 +3,15 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import MainContainer from "../../shared/components/MainContainer";
 import { Button } from "../../shared/components/controls/Button";
 import { Input } from "../../shared/components/controls/Input";
+import { Select } from "../../shared/components/controls/Select";
 import Modal from "../../shared/components/Modal";
 import type { AiModel } from "../../db/schema";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { z } from "zod";
 import "./AiModels.css";
+import { testApi } from "../../services/aiService";
+import { AiModelRepository } from "../../repositories/AiModelRepository";
+import { resolveProviderBaseUrl } from "../../staticConfigs/ProviderConfig";
 
 const EMPTY_MODEL: AiModel = {
   Id: "",
@@ -15,27 +19,58 @@ const EMPTY_MODEL: AiModel = {
   URL: null,
   ModelName: null,
   APIKey: null,
+  Provider: "GoogleGemini",
 };
 
-const aiModelFormSchema = z.object({
-  DisplayName: z
-    .string()
-    .trim()
-    .min(1, "Display name is required."),
-  ModelName: z
-    .string()
-    .trim()
-    .min(1, "Model name is required."),
-  URL: z
-    .string()
-    .trim()
-    .url("Enter a valid URL, e.g. https://api.example.com/v1")
-    .min(1, "URL is required."),
-  APIKey: z
-    .string()
-    .trim()
-    .min(1, "API key is required."),
-});
+const PROVIDER_OPTIONS: { label: string; value: AiModel["Provider"] }[] = [
+  { label: "Google Gemini", value: "GoogleGemini" },
+  { label: "OpenRouter", value: "OpenRouter" },
+  { label: "AvalAI", value: "AvalAi" },
+  { label: "OpenAI", value: "OpenAi" },
+  { label: "OpenAI Compatible", value: "OpenAiCompatible" },
+];
+
+const aiModelFormSchema = z
+  .object({
+    DisplayName: z.string().trim().min(1, "Display name is required."),
+    ModelName: z.string().trim().min(1, "Model name is required."),
+    APIKey: z.string().trim().min(1, "API key is required."),
+    Provider: z.enum([
+      "GoogleGemini",
+      "OpenRouter",
+      "AvalAi",
+      "OpenAi",
+      "OpenAiCompatible",
+    ]),
+    URL: z.string().trim(),
+  })
+  .superRefine((data, ctx) => {
+    if (data.Provider !== "OpenAiCompatible") return;
+
+    if (!data.URL) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["URL"],
+        message: "URL is required.",
+      });
+      return;
+    }
+
+    const urlCheck = z
+      .string()
+      .url(
+        "Enter a valid URL, e.g. https://api.example.com/v1 , your url should end with things like /v1",
+      )
+      .safeParse(data.URL);
+
+    if (!urlCheck.success) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["URL"],
+        message: urlCheck.error.issues[0]?.message ?? "Enter a valid URL.",
+      });
+    }
+  });
 
 type AiModelFormErrors = Partial<
   Record<keyof z.infer<typeof aiModelFormSchema>, string>
@@ -48,8 +83,9 @@ function validateFormModel(model: AiModel): {
   const result = aiModelFormSchema.safeParse({
     DisplayName: model.DisplayName ?? "",
     ModelName: model.ModelName ?? "",
-    URL: model.URL ?? "",
     APIKey: model.APIKey ?? "",
+    Provider: model.Provider,
+    URL: model.URL ?? "",
   });
 
   if (result.success) {
@@ -67,6 +103,8 @@ function validateFormModel(model: AiModel): {
 }
 
 export default function AiModels() {
+  const repository = useMemo(() => new AiModelRepository(), []);
+
   const [models, setModels] = useState<AiModel[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -76,6 +114,16 @@ export default function AiModels() {
   const [isTestingApi, setIsTestingApi] = useState(false);
   const [testApiError, setTestApiError] = useState<string | null>(null);
   const [formErrors, setFormErrors] = useState<AiModelFormErrors>({});
+
+  useEffect(() => {
+    let cancelled = false;
+    repository.getAll().then((data) => {
+      if (!cancelled) setModels(data);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [repository]);
 
   const openAddModal = () => {
     setEditingId(null);
@@ -104,18 +152,41 @@ export default function AiModels() {
     setFormErrors({});
   };
 
-  const handleDelete = (id: string) => {
+  const handleDelete = async (id: string) => {
+    await repository.delete(id);
     setModels((prev) => prev.filter((m) => m.Id !== id));
   };
 
-  const handleFieldChange = (field: keyof AiModel, value: string) => {
-    setFormModel((prev: AiModel) => ({ ...prev, [field]: value === "" ? null : value }));
+  const handleFieldChange = (
+    field: Exclude<keyof AiModel, "Provider">,
+    value: string,
+  ) => {
+    setFormModel((prev: AiModel) => ({
+      ...prev,
+      [field]: value === "" ? null : value,
+    }));
     setTestApiSuccess(false);
     setTestApiError(null);
-    setFormErrors((prev:AiModelFormErrors) => {
+    setFormErrors((prev: AiModelFormErrors) => {
       if (!(field in prev)) return prev;
       const next = { ...prev };
       delete next[field as keyof AiModelFormErrors];
+      return next;
+    });
+  };
+
+  const handleProviderChange = (provider: AiModel["Provider"]) => {
+    setFormModel((prev) => ({
+      ...prev,
+      Provider: provider,
+      URL: provider === "OpenAiCompatible" ? prev.URL : null,
+    }));
+    setTestApiSuccess(false);
+    setTestApiError(null);
+    setFormErrors((prev) => {
+      if (!("URL" in prev)) return prev;
+      const next = { ...prev };
+      delete next.URL;
       return next;
     });
   };
@@ -132,18 +203,15 @@ export default function AiModels() {
     setTestApiError(null);
 
     try {
-      const response = await fetch(formModel.URL as string, {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${formModel.APIKey}`,
-        },
-      });
-
-      if (response.ok) {
-        setTestApiSuccess(true);
-      } else {
-        setTestApiSuccess(false);
-        setTestApiError(`Test failed: ${response.status} ${response.statusText}`);
+      const url = resolveProviderBaseUrl(formModel);
+      const result = await testApi(
+        url,
+        formModel.APIKey as string,
+        formModel.ModelName as string,
+      );
+      setTestApiSuccess(result);
+      if (!result) {
+        setTestApiError("Test failed");
       }
     } catch (err) {
       setTestApiSuccess(false);
@@ -153,7 +221,7 @@ export default function AiModels() {
     }
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     const { success, errors } = validateFormModel(formModel);
     setFormErrors(errors);
     if (!success) {
@@ -162,14 +230,15 @@ export default function AiModels() {
     }
 
     if (editingId) {
-      setModels((prev) =>
-        prev.map((m) => (m.Id === editingId ? { ...formModel, Id: editingId } : m))
-      );
+      const updated: AiModel = { ...formModel, Id: editingId };
+      await repository.update(updated);
+      setModels((prev) => prev.map((m) => (m.Id === editingId ? updated : m)));
     } else {
       const newModel: AiModel = {
         ...formModel,
-        Id: crypto.randomUUID(),
+        Id: crypto.randomUUID(), // UUID string, used as the primary key
       };
+      await repository.create(newModel);
       setModels((prev) => [...prev, newModel]);
     }
     closeModal();
@@ -178,13 +247,15 @@ export default function AiModels() {
   return (
     <>
       <MainContainer>
-        {models.length === 0 ? (
-          <p className="no-models-text">No AI models added yet.</p>
-        ) : (
-          models.map((model) => (
-            <div className="ai-model-form" key={model.Id}>
-              <div className="model-item">
-                <h4>{model.DisplayName ?? model.ModelName ?? "Untitled Model"}</h4>
+        <div className="ai-model-form">
+          {models.length === 0 ? (
+            <p className="no-models-text">No AI models added yet.</p>
+          ) : (
+            models.map((model) => (
+              <div className="model-item" key={model.Id}>
+                <h4>
+                  {model.DisplayName ?? model.ModelName ?? "Untitled Model"}
+                </h4>
                 <div className="model-control-menu">
                   <span
                     className="model-control-menu"
@@ -200,9 +271,9 @@ export default function AiModels() {
                   </span>
                 </div>
               </div>
-            </div>
-          ))
-        )}
+            ))
+          )}
+        </div>
 
         <div
           style={{
@@ -231,6 +302,14 @@ export default function AiModels() {
             }}
           >
             <div>
+              <div>
+                <Select
+                  label="Provider"
+                  value={formModel.Provider}
+                  items={PROVIDER_OPTIONS}
+                  onChange={handleProviderChange}
+                />
+              </div>
               <Input
                 label="Display Name"
                 defaultValue={formModel.DisplayName ?? ""}
@@ -252,14 +331,18 @@ export default function AiModels() {
               )}
             </div>
 
-            <div>
-              <Input
-                label="URL"
-                defaultValue={formModel.URL ?? ""}
-                onChange={(e) => handleFieldChange("URL", e)}
-              />
-              {formErrors.URL && <p className="field-error">{formErrors.URL}</p>}
-            </div>
+            {formModel.Provider === "OpenAiCompatible" && (
+              <div>
+                <Input
+                  label="URL"
+                  defaultValue={formModel.URL ?? ""}
+                  onChange={(e) => handleFieldChange("URL", e)}
+                />
+                {formErrors.URL && (
+                  <p className="field-error">{formErrors.URL}</p>
+                )}
+              </div>
+            )}
 
             <div>
               <Input
@@ -279,11 +362,16 @@ export default function AiModels() {
           </div>
         </div>
 
-        <div style={{ display: "flex", justifyContent: "center", gap: "0.5rem" }}>
+        <div
+          style={{ display: "flex", justifyContent: "center", gap: "0.5rem" }}
+        >
           <Button className="secondary" label="Cancel" onClick={closeModal} />
 
           {testApiSuccess ? (
-            <Button label={editingId ? "Save Changes" : "Save"} onClick={handleSave} />
+            <Button
+              label={editingId ? "Save Changes" : "Save"}
+              onClick={handleSave}
+            />
           ) : (
             <Button
               label={isTestingApi ? "Testing..." : "Test API Key"}

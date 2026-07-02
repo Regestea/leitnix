@@ -7,13 +7,21 @@ export interface Setting {
   AndroidNavigation: boolean | null;
 }
 
-export interface AiModel {
+export type AiProvider =
+  | "GoogleGemini"
+  | "OpenRouter"
+  | "AvalAi"
+  | "OpenAi"
+  | "OpenAiCompatible";
+ 
+export type AiModel = {
   Id: string;
   DisplayName: string | null;
   URL: string | null;
   ModelName: string | null;
   APIKey: string | null;
-}
+  Provider: AiProvider;
+};
 
 export interface CategoryTag {
   Id: string;

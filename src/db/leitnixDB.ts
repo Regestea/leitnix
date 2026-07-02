@@ -45,7 +45,8 @@ export async function initializeDatabase() {
       DisplayName TEXT,
       URL   TEXT,
       ModelName TEXT,
-      APIKey TEXT
+      APIKey TEXT,
+      Provider TEXT CHECK (Provider IN ('GoogleGemini', 'OpenRouter', 'AvalAi','OpenAi','OpenAiCompatible'))
     );
   `);
 
