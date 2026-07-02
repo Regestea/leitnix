@@ -51,7 +51,7 @@ export default function Home() {
           {
             icon: faCode,
             title: "User Prompt",
-            onClick: () => console.log("Preferences"),
+            onClick: () => navigate("/custom-prompt"),
           },
           {
             icon: faBell,

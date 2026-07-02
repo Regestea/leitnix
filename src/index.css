@@ -163,6 +163,7 @@ textarea {
   font-family: var(--app-font-family);
   font-weight: var(--app-font-weight);
   transition: background 200ms ease, box-shadow 200ms ease;
+  resize: vertical !important;
 }
 
 input[type="text"]:focus,

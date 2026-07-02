@@ -6,6 +6,7 @@ import Home from "../features/home/Home.tsx";
 import StudyTopic from "../features/learnTopic/learnTopic.tsx";
 import Theme from "../features/theme/Theme.tsx";
 import AiModels from "../features/AiModels/AiModels.tsx";
+import Prompt from "../features/customPrompt/Prompt.tsx";
 
 export const router = createBrowserRouter([
   {
@@ -32,6 +33,10 @@ export const router = createBrowserRouter([
       {
         path: "theme",
         element: <Theme />,
+      },
+      {
+        path: "custom-prompt",
+        element: <Prompt />,
       },
     ],
   },

@@ -56,6 +56,17 @@ export async function initializeDatabase() {
     );
   `);
 
+  await db.execute(`CREATE TABLE IF NOT EXISTS CustomPrompts (
+      Id TEXT PRIMARY KEY,
+      Name TEXT,
+      Prompt TEXT
+    );
+  `);
+
+  await db.execute(
+    `Insert OR IGNORE INTO CategoryTags (Id, Name) VALUES ('${crypto.randomUUID()}', 'Default');`,
+  );
+
   await db.execute(`
     CREATE TABLE IF NOT EXISTS Cards (
       Id    TEXT PRIMARY KEY,

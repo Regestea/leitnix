@@ -13,7 +13,7 @@ export type AiProvider =
   | "AvalAi"
   | "OpenAi"
   | "OpenAiCompatible";
- 
+
 export type AiModel = {
   Id: string;
   DisplayName: string | null;
@@ -22,6 +22,12 @@ export type AiModel = {
   APIKey: string | null;
   Provider: AiProvider;
 };
+
+export interface CustomPrompt {
+  Id: string;
+  Name: string | null;
+  Prompt: string | null;
+}
 
 export interface CategoryTag {
   Id: string;
