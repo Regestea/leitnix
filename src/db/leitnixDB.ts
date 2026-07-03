@@ -28,16 +28,14 @@ export async function initializeDatabase() {
 
   await db.execute("PRAGMA foreign_keys = ON;");
 
-  await db.execute(`
-    CREATE TABLE IF NOT EXISTS Setting (
+  await db.execute(`CREATE TABLE IF NOT EXISTS Theme (
       Id TEXT PRIMARY KEY,
       FontFamily TEXT,
       FontSize   TEXT,
       FontWeight TEXT,
       Theme      TEXT,
       AndroidNavigation BOOLEAN
-    );
-  `);
+  );`);
 
   await db.execute(`
     CREATE TABLE IF NOT EXISTS AiModels (
@@ -64,17 +62,29 @@ export async function initializeDatabase() {
   `);
 
   await db.execute(
-    `Insert OR IGNORE INTO CategoryTags (Id, Name) VALUES ('${crypto.randomUUID()}', 'Default');`,
+    `INSERT OR IGNORE INTO CategoryTags (Id, Name) VALUES ('${crypto.randomUUID()}', 'Default');`,
   );
 
   await db.execute(`
     CREATE TABLE IF NOT EXISTS Boxes (
       Id            TEXT PRIMARY KEY,
-      Name        TEXT,
+      Name          TEXT,
       RepeatPeriodUnixTime  INTEGER,
       NextBoxId     TEXT,
       PreviousBoxId TEXT
     );
+  `);
+
+  await db.execute(`
+    INSERT OR IGNORE INTO Boxes (Id, Name, RepeatPeriodUnixTime) VALUES
+      ('${crypto.randomUUID()}', 'box1', 1440), -- 1 day = 1440 minutes
+      ('${crypto.randomUUID()}', 'box2', 2880), -- 2 days = 2880 minutes
+      ('${crypto.randomUUID()}', 'box3', 5760), -- 4 days = 5760 minutes
+      ('${crypto.randomUUID()}', 'box4', 10080), -- 7 days = 10080 minutes
+      ('${crypto.randomUUID()}', 'box5', 20160), -- 14 days = 20160 minutes
+      ('${crypto.randomUUID()}', 'box6', 43200), -- 30 days = 43200 minutes
+      ('${crypto.randomUUID()}', 'box7', 86400), -- 60 days = 86400 minutes
+      ('${crypto.randomUUID()}', 'finish', 0);
   `);
 
   await db.execute(`

@@ -7,7 +7,7 @@ import {
   type FontSize,
   type FontWeight,
   type ThemeName,
-} from "../../shared/store/themeStore";
+} from "./store/themeStore";
 
 const THEME_OPTIONS = [
   { value: "Dark", label: "Dark" },

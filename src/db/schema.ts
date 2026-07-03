@@ -1,4 +1,4 @@
-export interface Setting {
+export interface Theme {
   Id: string;
   FontFamily: string | null;
   FontSize: string | null;
