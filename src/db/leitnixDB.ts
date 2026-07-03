@@ -28,6 +28,13 @@ export async function initializeDatabase() {
 
   await db.execute("PRAGMA foreign_keys = ON;");
 
+    await db.execute(`
+    CREATE TABLE IF NOT EXISTS Setting (
+      Id TEXT PRIMARY KEY,
+      WrongAnswerPonishment TEXT NOT NULL DEFAULT 'None' CHECK (WrongAnswerPonishment IN ('None','JumpOneBoxBack', 'JumpToFirstBox'))
+    );
+  `);
+
   await db.execute(`CREATE TABLE IF NOT EXISTS Theme (
       Id TEXT PRIMARY KEY,
       FontFamily TEXT,

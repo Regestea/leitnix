@@ -1,3 +1,9 @@
+
+export type WrongAnswerPunishment = "None" | "JumpOneBoxBack" | "JumpToFirstBox";
+export interface Setting {
+  Id: string;
+  WrongAnswerPonishment: WrongAnswerPunishment;
+}
 export interface Theme {
   Id: string;
   FontFamily: string | null;
