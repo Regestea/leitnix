@@ -35,7 +35,7 @@ export async function initializeDatabase() {
       FontSize   TEXT,
       FontWeight TEXT,
       Theme      TEXT,
-      AndroidNavigation TEXT
+      AndroidNavigation BOOLEAN
     );
   `);
 
@@ -68,17 +68,6 @@ export async function initializeDatabase() {
   );
 
   await db.execute(`
-    CREATE TABLE IF NOT EXISTS Cards (
-      Id    TEXT PRIMARY KEY,
-      BoxId           TEXT NOT NULL,
-      CategoryTagId    TEXT,
-      MarkdownTopic TEXT,
-      FOREIGN KEY (BoxId) REFERENCES Boxes(Id) ON DELETE CASCADE,
-      FOREIGN KEY (CategoryTagId) REFERENCES CategoryTags(Id) ON DELETE SET NULL
-    );
-  `);
-
-  await db.execute(`
     CREATE TABLE IF NOT EXISTS Boxes (
       Id            TEXT PRIMARY KEY,
       Name        TEXT,
@@ -89,54 +78,59 @@ export async function initializeDatabase() {
   `);
 
   await db.execute(`
-    CREATE TABLE IF NOT EXISTS Notes (
-      Id              TEXT PRIMARY KEY,
-      CardId          TEXT NOT NULL,
+    CREATE TABLE IF NOT EXISTS Cards (
+      Id    TEXT PRIMARY KEY,
+      BoxId           TEXT NOT NULL,
+      CategoryTagId    TEXT,
+      MarkdownTopic TEXT,
+      LastReviewUnixTime      INTEGER,
       NextReviewUnixTime      INTEGER,
-      FOREIGN KEY (CardId) REFERENCES Cards(Id) ON DELETE CASCADE
+      StartedLearningUnixTime   INTEGER,
+      FOREIGN KEY (BoxId) REFERENCES Boxes(Id) ON DELETE CASCADE,
+      FOREIGN KEY (CategoryTagId) REFERENCES CategoryTags(Id) ON DELETE SET NULL
     );
   `);
 
   await db.execute(`
-    CREATE TABLE IF NOT EXISTS Content(
-      Id     TEXT PRIMARY KEY,
-      NoteId   TEXT NOT NULL,
+    CREATE TABLE IF NOT EXISTS Notes (
+      Id              TEXT PRIMARY KEY,
+      CardId          TEXT NOT NULL,
       MarkdownContent TEXT,
-      FOREIGN KEY (NoteId) REFERENCES Notes(Id) ON DELETE CASCADE
+      FOREIGN KEY (CardId) REFERENCES Cards(Id) ON DELETE CASCADE
     );
   `);
 
   await db.execute(`
     CREATE TABLE IF NOT EXISTS FreeResponseQuestions (
       Id TEXT PRIMARY KEY,
-      NoteId   TEXT NOT NULL,
+      CardId   TEXT NOT NULL,
       MarkdownQuestion TEXT,
       MarkdownAnswer   TEXT,
-      FOREIGN KEY (NoteId) REFERENCES Notes(Id) ON DELETE CASCADE
+      FOREIGN KEY (CardId) REFERENCES Cards(Id) ON DELETE CASCADE
     );
   `);
 
   await db.execute(`
     CREATE TABLE IF NOT EXISTS FillTheBlankQuestions (
       Id TEXT PRIMARY KEY,
-      NoteId   TEXT NOT NULL,
+      CardId   TEXT NOT NULL,
       MarkdownQuestion TEXT,
       MarkdownAnswer   TEXT,
-      FOREIGN KEY (NoteId) REFERENCES Notes(Id) ON DELETE CASCADE
+      FOREIGN KEY (CardId) REFERENCES Cards(Id) ON DELETE CASCADE
     );
   `);
 
   await db.execute(`
     CREATE TABLE IF NOT EXISTS MultipleChoiceQuestions (
       Id            TEXT PRIMARY KEY,
-      NoteId        TEXT NOT NULL,
+      CardId        TEXT NOT NULL,
       MarkdownQuestion      TEXT,
       MarkdownOptionA       TEXT,
       MarkdownOptionB       TEXT,
       MarkdownOptionC       TEXT,
       MarkdownOptionD       TEXT,
       CorrectOption TEXT CHECK (CorrectOption IN ('A', 'B', 'C', 'D')),
-      FOREIGN KEY (NoteId) REFERENCES Notes(Id) ON DELETE CASCADE
+      FOREIGN KEY (CardId) REFERENCES Cards(Id) ON DELETE CASCADE
     );
   `);
 }
