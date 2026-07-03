@@ -26,8 +26,8 @@ export default function Home() {
     const HOME_NAV_ITEMS: NavItem[] = [
       {
         icon: faPlus,
-        title: "Add New Topic To Learn",
-        onClick: () => navigate("/add-topic"),
+        title: "Add New Card",
+        onClick: () => navigate("/add-card"),
       },
       {
         icon: faGraduationCap,
