@@ -1,5 +1,5 @@
-import type { CustomPrompt } from "../../db/schema";
 import { z } from "zod";
+import type { CustomPrompt } from "../../shared/types/entities";
 
 export const EMPTY_PROMPT: CustomPrompt = {
   Id: "",

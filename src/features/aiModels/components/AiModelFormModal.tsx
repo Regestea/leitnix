@@ -2,7 +2,8 @@ import { Button } from "../../../shared/components/controls/Button";
 import { Input } from "../../../shared/components/controls/Input";
 import { Select } from "../../../shared/components/controls/Select";
 import Modal from "../../../shared/components/Modal";
-import type { AiProvider } from "../../../db/schema";
+import type { AiProvider } from "../../../shared/types/entities";
+
 import { PROVIDER_OPTIONS } from "../types";
 
 interface AiModelFormModalProps {

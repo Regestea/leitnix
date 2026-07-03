@@ -1,6 +1,6 @@
 import { faPenToSquare, faTrashCan } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import type { CustomPrompt } from "../../../db/schema";
+import type { CustomPrompt } from "../../../shared/types/entities";
 
 interface PromptListProps {
   prompts: CustomPrompt[];

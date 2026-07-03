@@ -1,5 +1,5 @@
-import type { AiModel } from "../../db/schema";
 import { z } from "zod";
+import type { AiModel } from "../../shared/types/entities";
 
 export const EMPTY_MODEL: AiModel = {
   Id: "",

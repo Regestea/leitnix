@@ -1,4 +1,4 @@
-import type { AiModel } from "../db/schema";
+import type { AiModel } from "../shared/types/entities.ts";
 
 export const PROVIDER_BASE_URLS: Record<
   Exclude<AiModel["Provider"], "OpenAiCompatible">,

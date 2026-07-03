@@ -1,6 +1,6 @@
-import type { CustomPrompt } from "../../../db/schema";
 import { useEffect, useMemo, useState } from "react";
 import { CustomPromptRepository } from "../repository/CustomPromptRepository";
+import type { CustomPrompt } from "../../../shared/types/entities";
 
 export function useCustomPrompts() {
   const repository = useMemo(() => new CustomPromptRepository(), []);

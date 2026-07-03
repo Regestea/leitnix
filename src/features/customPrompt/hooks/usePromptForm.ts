@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { EMPTY_PROMPT, validateFormPrompt } from "../types";
 import type { CustomPromptFormErrors } from "../types";
-import type { CustomPrompt } from "../../../db/schema";
+import type { CustomPrompt } from "../../../shared/types/entities";
+
 
 export function usePromptForm() {
   const [editingId, setEditingId] = useState<string | null>(null);

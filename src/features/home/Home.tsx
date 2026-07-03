@@ -1,18 +1,7 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router";
-import {
-  faCog,
-  faRobot,
-  faBell,
-  faPaintBrush,
-  faCode,
-  faList,
-  faCircleQuestion,
-  faPlus,
-  faGraduationCap,
-  faClipboardCheck,
-} from "@fortawesome/free-solid-svg-icons";
-import { useNavStore, type NavItem } from "../../shared/store/navStore";
+import { useNavStore } from "../../shared/store/navStore";
+import { getHomeNavItems } from "./homeNavConfig";
 import ProgressCircle from "./ProgressCircle";
 import LearningProgress from "./LearningProgress";
 
@@ -23,61 +12,7 @@ export default function Home() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const HOME_NAV_ITEMS: NavItem[] = [
-      {
-        icon: faPlus,
-        title: "Add New Card",
-        onClick: () => navigate("/add-card"),
-      },
-      {
-        icon: faGraduationCap,
-        title: "Learn",
-        onClick: () => navigate("/learn-topic"),
-      },
-      {
-        icon: faClipboardCheck,
-        title: "Review",
-        onClick: () => console.log("Review clicked"),
-      },
-      {
-        icon: faCog,
-        title: "Settings",
-        children: [
-          {
-            icon: faPaintBrush,
-            title: "Theme",
-            onClick: () => navigate("/theme"),
-          },
-          {
-            icon: faCode,
-            title: "User Prompt",
-            onClick: () => navigate("/custom-prompt"),
-          },
-          {
-            icon: faBell,
-            title: "Notifications",
-            onClick: () => console.log("Notifications"),
-          },
-          {
-            icon: faRobot,
-            title: "AI Models",
-            onClick: () => navigate("/ai-models"),
-          },
-          {
-            icon: faList,
-            title: "Edit list of words",
-            onClick: () => console.log("Search"),
-          },
-          {
-            icon: faCircleQuestion,
-            title: "Help",
-            onClick: () => console.log("Home"),
-          },
-        ],
-      },
-    ];
-
-    setItems(HOME_NAV_ITEMS);
+    setItems(getHomeNavItems(navigate));
     setIsShowing(true);
   }, [setItems, setIsShowing, navigate]);
 

@@ -1,5 +1,5 @@
-import { db } from "../../../db/leitnixDB";
-import type { CustomPrompt } from "../../../db/schema";
+import { db } from "../../../db/connection";
+import type { CustomPrompt } from "../../../shared/types/entities";
 
 
 export class CustomPromptRepository {

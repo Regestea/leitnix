@@ -1,95 +1,103 @@
-
-export type WrongAnswerPunishment = "None" | "JumpOneBoxBack" | "JumpToFirstBox";
-export interface Setting {
-  Id: string;
-  WrongAnswerPonishment: WrongAnswerPunishment;
-}
-export interface Theme {
-  Id: string;
-  FontFamily: string | null;
-  FontSize: string | null;
-  FontWeight: string | null;
-  Theme: string | null;
-  AndroidNavigation: boolean | null;
-}
-
-export type AiProvider =
-  | "GoogleGemini"
-  | "OpenRouter"
-  | "AvalAi"
-  | "OpenAi"
-  | "OpenAiCompatible";
-
-export type AiModel = {
-  Id: string;
-  DisplayName: string | null;
-  URL: string | null;
-  ModelName: string | null;
-  APIKey: string | null;
-  Provider: AiProvider;
-};
-
-export interface CustomPrompt {
-  Id: string;
-  Name: string | null;
-  Prompt: string | null;
-}
-
-export interface CategoryTag {
-  Id: string;
-  Name: string | null;
-}
-
-export interface Box {
-  Id: string;
-  Name: string | null;
-  RepeatPeriodUnixTime: number | null;
-  NextBoxId: string | null;
-  PreviousBoxId: string | null;
-}
-
-export interface Card {
-  Id: string;
-  BoxId: string;
-  CategoryTagId: string | null;
-  MarkdownTopic: string | null;
-}
-
-export interface Note {
-  Id: string;
-  CardId: string;
-  NextReviewUnixTime: number | null;
-}
-
-export interface Content {
-  Id: string;
-  NoteId: string;
-  MarkdownContent: string | null;
-}
-
-export interface FreeResponseQuestion {
-  Id: string;
-  NoteId: string;
-  MarkdownQuestion: string | null;
-  MarkdownAnswer: string | null;
-}
-
-export interface FillTheBlankQuestion {
-  Id: string;
-  NoteId: string;
-  MarkdownQuestion: string | null;
-  MarkdownAnswer: string | null;
-}
-
-export type MultipleChoiceOption = "A" | "B" | "C" | "D";
-
-export interface MultipleChoiceQuestion {
-  Id: string;
-  NoteId: string;
-  MarkdownQuestion: string | null;
-  MarkdownOptionA: string | null;
-  MarkdownOptionB: string | null;
-  MarkdownOptionC: string | null;
-  MarkdownOptionD: string | null;
-  CorrectOption: MultipleChoiceOption | null;
-}
+export const CREATE_TABLE_STATEMENTS = [
+  `
+    CREATE TABLE IF NOT EXISTS Setting (
+      Id TEXT PRIMARY KEY,
+      WrongAnswerPunishment TEXT NOT NULL DEFAULT 'None'
+      CHECK (WrongAnswerPunishment IN ('None','JumpOneBoxBack', 'JumpToFirstBox'))
+    );
+  `,
+  `
+    CREATE TABLE IF NOT EXISTS Theme (
+      Id TEXT PRIMARY KEY,
+      FontFamily TEXT,
+      FontSize   TEXT,
+      FontWeight TEXT,
+      Theme      TEXT,
+      AndroidNavigation BOOLEAN
+    );
+  `,
+  `
+    CREATE TABLE IF NOT EXISTS AiModels (
+      Id TEXT PRIMARY KEY,
+      DisplayName TEXT,
+      URL   TEXT,
+      ModelName TEXT,
+      APIKey TEXT,
+      Provider TEXT CHECK (Provider IN ('GoogleGemini', 'OpenRouter', 'AvalAi','OpenAi','OpenAiCompatible'))
+    );
+  `,
+  `
+    CREATE TABLE IF NOT EXISTS CategoryTags (
+      Id TEXT PRIMARY KEY,
+      Name TEXT
+    );
+  `,
+  `
+    CREATE TABLE IF NOT EXISTS CustomPrompts (
+      Id TEXT PRIMARY KEY,
+      Name TEXT,
+      Prompt TEXT
+    );
+  `,
+  `
+    CREATE TABLE IF NOT EXISTS Boxes (
+      Id            TEXT PRIMARY KEY,
+      Name          TEXT,
+      RepeatPeriodUnixTime  INTEGER,
+      NextBoxId     TEXT,
+      PreviousBoxId TEXT
+    );
+  `,
+  `
+    CREATE TABLE IF NOT EXISTS Cards (
+      Id    TEXT PRIMARY KEY,
+      BoxId           TEXT NOT NULL,
+      CategoryTagId    TEXT,
+      MarkdownTopic TEXT,
+      LastReviewUnixTime      INTEGER,
+      NextReviewUnixTime      INTEGER,
+      StartedLearningUnixTime   INTEGER,
+      FOREIGN KEY (BoxId) REFERENCES Boxes(Id) ON DELETE CASCADE,
+      FOREIGN KEY (CategoryTagId) REFERENCES CategoryTags(Id) ON DELETE SET NULL
+    );
+  `,
+  `
+    CREATE TABLE IF NOT EXISTS Notes (
+      Id              TEXT PRIMARY KEY,
+      CardId          TEXT NOT NULL,
+      MarkdownContent TEXT,
+      FOREIGN KEY (CardId) REFERENCES Cards(Id) ON DELETE CASCADE
+    );
+  `,
+  `
+    CREATE TABLE IF NOT EXISTS FreeResponseQuestions (
+      Id TEXT PRIMARY KEY,
+      CardId   TEXT NOT NULL,
+      MarkdownQuestion TEXT,
+      MarkdownAnswer   TEXT,
+      FOREIGN KEY (CardId) REFERENCES Cards(Id) ON DELETE CASCADE
+    );
+  `,
+  `
+    CREATE TABLE IF NOT EXISTS FillTheBlankQuestions (
+      Id TEXT PRIMARY KEY,
+      CardId   TEXT NOT NULL,
+      MarkdownQuestion TEXT,
+      MarkdownAnswer   TEXT,
+      FOREIGN KEY (CardId) REFERENCES Cards(Id) ON DELETE CASCADE
+    );
+  `,
+  `
+    CREATE TABLE IF NOT EXISTS MultipleChoiceQuestions (
+      Id            TEXT PRIMARY KEY,
+      CardId        TEXT NOT NULL,
+      MarkdownQuestion      TEXT,
+      MarkdownOptionA       TEXT,
+      MarkdownOptionB       TEXT,
+      MarkdownOptionC       TEXT,
+      MarkdownOptionD       TEXT,
+      CorrectOption TEXT CHECK (CorrectOption IN ('A', 'B', 'C', 'D')),
+      FOREIGN KEY (CardId) REFERENCES Cards(Id) ON DELETE CASCADE
+    );
+  `,
+];
