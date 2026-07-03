@@ -82,16 +82,25 @@ export async function initializeDatabase() {
     );
   `);
 
+  const box1Id = crypto.randomUUID();
+  const box2Id = crypto.randomUUID();
+  const box3Id = crypto.randomUUID();
+  const box4Id = crypto.randomUUID();
+  const box5Id = crypto.randomUUID();
+  const box6Id = crypto.randomUUID();
+  const box7Id = crypto.randomUUID();
+  const finishId = crypto.randomUUID();
+
   await db.execute(`
-    INSERT OR IGNORE INTO Boxes (Id, Name, RepeatPeriodUnixTime) VALUES
-      ('${crypto.randomUUID()}', 'box1', 1440), -- 1 day = 1440 minutes
-      ('${crypto.randomUUID()}', 'box2', 2880), -- 2 days = 2880 minutes
-      ('${crypto.randomUUID()}', 'box3', 5760), -- 4 days = 5760 minutes
-      ('${crypto.randomUUID()}', 'box4', 10080), -- 7 days = 10080 minutes
-      ('${crypto.randomUUID()}', 'box5', 20160), -- 14 days = 20160 minutes
-      ('${crypto.randomUUID()}', 'box6', 43200), -- 30 days = 43200 minutes
-      ('${crypto.randomUUID()}', 'box7', 86400), -- 60 days = 86400 minutes
-      ('${crypto.randomUUID()}', 'finish', 0);
+    INSERT OR IGNORE INTO Boxes (Id, Name, RepeatPeriodUnixTime, NextBoxId, PreviousBoxId) VALUES
+      ('${box1Id}', 'box1', 1440, '${box2Id}', NULL),
+      ('${box2Id}', 'box2', 2880, '${box3Id}', '${box1Id}'),
+      ('${box3Id}', 'box3', 5760, '${box4Id}', '${box2Id}'),
+      ('${box4Id}', 'box4', 10080, '${box5Id}', '${box3Id}'),
+      ('${box5Id}', 'box5', 20160, '${box6Id}', '${box4Id}'),
+      ('${box6Id}', 'box6', 43200, '${box7Id}', '${box5Id}'),
+      ('${box7Id}', 'box7', 86400, '${finishId}', '${box6Id}'),
+      ('${finishId}', 'finish', 0, NULL, '${box7Id}');
   `);
 
   await db.execute(`
