@@ -1,5 +1,6 @@
-import { db } from "../db/leitnixDB";
-import type { Theme } from "../db/schema";
+import { db } from "../../../db/leitnixDB";
+import type { Theme } from "../../../db/schema";
+
 
 const Theme_ID = "app-theme";
 

@@ -1,5 +1,5 @@
-import { db } from "../db/leitnixDB";
-import type { AiModel } from "../db/schema";
+import { db } from "../../../db/leitnixDB";
+import type { AiModel } from "../../../db/schema";
 
 export class AiModelRepository {
   async getAll(): Promise<AiModel[]> {

@@ -1,7 +1,7 @@
 import type { z } from "zod";
 import { fetchStructuredAI } from "./aiService";
-import { AiModelRepository } from "../repositories/AiModelRepository";
 import { resolveProviderBaseUrl } from "../staticConfigs/ProviderConfig";
+import { AiModelRepository } from "../features/AiModels/repository/AiModelRepository";
 
 interface FetchStructuredAIByModelIdOptions<T> {
   modelId: string;

@@ -1,5 +1,6 @@
-import { db } from "../db/leitnixDB";
-import type { CustomPrompt } from "../db/schema";
+import { db } from "../../../db/leitnixDB";
+import type { CustomPrompt } from "../../../db/schema";
+
 
 export class CustomPromptRepository {
   async getAll(): Promise<CustomPrompt[]> {

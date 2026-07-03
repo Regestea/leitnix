@@ -4,8 +4,8 @@ import {
   createJSONStorage,
   type StateStorage,
 } from "zustand/middleware";
-import { ThemeRepository } from "../../../repositories/ThemeRepository";
 import { SystemBars, SystemBarType } from "@capacitor/core";
+import { ThemeRepository } from "../repository/ThemeRepository";
 
 export type ThemeName = "Light" | "Dark";
 

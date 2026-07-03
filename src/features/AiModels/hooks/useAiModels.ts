@@ -1,6 +1,6 @@
 import type { AiModel } from "../../../db/schema";
 import { useEffect, useMemo, useState } from "react";
-import { AiModelRepository } from "../../../repositories/AiModelRepository";
+import { AiModelRepository } from "../repository/AiModelRepository";
 
 export function useAiModels() {
   const repository = useMemo(() => new AiModelRepository(), []);
