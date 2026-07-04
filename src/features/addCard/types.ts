@@ -1,10 +1,6 @@
 import { z } from "zod";
 
-export const CARD_GENERATION_SYSTEM_PROMPT =
-  "You are an expert educational content creator. Given a topic, generate a concise flashcard summary and multiple detailed study notes. Return the topic summary as markdown and a list of detailed notes as markdown content blocks.";
-
-export const QUESTION_GENERATION_SYSTEM_PROMPT =
-  "You are an expert question generator. Given a flashcard topic and its study notes, generate different types of assessment questions: free-response, fill-in-the-blank, and multiple-choice. All content in markdown.";
+// ─── AI Response Schemas ────────────────────────────────────────────
 
 export const cardNotesResponseSchema = z.object({
   topicMarkdown: z.string(),
@@ -44,18 +40,30 @@ export const questionsResponseSchema = z.object({
 
 export type QuestionsResponse = z.infer<typeof questionsResponseSchema>;
 
+// ─── System Prompts ───────────────────────────────────────────────────
+
+export const CARD_GENERATION_SYSTEM_PROMPT =
+  "You are an expert educational content creator. Given a topic, generate a concise flashcard summary and multiple detailed study notes. Return the topic summary as markdown and a list of detailed notes as markdown content blocks.";
+
+export const QUESTION_GENERATION_SYSTEM_PROMPT =
+  "You are an expert question generator. Given a flashcard topic and its study notes, generate different types of assessment questions: free-response, fill-in-the-blank, and multiple-choice. All content in markdown.";
+
+// ─── Wizard Types ────────────────────────────────────────────────────
+
 export type WizardStep = 1 | 2 | 3;
+
+export interface GeneratedCardData {
+  topicMarkdown: string;
+  notes: string[];
+}
+
+// ─── Form State & Validation ─────────────────────────────────────────
 
 export interface AddCardFormState {
   categoryTagId: string;
   aiModelId: string;
   customPromptId: string;
   topicText: string;
-}
-
-export interface GeneratedCardData {
-  topicMarkdown: string;
-  notes: string[];
 }
 
 export const addCardFormSchema = z.object({
@@ -98,5 +106,7 @@ export const EMPTY_FORM_STATE: AddCardFormState = {
   customPromptId: "",
   topicText: "",
 };
+
+// ─── Constants ───────────────────────────────────────────────────────
 
 export const NONE_PROMPT_VALUE = "none";

@@ -1,56 +1,55 @@
 import { getDb } from "../../../db/connection";
-import type {
-  FreeResponseQuestion,
-  FillTheBlankQuestion,
-  MultipleChoiceQuestion,
-} from "../../../shared/types/entities";
+
+interface QuestionRow {
+  Id: string;
+  CardId: string;
+  [column: string]: unknown;
+}
 
 export class QuestionRepository {
-  async createFreeResponseQuestions(
-    questions: FreeResponseQuestion[]
-  ): Promise<void> {
+  private async createMany(table: string, columns: string, rows: QuestionRow[]): Promise<void> {
     const db = await getDb();
-    for (const q of questions) {
-      await db.run(
-        `INSERT INTO FreeResponseQuestions (Id, CardId, MarkdownQuestion, MarkdownAnswer)
-         VALUES (?, ?, ?, ?);`,
-        [q.Id, q.CardId, q.MarkdownQuestion, q.MarkdownAnswer]
-      );
+    const placeholders = columns.split(", ").map(() => "?").join(", ");
+    const sql = `INSERT INTO ${table} (${columns}) VALUES (${placeholders});`;
+
+    for (const row of rows) {
+      const values = columns.split(", ").map((col) => row[col]);
+      await db.run(sql, values);
     }
+  }
+
+  async createFreeResponseQuestions(
+    questions: { Id: string; CardId: string; MarkdownQuestion: string; MarkdownAnswer: string }[]
+  ): Promise<void> {
+    await this.createMany(
+      "FreeResponseQuestions",
+      "Id, CardId, MarkdownQuestion, MarkdownAnswer",
+      questions,
+    );
   }
 
   async createFillTheBlankQuestions(
-    questions: FillTheBlankQuestion[]
+    questions: { Id: string; CardId: string; MarkdownQuestion: string; MarkdownAnswer: string }[]
   ): Promise<void> {
-    const db = await getDb();
-    for (const q of questions) {
-      await db.run(
-        `INSERT INTO FillTheBlankQuestions (Id, CardId, MarkdownQuestion, MarkdownAnswer)
-         VALUES (?, ?, ?, ?);`,
-        [q.Id, q.CardId, q.MarkdownQuestion, q.MarkdownAnswer]
-      );
-    }
+    await this.createMany(
+      "FillTheBlankQuestions",
+      "Id, CardId, MarkdownQuestion, MarkdownAnswer",
+      questions,
+    );
   }
 
   async createMultipleChoiceQuestions(
-    questions: MultipleChoiceQuestion[]
+    questions: {
+      Id: string; CardId: string; MarkdownQuestion: string;
+      MarkdownOptionA: string; MarkdownOptionB: string;
+      MarkdownOptionC: string; MarkdownOptionD: string;
+      CorrectOption: string;
+    }[]
   ): Promise<void> {
-    const db = await getDb();
-    for (const q of questions) {
-      await db.run(
-        `INSERT INTO MultipleChoiceQuestions (Id, CardId, MarkdownQuestion, MarkdownOptionA, MarkdownOptionB, MarkdownOptionC, MarkdownOptionD, CorrectOption)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?);`,
-        [
-          q.Id,
-          q.CardId,
-          q.MarkdownQuestion,
-          q.MarkdownOptionA,
-          q.MarkdownOptionB,
-          q.MarkdownOptionC,
-          q.MarkdownOptionD,
-          q.CorrectOption,
-        ]
-      );
-    }
+    await this.createMany(
+      "MultipleChoiceQuestions",
+      "Id, CardId, MarkdownQuestion, MarkdownOptionA, MarkdownOptionB, MarkdownOptionC, MarkdownOptionD, CorrectOption",
+      questions,
+    );
   }
 }

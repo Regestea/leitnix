@@ -1,19 +1,14 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useNavigate } from "react-router";
 import MainContainer from "../../shared/components/MainContainer";
 import { useAddCardForm } from "./hooks/useAddCardForm";
 import { useCardGeneration } from "./hooks/useCardGeneration";
+import { WizardTabs } from "./components/WizardTabs";
 import StepGenerate from "./components/StepGenerate";
 import StepReview from "./components/StepReview";
 import StepComplete from "./components/StepComplete";
-import type { WizardStep, GeneratedCardData, QuestionsResponse } from "./types";
+import type { WizardStep } from "./types";
 import "./AddCard.css";
-
-const STEP_LABELS: Record<WizardStep, string> = {
-  1: "Generate",
-  2: "Review",
-  3: "Done",
-};
 
 export default function AddCard() {
   const navigate = useNavigate();
@@ -33,13 +28,7 @@ export default function AddCard() {
     clearGenerated,
   } = useCardGeneration();
 
-  const [savedQuestions, setSavedQuestions] =
-    useState<QuestionsResponse | null>(null);
-
-  // savedQuestions is tracked for potential future display
-  void savedQuestions;
-
-  const handleGenerate = async () => {
+  const handleGenerate = useCallback(async () => {
     if (!form.validate()) return;
 
     const result = await generateCard(
@@ -50,12 +39,11 @@ export default function AddCard() {
 
     if (result) {
       setIsComplete(false);
-      setSavedQuestions(null);
       setCurrentStep(2);
     }
-  };
+  }, [form, generateCard]);
 
-  const handleGenerateQuestions = async () => {
+  const handleGenerateQuestions = useCallback(async () => {
     if (!generatedCard) return;
 
     const questions = await generateQuestions(
@@ -67,59 +55,42 @@ export default function AddCard() {
       const cardId = await saveCard(
         generatedCard,
         questions,
-        form.formState.aiModelId,
         form.formState.categoryTagId
       );
 
       if (cardId) {
-        setSavedQuestions(questions);
         setIsComplete(true);
       }
     }
-  };
+  }, [generatedCard, form.formState.aiModelId, form.formState.categoryTagId, generateQuestions, saveCard]);
 
-  const handleCardChange = (updatedCard: GeneratedCardData) => {
-    setGeneratedCard(updatedCard);
-  };
+  const handleCardChange = useCallback(
+    (updatedCard: typeof generatedCard) => {
+      setGeneratedCard(updatedCard);
+    },
+    [setGeneratedCard]
+  );
 
-  const handleGenerateNewCard = () => {
+  const handleTabClick = useCallback(
+    (step: WizardStep) => {
+      if (step < currentStep) setCurrentStep(step);
+    },
+    [currentStep]
+  );
+
+  const handleGenerateNewCard = useCallback(() => {
     form.reset();
     clearGenerated();
     setIsComplete(false);
-    setSavedQuestions(null);
     setCurrentStep(1);
-  };
+  }, [form, clearGenerated]);
 
-  const handleDone = () => {
-    navigate("/");
-  };
-
-  const handleTabClick = (step: WizardStep) => {
-    if (step < currentStep) {
-      setCurrentStep(step);
-    }
-  };
+  const handleDone = useCallback(() => navigate("/"), [navigate]);
 
   return (
     <MainContainer>
       <div className="add-card-wizard">
-        <div className="wizard-tabs">
-          {([1, 2, 3] as WizardStep[]).map((step) => (
-            <button
-              key={step}
-              className={`wizard-tab ${
-                step === currentStep ? "active" : ""
-              } ${step < currentStep ? "completed" : ""}`}
-              onClick={() => handleTabClick(step)}
-              disabled={step > currentStep}
-            >
-              <span className="wizard-tab-number">
-                {step < currentStep ? "✓" : step}
-              </span>
-              <span className="wizard-tab-label">{STEP_LABELS[step]}</span>
-            </button>
-          ))}
-        </div>
+        <WizardTabs currentStep={currentStep} onTabClick={handleTabClick} />
 
         <div className="wizard-content">
           {currentStep === 1 && (

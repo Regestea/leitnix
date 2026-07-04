@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { fetchStructuredAIByModelId } from "../../../services/aiModelClient";
 import {
   CARD_GENERATION_SYSTEM_PROMPT,
@@ -17,172 +17,183 @@ import { NoteRepository } from "../repository/NoteRepository";
 import { QuestionRepository } from "../repository/QuestionRepository";
 import { CustomPromptRepository } from "../../customPrompt/repository/CustomPromptRepository";
 
+function getErrorMessage(err: unknown, fallback: string): string {
+  return err instanceof Error ? err.message : fallback;
+}
+
+function buildCardPrompt(card: GeneratedCardData): string {
+  const notesText = card.notes
+    .map((note, i) => `Note ${i + 1}:\n${note}`)
+    .join("\n\n");
+  return `Topic:\n${card.topicMarkdown}\n\nNotes:\n${notesText}`;
+}
+
+async function resolveSystemPrompt(
+  customPromptId: string,
+  fallback: string
+): Promise<string> {
+  if (!customPromptId || customPromptId === NONE_PROMPT_VALUE) return fallback;
+
+  const promptRepo = new CustomPromptRepository();
+  const customPrompt = await promptRepo.getById(customPromptId);
+  return customPrompt?.Prompt ?? fallback;
+}
+
 export function useCardGeneration() {
-  const [generatedCard, setGeneratedCard] = useState<GeneratedCardData | null>(
-    null
-  );
+  const [generatedCard, setGeneratedCard] =
+    useState<GeneratedCardData | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [isGeneratingQuestions, setIsGeneratingQuestions] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const cardRepo = new CardRepository();
-  const noteRepo = new NoteRepository();
-  const questionRepo = new QuestionRepository();
-  const customPromptRepo = new CustomPromptRepository();
+  const generateCard = useCallback(
+    async (
+      aiModelId: string,
+      topicText: string,
+      customPromptId: string
+    ): Promise<GeneratedCardData | null> => {
+      setIsGenerating(true);
+      setError(null);
 
-  const generateCard = async (
-    aiModelId: string,
-    topicText: string,
-    customPromptId: string
-  ): Promise<GeneratedCardData | null> => {
-    setIsGenerating(true);
-    setError(null);
+      try {
+        const systemPrompt = await resolveSystemPrompt(
+          customPromptId,
+          CARD_GENERATION_SYSTEM_PROMPT
+        );
 
-    try {
-      let systemPrompt = CARD_GENERATION_SYSTEM_PROMPT;
+        const response = await fetchStructuredAIByModelId<CardNotesResponse>({
+          modelId: aiModelId,
+          schema: cardNotesResponseSchema,
+          prompt: topicText,
+          systemPrompt,
+        });
 
-      if (customPromptId && customPromptId !== NONE_PROMPT_VALUE) {
-        const customPrompt = await customPromptRepo.getById(customPromptId);
-        if (customPrompt?.Prompt) {
-          systemPrompt = customPrompt.Prompt;
-        }
+        const data: GeneratedCardData = {
+          topicMarkdown: response.topicMarkdown,
+          notes: response.notes.map((n) => n.markdownContent),
+        };
+
+        setGeneratedCard(data);
+        return data;
+      } catch (err) {
+        setError(getErrorMessage(err, "Failed to generate card"));
+        return null;
+      } finally {
+        setIsGenerating(false);
       }
+    },
+    []
+  );
 
-      const prompt = topicText;
+  const generateQuestions = useCallback(
+    async (
+      aiModelId: string,
+      card: GeneratedCardData
+    ): Promise<QuestionsResponse | null> => {
+      setIsGeneratingQuestions(true);
+      setError(null);
 
-      const response = await fetchStructuredAIByModelId<CardNotesResponse>({
-        modelId: aiModelId,
-        schema: cardNotesResponseSchema,
-        prompt,
-        systemPrompt,
-      });
+      try {
+        const response = await fetchStructuredAIByModelId<QuestionsResponse>({
+          modelId: aiModelId,
+          schema: questionsResponseSchema,
+          prompt: buildCardPrompt(card),
+          systemPrompt: QUESTION_GENERATION_SYSTEM_PROMPT,
+        });
 
-      const data: GeneratedCardData = {
-        topicMarkdown: response.topicMarkdown,
-        notes: response.notes.map((n) => n.markdownContent),
-      };
+        return response;
+      } catch (err) {
+        setError(getErrorMessage(err, "Failed to generate questions"));
+        return null;
+      } finally {
+        setIsGeneratingQuestions(false);
+      }
+    },
+    []
+  );
 
-      setGeneratedCard(data);
-      return data;
-    } catch (err) {
-      const message =
-        err instanceof Error ? err.message : "Failed to generate card";
-      setError(message);
-      return null;
-    } finally {
-      setIsGenerating(false);
-    }
-  };
+  const saveCard = useCallback(
+    async (
+      card: GeneratedCardData,
+      questions: QuestionsResponse,
+      categoryTagId: string
+    ): Promise<string | null> => {
+      const cardRepo = new CardRepository();
+      const noteRepo = new NoteRepository();
+      const questionRepo = new QuestionRepository();
 
-  const generateQuestions = async (
-    aiModelId: string,
-    card: GeneratedCardData
-  ): Promise<QuestionsResponse | null> => {
-    setIsGeneratingQuestions(true);
-    setError(null);
+      try {
+        const firstBoxId = await cardRepo.getFirstBoxId();
+        if (!firstBoxId) {
+          setError("No box found. Please set up boxes first.");
+          return null;
+        }
 
-    try {
-      const notesText = card.notes
-        .map((note, i) => `Note ${i + 1}:\n${note}`)
-        .join("\n\n");
+        const cardId = crypto.randomUUID();
+        const now = Date.now();
 
-      const prompt = `Topic:\n${card.topicMarkdown}\n\nNotes:\n${notesText}`;
+        await cardRepo.create({
+          Id: cardId,
+          BoxId: firstBoxId,
+          CategoryTagId: categoryTagId,
+          MarkdownTopic: card.topicMarkdown,
+          LastReviewUnixTime: now,
+          NextReviewUnixTime: now,
+          StartedLearningUnixTime: now,
+        });
 
-      const response = await fetchStructuredAIByModelId<QuestionsResponse>({
-        modelId: aiModelId,
-        schema: questionsResponseSchema,
-        prompt,
-        systemPrompt: QUESTION_GENERATION_SYSTEM_PROMPT,
-      });
+        await noteRepo.createMany(
+          card.notes.map((markdownContent) => ({
+            Id: crypto.randomUUID(),
+            CardId: cardId,
+            MarkdownContent: markdownContent,
+          }))
+        );
 
-      return response;
-    } catch (err) {
-      const message =
-        err instanceof Error
-          ? err.message
-          : "Failed to generate questions";
-      setError(message);
-      return null;
-    } finally {
-      setIsGeneratingQuestions(false);
-    }
-  };
+        await questionRepo.createFreeResponseQuestions(
+          questions.freeResponseQuestions.map((q) => ({
+            Id: crypto.randomUUID(),
+            CardId: cardId,
+            MarkdownQuestion: q.markdownQuestion,
+            MarkdownAnswer: q.markdownAnswer,
+          }))
+        );
 
-  const saveCard = async (
-    card: GeneratedCardData,
-    questions: QuestionsResponse,
-    _aiModelId: string,
-    categoryTagId: string
-  ): Promise<string | null> => {
-    try {
-      const firstBoxId = await cardRepo.getFirstBoxId();
-      if (!firstBoxId) {
-        setError("No box found. Please set up boxes first.");
+        await questionRepo.createFillTheBlankQuestions(
+          questions.fillTheBlankQuestions.map((q) => ({
+            Id: crypto.randomUUID(),
+            CardId: cardId,
+            MarkdownQuestion: q.markdownQuestion,
+            MarkdownAnswer: q.markdownAnswer,
+          }))
+        );
+
+        await questionRepo.createMultipleChoiceQuestions(
+          questions.multipleChoiceQuestions.map((q) => ({
+            Id: crypto.randomUUID(),
+            CardId: cardId,
+            MarkdownQuestion: q.markdownQuestion,
+            MarkdownOptionA: q.markdownOptionA,
+            MarkdownOptionB: q.markdownOptionB,
+            MarkdownOptionC: q.markdownOptionC,
+            MarkdownOptionD: q.markdownOptionD,
+            CorrectOption: q.correctOption,
+          }))
+        );
+
+        return cardId;
+      } catch (err) {
+        setError(getErrorMessage(err, "Failed to save card"));
         return null;
       }
+    },
+    []
+  );
 
-      const cardId = crypto.randomUUID();
-      const now = Date.now();
-
-      await cardRepo.create({
-        Id: cardId,
-        BoxId: firstBoxId,
-        CategoryTagId: categoryTagId,
-        MarkdownTopic: card.topicMarkdown,
-        LastReviewUnixTime: now,
-        NextReviewUnixTime: now,
-        StartedLearningUnixTime: now,
-      });
-
-      const notes = card.notes.map((markdownContent) => ({
-        Id: crypto.randomUUID(),
-        CardId: cardId,
-        MarkdownContent: markdownContent,
-      }));
-      await noteRepo.createMany(notes);
-
-      const freeResponseQuestions = questions.freeResponseQuestions.map((q) => ({
-        Id: crypto.randomUUID(),
-        CardId: cardId,
-        MarkdownQuestion: q.markdownQuestion,
-        MarkdownAnswer: q.markdownAnswer,
-      }));
-      await questionRepo.createFreeResponseQuestions(freeResponseQuestions);
-
-      const fillTheBlankQuestions = questions.fillTheBlankQuestions.map((q) => ({
-        Id: crypto.randomUUID(),
-        CardId: cardId,
-        MarkdownQuestion: q.markdownQuestion,
-        MarkdownAnswer: q.markdownAnswer,
-      }));
-      await questionRepo.createFillTheBlankQuestions(fillTheBlankQuestions);
-
-      const multipleChoiceQuestions =
-        questions.multipleChoiceQuestions.map((q) => ({
-          Id: crypto.randomUUID(),
-          CardId: cardId,
-          MarkdownQuestion: q.markdownQuestion,
-          MarkdownOptionA: q.markdownOptionA,
-          MarkdownOptionB: q.markdownOptionB,
-          MarkdownOptionC: q.markdownOptionC,
-          MarkdownOptionD: q.markdownOptionD,
-          CorrectOption: q.correctOption,
-        }));
-      await questionRepo.createMultipleChoiceQuestions(multipleChoiceQuestions);
-
-      return cardId;
-    } catch (err) {
-      const message =
-        err instanceof Error ? err.message : "Failed to save card";
-      setError(message);
-      return null;
-    }
-  };
-
-  const clearGenerated = () => {
+  const clearGenerated = useCallback(() => {
     setGeneratedCard(null);
     setError(null);
-  };
+  }, []);
 
   return {
     generatedCard,
