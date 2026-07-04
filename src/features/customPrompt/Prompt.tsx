@@ -1,5 +1,6 @@
 import { useState } from "react";
 import MainContainer from "../../shared/components/MainContainer";
+import ConfirmModal from "../../shared/components/ConfirmModal";
 import { Button } from "../../shared/components/controls/Button";
 import { useCustomPrompts } from "./hooks/useCustomPrompts";
 import { usePromptForm } from "./hooks/usePromptForm";
@@ -11,6 +12,7 @@ export default function Prompt() {
   const { prompts, deletePrompt, updatePrompt, addPrompt } = useCustomPrompts();
   const form = usePromptForm();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
 
   const openAddModal = () => {
     form.openAdd();
@@ -38,6 +40,13 @@ export default function Prompt() {
     closeModal();
   };
 
+  const handleDeleteConfirm = async () => {
+    if (deleteTargetId) {
+      await deletePrompt(deleteTargetId);
+      setDeleteTargetId(null);
+    }
+  };
+
   return (
     <>
       <MainContainer>
@@ -47,7 +56,7 @@ export default function Prompt() {
             form.openEdit(prompt);
             setIsModalOpen(true);
           }}
-          onDelete={deletePrompt}
+          onDelete={(id) => setDeleteTargetId(id)}
         />
 
         <div
@@ -73,6 +82,13 @@ export default function Prompt() {
         formErrors={form.formErrors}
         onFieldChange={form.handleFieldChange}
         onSave={handleSave}
+      />
+
+      <ConfirmModal
+        isOpen={deleteTargetId !== null}
+        onClose={() => setDeleteTargetId(null)}
+        onConfirm={handleDeleteConfirm}
+        message="Are you sure you want to delete this prompt?"
       />
     </>
   );

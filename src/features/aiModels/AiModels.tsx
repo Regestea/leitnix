@@ -1,5 +1,6 @@
 import { useState } from "react";
 import MainContainer from "../../shared/components/MainContainer";
+import ConfirmModal from "../../shared/components/ConfirmModal";
 import { Button } from "../../shared/components/controls/Button";
 import { useAiModels } from "./hooks/useAiModels";
 import { useAiModelForm } from "./hooks/useAiModelForm";
@@ -11,6 +12,7 @@ export default function AiModels() {
   const { models, deleteModel, updateModel, addModel } = useAiModels();
   const form = useAiModelForm();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
 
   const openAddModal = () => {
     form.openAdd();
@@ -38,6 +40,13 @@ export default function AiModels() {
     closeModal();
   };
 
+  const handleDeleteConfirm = async () => {
+    if (deleteTargetId) {
+      await deleteModel(deleteTargetId);
+      setDeleteTargetId(null);
+    }
+  };
+
   return (
     <>
       <MainContainer>
@@ -47,7 +56,7 @@ export default function AiModels() {
             form.openEdit(model);
             setIsModalOpen(true);
           }}
-          onDelete={deleteModel}
+          onDelete={(id) => setDeleteTargetId(id)}
         />
 
         <div
@@ -78,6 +87,13 @@ export default function AiModels() {
         onFieldChange={form.handleFieldChange}
         onTestApiKey={form.testApiKey}
         onSave={handleSave}
+      />
+
+      <ConfirmModal
+        isOpen={deleteTargetId !== null}
+        onClose={() => setDeleteTargetId(null)}
+        onConfirm={handleDeleteConfirm}
+        message="Are you sure you want to delete this AI model?"
       />
     </>
   );

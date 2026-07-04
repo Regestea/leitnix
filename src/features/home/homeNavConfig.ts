@@ -2,7 +2,7 @@ import type { NavigateFunction } from "react-router";
 import {
   faCog,
   faRobot,
-  faBell,
+  faBox,
   faPaintBrush,
   faCode,
   faList,
@@ -45,9 +45,9 @@ export function getHomeNavItems(navigate: NavigateFunction): NavItem[] {
           onClick: () => navigate("/custom-prompt"),
         },
         {
-          icon: faBell,
-          title: "Notifications",
-          onClick: () => console.log("Notifications"),
+          icon: faBox,
+          title: "Box Management",
+          onClick: () => navigate("/box-management"),
         },
         {
           icon: faRobot,

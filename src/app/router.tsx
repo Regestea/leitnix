@@ -6,6 +6,7 @@ import StudyTopic from "../features/learnTopic/learnTopic.tsx";
 import Theme from "../features/theme/Theme.tsx";
 import AiModels from "../features/aiModels/AiModels.tsx";
 import Prompt from "../features/customPrompt/Prompt.tsx";
+import BoxManagement from "../features/boxManagement/BoxManagement.tsx";
 import AddCard from "../features/addCard/AddCard.tsx";
 
 export const router = createBrowserRouter([
@@ -37,6 +38,10 @@ export const router = createBrowserRouter([
       {
         path: "custom-prompt",
         element: <Prompt />,
+      },
+      {
+        path: "box-management",
+        element: <BoxManagement />,
       },
     ],
   },
