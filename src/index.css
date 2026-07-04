@@ -117,7 +117,7 @@
 
 body {
   margin: 0;
-  min-height: 100vh;
+  min-height: 100dvh;
   overflow-x: hidden;
   color: var(--text);
   font-family: var(--app-font-family);
@@ -288,7 +288,7 @@ code {
 .glass {
   background: rgba(80, 105, 135, 0.1);
   backdrop-filter: blur(12px);
-  border: 1px solid rgba(245, 224, 186, 0.2) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
 }
 
 /* ─── Layout ─────────────────────────────────────────────────────────────────── */

@@ -10,11 +10,17 @@ import {
   faPlus,
   faGraduationCap,
   faClipboardCheck,
+  faHome,
 } from "@fortawesome/free-solid-svg-icons";
 import type { NavItem } from "../../shared/store/navStore";
 
 export function getHomeNavItems(navigate: NavigateFunction): NavItem[] {
   return [
+     {
+      icon: faHome,
+      title: "Home",
+      onClick: () => navigate("/"),
+    },
     {
       icon: faPlus,
       title: "Add New Card",

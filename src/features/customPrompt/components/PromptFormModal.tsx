@@ -57,7 +57,7 @@ export default function PromptFormModal({
               style={{ width: "100%" }}
               defaultValue={formPrompt.Prompt ?? ""}
               onChange={(e) => onFieldChange("Prompt", e)}
-              rows={15}
+              rows={5}
             />
             {formErrors.Prompt && (
               <p className="field-error">{formErrors.Prompt}</p>

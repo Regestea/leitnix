@@ -95,7 +95,7 @@
   line-height: 1.6;
   overflow-y: scroll;
   overflow-x: hidden;
-  height: 65vh;
+  height: calc(90dvh - 10rem);
 }
 
 .modal-body label {

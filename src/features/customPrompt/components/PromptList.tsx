@@ -14,7 +14,7 @@ export default function PromptList({
   onDelete,
 }: PromptListProps) {
   if (prompts.length === 0) {
-    return <p className="no-prompts-text">No custom prompts added yet.</p>;
+    return  <div className="custom-prompt-form"><p className="no-prompts-text">No custom prompts added yet.</p></div>;
   }
 
   return (

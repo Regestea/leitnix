@@ -10,7 +10,7 @@ interface ModelListProps {
 
 export default function ModelList({ models, onEdit, onDelete }: ModelListProps) {
   if (models.length === 0) {
-    return <p className="no-models-text">No AI models added yet.</p>;
+    return <div className="ai-model-form"><p className="no-models-text">No AI models added yet.</p></div>;
   }
 
   return (

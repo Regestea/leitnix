@@ -29,8 +29,7 @@
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
   transition: transform 0.3s;
   color: #fff;
-  height: 70vh;
+  min-height: calc(100dvh - 7rem);
   overflow: auto;
-  
 }
 
