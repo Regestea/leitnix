@@ -1,14 +1,16 @@
-import { db } from "../../../db/connection";
+import { getDb } from "../../../db/connection";
 import type { CustomPrompt } from "../../../shared/types/entities";
 
 
 export class CustomPromptRepository {
   async getAll(): Promise<CustomPrompt[]> {
+    const db = await getDb();
     const result = await db.query("SELECT * FROM CustomPrompts;");
     return (result.values ?? []) as CustomPrompt[];
   }
 
   async getById(id: string): Promise<CustomPrompt | null> {
+    const db = await getDb();
     const result = await db.query("SELECT * FROM CustomPrompts WHERE Id = ?;", [
       id,
     ]);
@@ -17,6 +19,7 @@ export class CustomPromptRepository {
   }
 
   async create(prompt: CustomPrompt): Promise<void> {
+    const db = await getDb();
     await db.run(
       `INSERT INTO CustomPrompts (Id, Name, Prompt)
        VALUES (?, ?, ?);`,
@@ -25,6 +28,7 @@ export class CustomPromptRepository {
   }
 
   async update(prompt: CustomPrompt): Promise<void> {
+    const db = await getDb();
     await db.run(
       `UPDATE CustomPrompts
        SET Name = ?, Prompt = ?
@@ -34,6 +38,7 @@ export class CustomPromptRepository {
   }
 
   async delete(id: string): Promise<void> {
+    const db = await getDb();
     await db.run("DELETE FROM CustomPrompts WHERE Id = ?;", [id]);
   }
 }

@@ -1,4 +1,4 @@
-import { db } from "../../../db/connection";
+import { getDb } from "../../../db/connection";
 import type { Theme } from "../../../shared/types/entities";
 
 const Theme_ID = "app-theme";
@@ -13,6 +13,7 @@ const DEFAULT_Theme: Omit<Theme, "Id"> = {
 
 export const ThemeRepository = {
   async get(): Promise<Theme | null> {
+    const db = await getDb();
     const result = await db.query("SELECT * FROM Theme WHERE Id = ?;", [
       Theme_ID,
     ]);
@@ -26,6 +27,7 @@ export const ThemeRepository = {
   },
 
   async upsert(theme: Omit<Theme, "Id">): Promise<void> {
+    const db = await getDb();
     await db.run(
       `INSERT INTO Theme (Id, FontFamily, FontSize, FontWeight, Theme, AndroidNavigation)
        VALUES (?, ?, ?, ?, ?, ?)

@@ -1,19 +1,22 @@
-import { db } from "../../../db/connection.ts";
+import { getDb } from "../../../db/connection.ts";
 import type { Box } from "../../../shared/types/entities";
 
 export class BoxRepository {
   async getAll(): Promise<Box[]> {
+    const db = await getDb();
     const result = await db.query("SELECT * FROM Boxes;");
     return (result.values ?? []) as Box[];
   }
 
   async getById(id: string): Promise<Box | null> {
+    const db = await getDb();
     const result = await db.query("SELECT * FROM Boxes WHERE Id = ?;", [id]);
     const rows = result.values ?? [];
     return rows.length > 0 ? (rows[0] as Box) : null;
   }
 
   async getFirst(): Promise<Box | null> {
+    const db = await getDb();
     const result = await db.query(
       "SELECT * FROM Boxes WHERE PreviousBoxId IS NULL LIMIT 1;",
     );
@@ -52,6 +55,7 @@ export class BoxRepository {
   }
 
   async create(box: Box): Promise<void> {
+    const db = await getDb();
     const ordered = await this.getChainOrdered();
 
     const finishBox =
@@ -87,6 +91,7 @@ export class BoxRepository {
   }
 
   async getCardCounts(): Promise<Map<string, number>> {
+    const db = await getDb();
     const result = await db.query(
       "SELECT BoxId, COUNT(*) as Count FROM Cards GROUP BY BoxId;",
     );
@@ -98,6 +103,7 @@ export class BoxRepository {
   }
 
   async update(box: Box): Promise<void> {
+    const db = await getDb();
     await db.run(
       `UPDATE Boxes
        SET Name = ?, RepeatPeriodUnixTime = ?
@@ -121,6 +127,7 @@ export class BoxRepository {
   }
 
   async delete(id: string): Promise<void> {
+    const db = await getDb();
     const box = await this.getById(id);
     if (!box) return;
 
