@@ -1,0 +1,215 @@
+/* Add Card Wizard */
+
+.add-card-wizard {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  gap: 1.5rem;
+}
+
+/* Wizard Tabs */
+
+.wizard-tabs {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0;
+}
+
+.wizard-tab {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1.2rem;
+  border-radius: 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.9rem;
+}
+
+.wizard-tab:disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+.wizard-tab:not(:disabled):hover {
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 0 15px rgba(0, 255, 255, 0.2);
+}
+
+.wizard-tab.active {
+  background: rgba(0, 255, 255, 0.1);
+  border-color: rgba(0, 255, 255, 0.5);
+  color: #ffffff;
+  box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
+}
+
+.wizard-tab.completed {
+  background: rgba(0, 255, 209, 0.08);
+  border-color: rgba(0, 255, 209, 0.4);
+  color: #00ffd1;
+}
+
+.wizard-tab-number {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.6rem;
+  height: 1.6rem;
+  border-radius: 50%;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.wizard-tab.active .wizard-tab-number {
+  background: rgba(0, 255, 255, 0.2);
+}
+
+.wizard-tab.completed .wizard-tab-number {
+  background: rgba(0, 255, 209, 0.2);
+}
+
+.wizard-tab-label {
+  font-weight: 500;
+}
+
+/* Wizard Content */
+
+.wizard-content {
+  flex: 1;
+  overflow: auto;
+}
+
+/* Step Generate */
+
+.step-generate {
+  padding: 0.5rem;
+}
+
+/* Step Loading */
+
+.step-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1rem;
+  gap: 1.5rem;
+}
+
+.loading-text {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 1rem;
+}
+
+/* Step Review */
+
+.step-review {
+  padding: 0.5rem;
+}
+
+.review-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.review-section h3 {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+/* Step Complete Review (within StepReview when done) */
+
+.step-complete-review {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1rem;
+  gap: 1.5rem;
+}
+
+/* Step Complete (Step 3) */
+
+.step-complete {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1rem;
+  gap: 1rem;
+  text-align: center;
+}
+
+.complete-icon {
+  width: 4rem;
+  height: 4rem;
+  border-radius: 50%;
+  background: rgba(0, 255, 209, 0.15);
+  border: 2px solid rgba(0, 255, 209, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  color: #00ffd1;
+}
+
+.complete-message {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 1rem;
+  max-width: 20rem;
+}
+
+/* Step Actions */
+
+.step-actions {
+  display: flex;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-top: 1rem;
+  padding: 0.5rem 0;
+}
+
+/* Wizard Error */
+
+.wizard-error {
+  padding: 0.5rem 1rem;
+}
+
+/* Field Error */
+
+.field-error {
+  color: #ff6b6b;
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+/* Responsive */
+
+@media (max-width: 768px) {
+  .wizard-tabs {
+    gap: 0.25rem;
+  }
+
+  .wizard-tab {
+    padding: 0.5rem 0.8rem;
+    font-size: 0.8rem;
+  }
+
+  .wizard-tab-label {
+    display: none;
+  }
+
+  .wizard-tab-number {
+    width: 2rem;
+    height: 2rem;
+  }
+}
