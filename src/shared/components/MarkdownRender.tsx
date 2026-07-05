@@ -24,21 +24,28 @@ function extractText(node: React.ReactNode): string {
 
 function getDir(node: React.ReactNode): "rtl" | "ltr" | undefined {
   const text = extractText(node);
+  let rtlCount = 0;
+  let ltrCount = 0;
+
   for (const ch of text) {
     const cp = ch.codePointAt(0) ?? 0;
     if (
-      (cp >= 0x0590 && cp <= 0x05ff) ||
-      (cp >= 0x0600 && cp <= 0x06ff) ||
-      (cp >= 0x0750 && cp <= 0x077f) ||
-      (cp >= 0xfb50 && cp <= 0xfdff) ||
-      (cp >= 0xfe70 && cp <= 0xfeff)
+      (cp >= 0x0590 && cp <= 0x05ff) || // Hebrew
+      (cp >= 0x0600 && cp <= 0x06ff) || // Arabic
+      (cp >= 0x0750 && cp <= 0x077f) || // Arabic Supplement
+      (cp >= 0xfb50 && cp <= 0xfdff) || // Arabic Presentation Forms-A
+      (cp >= 0xfe70 && cp <= 0xfeff)    // Arabic Presentation Forms-B
     ) {
-      return "rtl";
+      rtlCount++;
+    } else if (/[a-zA-Z]/.test(ch)) {
+      ltrCount++;
     }
-    if (cp > 0x7e) continue;
-    if (/[a-zA-Z0-9]/.test(ch)) return "ltr";
+    // اعداد، فاصله، علائم نگارشی نادیده گرفته می‌شن
   }
-  return undefined;
+
+  const total = rtlCount + ltrCount;
+  if (total === 0) return undefined;
+  return rtlCount / total > 0.5 ? "rtl" : "ltr";
 }
 
 function dirProps(children: React.ReactNode): {
@@ -58,6 +65,10 @@ export default function MarkdownRender({ markdown }: { markdown: string }) {
       remarkPlugins={[remarkGfm, remarkMath]}
       rehypePlugins={[rehypeRaw, rehypeKatex]}
       components={{
+        input({ node, ...props }) {
+          const { ref: _ref, ...rest } = props as Record<string, unknown>;
+          return <input {...rest} />;
+        },
         p({ children }) {
           return <p {...dirProps(children)}>{children}</p>;
         },
@@ -72,6 +83,12 @@ export default function MarkdownRender({ markdown }: { markdown: string }) {
         },
         h4({ children }) {
           return <h4 {...dirProps(children)}>{children}</h4>;
+        },
+        ul({ children }) {
+          return <ul {...dirProps(children)}>{children}</ul>;
+        },
+        ol({ children }) {
+          return <ol {...dirProps(children)}>{children}</ol>;
         },
         li({ children }) {
           return <li {...dirProps(children)}>{children}</li>;
@@ -88,11 +105,9 @@ export default function MarkdownRender({ markdown }: { markdown: string }) {
         },
         code({ className, children }) {
           const match = /language-(\w+)/.exec(className || "");
-
           if (match?.[1] === "mermaid") {
             return <MermaidDiagram chart={String(children).trim()} />;
           }
-
           return match ? (
             <SyntaxHighlighter
               style={vscDarkPlus}

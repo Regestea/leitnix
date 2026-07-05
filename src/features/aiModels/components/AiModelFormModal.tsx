@@ -90,6 +90,8 @@ export default function AiModelFormModal({
             <div>
               <Input
                 label="URL"
+                placeholder="https://api.openai.com/v1"
+                type="url"
                 defaultValue={formModel.URL ?? ""}
                 onChange={(e) => onFieldChange("URL", e)}
               />

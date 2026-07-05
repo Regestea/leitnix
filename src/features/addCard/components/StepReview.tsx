@@ -1,7 +1,9 @@
 import { useState } from "react";
-import { Textarea } from "../../../shared/components/controls/Textarea";
 import { Button } from "../../../shared/components/controls/Button";
 import ThinkingSphere from "../../../shared/components/thinkingSphere/ThinkingSphere";
+import Tabs from "../../../shared/components/Tabs";
+import MarkdownRender from "../../../shared/components/MarkdownRender";
+import MarkdownEditor from "../../../shared/components/MarkdownEditor";
 import { CardService } from "../../../services/CardService";
 import type {
   GeneratedCardData,
@@ -83,7 +85,6 @@ export default function StepReview({
       ) : (
         <div
           style={{
-            overflow: "auto",
             display: "flex",
             flexDirection: "column",
             gap: "1rem",
@@ -91,28 +92,67 @@ export default function StepReview({
         >
           <div className="review-section">
             <h3>Card Topic</h3>
-            <Textarea
-              label="Topic (Markdown)"
-              defaultValue={card.topicMarkdown}
-              rows={4}
-              onChange={handleTopicChange}
-            />
+            <div style={{ overflow: "scroll", height: "30dvh" }}>
+              <Tabs
+                tabs={[
+                  {
+                    id: "topic-view",
+                    label: "View",
+                    content: <MarkdownRender markdown={card.topicMarkdown} />,
+                  },
+                  {
+                    id: "topic-edit",
+                    label: "Edit",
+                    content: (
+                      <MarkdownEditor
+                        value={card.topicMarkdown}
+                        onChange={handleTopicChange}
+                      />
+                    ),
+                  },
+                ]}
+              />
+            </div>
           </div>
 
           <div className="review-section">
             <h3>Content</h3>
-            <Textarea
-              label="Content (Markdown)"
-              defaultValue={card.markdownContent}
-              rows={8}
-              onChange={handleContentChange}
-            />
+            <div style={{ overflow: "scroll", height: "40dvh" }}>
+              <Tabs
+                tabs={[
+                  {
+                    id: "content-view",
+                    label: "View",
+                    content: (
+                      <MarkdownRender markdown={card.markdownContent} />
+                    ),
+                  },
+                  {
+                    id: "content-edit",
+                    label: "Edit",
+                    content: (
+                      <MarkdownEditor
+                        value={card.markdownContent}
+                        onChange={handleContentChange}
+                      />
+                    ),
+                  },
+                ]}
+              />
+            </div>
           </div>
 
           {error && <p className="field-error">{error}</p>}
 
-          <div className="step-actions">
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              marginTop: "1rem",
+            }}
+          >
             <Button
+              style={{ width: "100%" }}
               label="Generate Questions"
               onClick={handleGenerateQuestions}
             />
