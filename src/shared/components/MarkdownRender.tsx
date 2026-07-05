@@ -6,8 +6,8 @@ import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
 import rehypeRaw from "rehype-raw";
+import MarkdownTable from "./MarkdownTable";
 import "./MarkdownRender.css";
-
 
 // RTL helper
 function extractText(node: React.ReactNode): string {
@@ -26,15 +26,15 @@ function getDir(node: React.ReactNode): "rtl" | "ltr" | undefined {
   for (const ch of text) {
     const cp = ch.codePointAt(0) ?? 0;
     if (
-      (cp >= 0x0590 && cp <= 0x05ff) || // Hebrew
-      (cp >= 0x0600 && cp <= 0x06ff) || // Arabic / Persian
-      (cp >= 0x0750 && cp <= 0x077f) || // Arabic Supplement
-      (cp >= 0xfb50 && cp <= 0xfdff) || // Arabic Presentation A
-      (cp >= 0xfe70 && cp <= 0xfeff)    // Arabic Presentation B
+      (cp >= 0x0590 && cp <= 0x05ff) ||
+      (cp >= 0x0600 && cp <= 0x06ff) ||
+      (cp >= 0x0750 && cp <= 0x077f) ||
+      (cp >= 0xfb50 && cp <= 0xfdff) ||
+      (cp >= 0xfe70 && cp <= 0xfeff)
     ) {
       return "rtl";
     }
-    if (cp > 0x7e) continue; // skip non-ASCII non-RTL (emoji, CJK…)
+    if (cp > 0x7e) continue;
     if (/[a-zA-Z0-9]/.test(ch)) return "ltr";
   }
   return undefined;
@@ -78,6 +78,7 @@ export default function MarkdownRender({ markdown }: { markdown: string }) {
         blockquote({ children }) {
           return <blockquote {...dirProps(children)}>{children}</blockquote>;
         },
+        table: MarkdownTable,
         td({ children }) {
           return <td {...dirProps(children)}>{children}</td>;
         },
