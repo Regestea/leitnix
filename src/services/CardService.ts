@@ -33,7 +33,7 @@ function getErrorMessage(err: unknown, fallback: string): string {
 
 async function resolveSystemPrompt(
   customPromptId: string,
-  fallback: string
+  fallback: string,
 ): Promise<string> {
   if (!customPromptId || customPromptId === NONE_PROMPT_VALUE) return fallback;
 
@@ -56,13 +56,11 @@ export class CardService {
   private questionRepo = new QuestionRepository();
 
   /** Step 1: generate the card topic + notes from a topic prompt. */
-  async generateCard(
-    request: GenerateCardRequest
-  ): Promise<GeneratedCardData> {
+  async generateCard(request: GenerateCardRequest): Promise<GeneratedCardData> {
     try {
       const systemPrompt = await resolveSystemPrompt(
         request.customPromptId,
-        CARD_GENERATION_SYSTEM_PROMPT
+        CARD_GENERATION_SYSTEM_PROMPT,
       );
 
       const response = await fetchStructuredAIByModelId<CardNotesResponse>({
@@ -77,14 +75,16 @@ export class CardService {
         notes: response.notes.map((n) => n.markdownContent),
       };
     } catch (err) {
-      throw new Error(getErrorMessage(err, "Failed to generate card"));
+      throw new Error(getErrorMessage(err, "Failed to generate card"), {
+        cause: err,
+      });
     }
   }
 
   /** Step 2: generate questions from an existing card. */
   async generateQuestions(
     aiModelId: string,
-    card: GeneratedCardData
+    card: GeneratedCardData,
   ): Promise<QuestionsResponse> {
     try {
       return await fetchStructuredAIByModelId<QuestionsResponse>({
@@ -94,7 +94,9 @@ export class CardService {
         systemPrompt: QUESTION_GENERATION_SYSTEM_PROMPT,
       });
     } catch (err) {
-      throw new Error(getErrorMessage(err, "Failed to generate questions"));
+      throw new Error(getErrorMessage(err, "Failed to generate questions"), {
+        cause: err,
+      });
     }
   }
 
@@ -125,7 +127,7 @@ export class CardService {
           Id: crypto.randomUUID(),
           CardId: cardId,
           MarkdownContent: markdownContent,
-        }))
+        })),
       );
 
       await this.questionRepo.createFreeResponseQuestions(
@@ -134,7 +136,7 @@ export class CardService {
           CardId: cardId,
           MarkdownQuestion: q.markdownQuestion,
           MarkdownAnswer: q.markdownAnswer,
-        }))
+        })),
       );
 
       await this.questionRepo.createFillTheBlankQuestions(
@@ -143,7 +145,7 @@ export class CardService {
           CardId: cardId,
           MarkdownQuestion: q.markdownQuestion,
           MarkdownAnswer: q.markdownAnswer,
-        }))
+        })),
       );
 
       await this.questionRepo.createMultipleChoiceQuestions(
@@ -156,12 +158,14 @@ export class CardService {
           MarkdownOptionC: q.markdownOptionC,
           MarkdownOptionD: q.markdownOptionD,
           CorrectOption: q.correctOption,
-        }))
+        })),
       );
 
       return cardId;
     } catch (err) {
-      throw new Error(getErrorMessage(err, "Failed to save card"));
+      throw new Error(getErrorMessage(err, "Failed to save card"), {
+        cause: err,
+      });
     }
   }
 
@@ -169,7 +173,7 @@ export class CardService {
   async generateQuestionsAndSave(request: SaveCardRequest): Promise<string> {
     const questions = await this.generateQuestions(
       request.aiModelId,
-      request.card
+      request.card,
     );
     return this.saveCard({ ...request, questions });
   }

@@ -8,10 +8,7 @@ import { CustomPromptRepository } from "../../customPrompt/repository/CustomProm
 import { CategoryTagRepository } from "../repository/CategoryTagRepository";
 import { CardService } from "../../../services/CardService";
 import { NONE_PROMPT_VALUE } from "../../../statics/prompts";
-import {
-  EMPTY_FORM_STATE,
-  validateAddCardForm,
-} from "../types";
+import { EMPTY_FORM_STATE, validateAddCardForm } from "../types";
 import type {
   AddCardFormState,
   AddCardFormErrors,
@@ -23,8 +20,14 @@ interface StepGenerateProps {
   onGenerated: (card: GeneratedCardData, form: AddCardFormState) => void;
 }
 
-const PLACEHOLDER_TAG: SelectOption = { value: "", label: "Select category tag..." };
-const PLACEHOLDER_MODEL: SelectOption = { value: "", label: "Select AI model..." };
+const PLACEHOLDER_TAG: SelectOption = {
+  value: "",
+  label: "Select category tag...",
+};
+const PLACEHOLDER_MODEL: SelectOption = {
+  value: "",
+  label: "Select AI model...",
+};
 const NONE_PROMPT: SelectOption = { value: NONE_PROMPT_VALUE, label: "None" };
 
 type Optionable = {
@@ -70,10 +73,7 @@ export default function StepGenerate({ onGenerated }: StepGenerateProps) {
     loadOptions();
   }, []);
 
-  const updateField = (
-    field: keyof AddCardFormState,
-    value: string
-  ) => {
+  const updateField = (field: keyof AddCardFormState, value: string) => {
     setFormState((prev) => ({ ...prev, [field]: value }));
     setFormErrors((prev) => {
       if (!(field in prev)) return prev;

@@ -3,7 +3,11 @@ import { Textarea } from "../../../shared/components/controls/Textarea";
 import { Button } from "../../../shared/components/controls/Button";
 import ThinkingSphere from "../../../shared/components/thinkingSphere/ThinkingSphere";
 import { CardService } from "../../../services/CardService";
-import type { GeneratedCardData, QuestionsResponse, AddCardFormState } from "../types";
+import type {
+  GeneratedCardData,
+  QuestionsResponse,
+  AddCardFormState,
+} from "../types";
 
 interface StepReviewProps {
   card: GeneratedCardData;
@@ -42,7 +46,7 @@ export default function StepReview({
       const cardService = new CardService();
       const generated = await cardService.generateQuestions(
         formState.aiModelId,
-        card
+        card,
       );
       setQuestions(generated);
 
@@ -55,7 +59,9 @@ export default function StepReview({
 
       if (cardId) onComplete();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to generate questions");
+      setError(
+        err instanceof Error ? err.message : "Failed to generate questions",
+      );
     } finally {
       setIsGeneratingQuestions(false);
     }
@@ -113,7 +119,10 @@ export default function StepReview({
           {error && <p className="field-error">{error}</p>}
 
           <div className="step-actions">
-            <Button label="Generate Questions" onClick={handleGenerateQuestions} />
+            <Button
+              label="Generate Questions"
+              onClick={handleGenerateQuestions}
+            />
           </div>
         </div>
       )}
