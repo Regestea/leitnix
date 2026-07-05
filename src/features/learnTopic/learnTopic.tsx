@@ -5,9 +5,8 @@ import MarkdownRender from "../../shared/components/MarkdownRender";
 import Tabs from "../../shared/components/Tabs";
 import { Button } from "../../shared/components/controls/Button";
 
-
 const markdownSections: string[] = [
-    `# 🚀 نمونه کامل Markdown
+  `# 🚀 نمونه کامل Markdown
 
 ## تیترها
 
@@ -15,7 +14,7 @@ const markdownSections: string[] = [
 ## Heading 2
 ### Heading 3`,
 
-    `## متن ساده
+  `## متن ساده
 
 این یک متن معمولی است.
 
@@ -29,7 +28,7 @@ const markdownSections: string[] = [
 
 > این یک نقل قول است.`,
 
-    `## لیست‌ها
+  `## لیست‌ها
 
 ### لیست نامرتب
 
@@ -50,13 +49,13 @@ const markdownSections: string[] = [
 - [x] یادگیری .NET
 - [ ] یادگیری AI`,
 
-    `## لینک و تصویر
+  `## لینک و تصویر
 
 [OpenAI](https://openai.com)
 
 ![Sample Image](https://picsum.photos/300/150)`,
 
-    `## جدول بزرگ نمونه
+  `## جدول بزرگ نمونه
 
 | ID | نام | نام خانوادگی | سن | جنسیت | شهر | کشور | شغل | سابقه کار | زبان اصلی | ایمیل | وضعیت |
 |----|-----|--------------|----|--------|------|--------|------|-----------|------------|--------|--------|
@@ -69,11 +68,11 @@ const markdownSections: string[] = [
 | 7 | Fatemeh | Jalali | 31 | Female | Ahvaz | Iran | Product Manager | 6 Years | Persian | fatemeh@example.com | Active |
 | 8 | Arman | Rahimi | 26 | Male | Qom | Iran | Mobile Developer | 3 Years | Persian | arman@example.com | Pending |`,
 
-    `## کد Inline
+  `## کد Inline
 
 برای نصب پکیج از دستور \`npm install\` استفاده کنید.`,
 
-    `## کد C#
+  `## کد C#
 
 \`\`\`csharp
 using System;
@@ -95,7 +94,7 @@ public class Program
 }
 \`\`\``,
 
-    `## کد TypeScript
+  `## کد TypeScript
 
 \`\`\`ts
 interface User {
@@ -111,7 +110,7 @@ const user: User = {
 console.log(user);
 \`\`\``,
 
-    `## کد JSON
+  `## کد JSON
 
 \`\`\`json
 {
@@ -124,7 +123,7 @@ console.log(user);
 }
 \`\`\``,
 
-    `## فرمول‌های ریاضی (KaTeX / MathJax)
+  `## فرمول‌های ریاضی (KaTeX / MathJax)
 
 فرمول درون‌خطی:
 
@@ -136,7 +135,7 @@ $$
 a^2 + b^2 = c^2
 $$`,
 
-    `## فرمول‌های پیشرفته
+  `## فرمول‌های پیشرفته
 
 انتگرال:
 
@@ -159,7 +158,7 @@ $$
 \\end{bmatrix}
 $$`,
 
-    `## فیزیک
+  `## فیزیک
 
 قانون دوم نیوتن:
 
@@ -185,7 +184,7 @@ $$
 F = G \\frac{m_1 m_2}{r^2}
 $$`,
 
-    `## متن رنگی (HTML)
+  `## متن رنگی (HTML)
 
 <span style="color:red">متن قرمز</span>
 
@@ -193,13 +192,13 @@ $$`,
 
 <span style="color:blue">متن آبی</span>`,
 
-    `## HTML داخل Markdown
+  `## HTML داخل Markdown
 
 <div style="padding:10px;border:1px solid gray;border-radius:8px;">
   این یک Box HTML است.
 </div>`,
 
-    `## جدول با ایموجی
+  `## جدول با ایموجی
 
 | Skill | Level |
 |---------|---------|
@@ -208,7 +207,7 @@ $$`,
 | Docker | ⭐⭐⭐⭐ |
 | Azure | ⭐⭐⭐ |`,
 
-    `## Mermaid Diagram
+  `## Mermaid Diagram
 
 \`\`\`mermaid
 erDiagram
@@ -383,7 +382,7 @@ erDiagram
     WISHLIST ||--o{ WISHLIST_ITEM : contains
 \`\`\``,
 
-    `## نقل قول چند خطی
+  `## نقل قول چند خطی
 
 > Clean Architecture
 >
@@ -391,16 +390,17 @@ erDiagram
 >
 > Domain Driven Design`,
 
-    `پایان نمونه کامل Markdown 🎉`,
-  ];
-
+  `پایان نمونه کامل Markdown 🎉`,
+];
 
 export default function LearnTopic() {
-  const [markdown, setMarkdown] = useState(markdownSections.join("\n\n---\n\n"));
+  const [markdown, setMarkdown] = useState(
+    markdownSections.join("\n\n---\n\n"),
+  );
 
   return (
     <MainContainer>
-      <div style={{ overflow: "scroll", height: "80dvh" }}>
+      <div style={{ overflow: "scroll", height: "75dvh" }}>
         <Tabs
           tabs={[
             {
@@ -418,7 +418,11 @@ export default function LearnTopic() {
           ]}
         />
       </div>
-      <Button style={{width:'100%',marginTop:'2rem'}} label="Generate Questions" />
+      <div
+        style={{ display: "flex", justifyContent: "center", marginTop: "1rem" }}
+      >
+        <Button style={{ width: "100%" }} label="Generate Questions" />
+      </div>
     </MainContainer>
   );
 }
