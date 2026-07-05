@@ -1,0 +1,184 @@
+/* ─── Root ─────────────────────────────────────────────── */
+.md-editor {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  min-height: 400px;
+  background: rgba(80, 105, 135, 0.1);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 14px;
+  overflow: hidden;
+  color: #ffffff;
+}
+
+/* ─── Toolbar ───────────────────────────────────────────── */
+.md-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 7px 10px;
+  background: rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  flex-wrap: wrap;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.md-toolbar-separator {
+  width: 1px;
+  height: 20px;
+  background: rgba(255, 255, 255, 0.15);
+  margin: 0 4px;
+  flex-shrink: 0;
+}
+
+/* ─── Toolbar Button ────────────────────────────────────── */
+.md-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  background: transparent;
+  border: 1px solid white;
+  border-radius: 6px;
+  color: rgba(255, 255, 255);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s, box-shadow 0.15s;
+  flex-shrink: 0;
+  line-height: 1;
+  user-select: none;
+}
+
+.md-btn svg {
+  width: 15px;
+  height: 15px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  pointer-events: none;
+}
+
+.md-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.95);
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.06),
+    0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.md-btn:active {
+  background: rgba(255, 255, 255, 0.18);
+  border-color: rgba(255, 255, 255, 0.35);
+  color: #ffffff;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.12);
+}
+
+/* ─── Tooltip ───────────────────────────────────────────── */
+.md-btn::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  top: calc(100% + 7px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(20, 30, 50, 0.85);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 11px;
+  font-weight: 400;
+  white-space: nowrap;
+  padding: 4px 9px;
+  border-radius: 5px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s;
+  z-index: 99;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.md-btn:hover::after {
+  opacity: 1;
+}
+
+/* ─── Shortcut badge inside tooltip ────────────────────── */
+.md-btn[data-shortcut]::after {
+  content: attr(data-tooltip) " · " attr(data-shortcut);
+}
+
+/* ─── Textarea wrapper ───────────────────────────────────── */
+.md-textarea-wrap {
+  flex: 1;
+  position: relative;
+  display: flex;
+}
+
+/* ─── Textarea ──────────────────────────────────────────── */
+.md-textarea {
+  flex: 1;
+  resize: none;
+  border: none;
+  outline: none;
+  padding: 20px 24px;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.92);
+  font-size: 14px;
+  line-height: 1.78;
+  tab-size: 2;
+  caret-color: rgba(255, 255, 255, 0.9);
+  letter-spacing: 0.01em;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
+}
+
+.md-textarea::placeholder {
+  color: rgba(255, 255, 255, 0.22);
+}
+
+.md-textarea::-webkit-scrollbar {
+  width: 5px;
+}
+.md-textarea::-webkit-scrollbar-track {
+  background: transparent;
+}
+.md-textarea::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 3px;
+}
+.md-textarea::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.28);
+}
+
+/* ─── Status bar ────────────────────────────────────────── */
+.md-statusbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 5px 16px;
+  background: rgba(255, 255, 255, 0.05);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 11px;
+  color: rgba(255, 255, 255);
+  gap: 12px;
+  letter-spacing: 0.02em;
+}
+
+.md-statusbar-right {
+  display: flex;
+  gap: 16px;
+}
+
+.md-statusbar span {
+  white-space: nowrap;
+}

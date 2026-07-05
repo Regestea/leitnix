@@ -58,7 +58,7 @@ export function Textarea({
         disabled={disabled}
         rows={rows}
         cols={cols}
-        className={className}
+        className={`glass-textarea ${className}`}
         style={style}
       />
     </div>

@@ -376,7 +376,7 @@ code {
 }
 
 /* ─── Components ─────────────────────────────────────────────────────────────── */
-.title {
+.styled-title {
   font-family: "angelina", "comic", serif;
   font-weight: bold;
   font-size: 6.5rem;

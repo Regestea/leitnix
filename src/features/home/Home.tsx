@@ -19,7 +19,7 @@ export default function Home() {
   return (
     <>
       <div className="title-section">
-        <h1 className="title">Leitnix</h1>
+        <h1 className="styled-title">Leitnix</h1>
       </div>
       <div className="content-stack">
         <div className="cards-layout">
