@@ -211,10 +211,176 @@ $$`,
     `## Mermaid Diagram
 
 \`\`\`mermaid
-graph TD
-A[Client] --> B[API]
-B --> C[Database]
-B --> D[Redis]
+erDiagram
+
+    USER {
+        int id
+        string firstName
+        string lastName
+        string email
+        string passwordHash
+        string phone
+        datetime createdAt
+    }
+
+    ADDRESS {
+        int id
+        int userId
+        string country
+        string city
+        string street
+        string postalCode
+    }
+
+    CATEGORY {
+        int id
+        string name
+        int parentId
+    }
+
+    BRAND {
+        int id
+        string name
+    }
+
+    PRODUCT {
+        int id
+        int categoryId
+        int brandId
+        string name
+        string description
+        decimal price
+        bool isActive
+    }
+
+    PRODUCT_IMAGE {
+        int id
+        int productId
+        string url
+        bool isPrimary
+    }
+
+    PRODUCT_VARIANT {
+        int id
+        int productId
+        string sku
+        string color
+        string size
+        decimal price
+    }
+
+    INVENTORY {
+        int id
+        int variantId
+        int quantity
+    }
+
+    CART {
+        int id
+        int userId
+        datetime createdAt
+    }
+
+    CART_ITEM {
+        int id
+        int cartId
+        int variantId
+        int quantity
+    }
+
+    ORDER {
+        int id
+        int userId
+        int addressId
+        decimal total
+        string status
+        datetime createdAt
+    }
+
+    ORDER_ITEM {
+        int id
+        int orderId
+        int variantId
+        decimal price
+        int quantity
+    }
+
+    PAYMENT {
+        int id
+        int orderId
+        decimal amount
+        string method
+        string status
+        datetime paidAt
+    }
+
+    SHIPMENT {
+        int id
+        int orderId
+        string carrier
+        string trackingCode
+        string status
+    }
+
+    REVIEW {
+        int id
+        int userId
+        int productId
+        int rating
+        string comment
+    }
+
+    WISHLIST {
+        int id
+        int userId
+    }
+
+    WISHLIST_ITEM {
+        int id
+        int wishlistId
+        int productId
+    }
+
+    COUPON {
+        int id
+        string code
+        decimal discount
+        datetime expiresAt
+    }
+
+    ORDER_COUPON {
+        int orderId
+        int couponId
+    }
+
+    USER ||--o{ ADDRESS : has
+    USER ||--|| CART : owns
+    USER ||--o{ ORDER : places
+    USER ||--|| WISHLIST : owns
+    USER ||--o{ REVIEW : writes
+
+    CATEGORY ||--o{ PRODUCT : contains
+    BRAND ||--o{ PRODUCT : makes
+
+    PRODUCT ||--o{ PRODUCT_IMAGE : has
+    PRODUCT ||--o{ PRODUCT_VARIANT : has
+    PRODUCT ||--o{ REVIEW : receives
+    PRODUCT ||--o{ WISHLIST_ITEM : saved
+
+    PRODUCT_VARIANT ||--|| INVENTORY : stock
+    PRODUCT_VARIANT ||--o{ CART_ITEM : selected
+    PRODUCT_VARIANT ||--o{ ORDER_ITEM : purchased
+
+    CART ||--o{ CART_ITEM : contains
+
+    ORDER ||--|{ ORDER_ITEM : contains
+    ORDER ||--|| PAYMENT : paid_by
+    ORDER ||--|| SHIPMENT : shipped_by
+    ORDER ||--o{ ORDER_COUPON : uses
+
+    COUPON ||--o{ ORDER_COUPON : applied
+
+    WISHLIST ||--o{ WISHLIST_ITEM : contains
 \`\`\``,
 
     `## نقل قول چند خطی

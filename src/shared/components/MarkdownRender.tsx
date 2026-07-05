@@ -7,6 +7,7 @@ import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
 import rehypeRaw from "rehype-raw";
 import MarkdownTable from "./MarkdownTable";
+import MermaidDiagram from "./MermaidDiagram";
 import "./MarkdownRender.css";
 
 // RTL helper
@@ -87,6 +88,11 @@ export default function MarkdownRender({ markdown }: { markdown: string }) {
         },
         code({ className, children }) {
           const match = /language-(\w+)/.exec(className || "");
+
+          if (match?.[1] === "mermaid") {
+            return <MermaidDiagram chart={String(children).trim()} />;
+          }
+
           return match ? (
             <SyntaxHighlighter
               style={vscDarkPlus}
