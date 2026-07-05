@@ -1,6 +1,18 @@
 import { z } from "zod";
+import { NONE_PROMPT_VALUE } from "../../statics/prompts";
 
-// ─── AI Response Schemas ────────────────────────────────────────────
+// ─── Wizard Steps ───────────────────────────────────────────────────
+// Const object drives which step tab is rendered.
+
+export const AddCardWizardStep = {
+  Generate: 1,
+  Review: 2,
+  Complete: 3,
+} as const;
+
+export type AddCardWizardStep = (typeof AddCardWizardStep)[keyof typeof AddCardWizardStep];
+
+// ─── AI Response Models ─────────────────────────────────────────────
 
 export const cardNotesResponseSchema = z.object({
   topicMarkdown: z.string(),
@@ -40,24 +52,29 @@ export const questionsResponseSchema = z.object({
 
 export type QuestionsResponse = z.infer<typeof questionsResponseSchema>;
 
-// ─── System Prompts ───────────────────────────────────────────────────
+// ─── Request Models passed to CardService ──────────────────────────
 
-export const CARD_GENERATION_SYSTEM_PROMPT =
-  "You are an expert educational content creator. Given a topic, generate a concise flashcard summary and multiple detailed study notes. Return the topic summary as markdown and a list of detailed notes as markdown content blocks.";
+export interface GenerateCardRequest {
+  aiModelId: string;
+  customPromptId: string;
+  topicText: string;
+}
 
-export const QUESTION_GENERATION_SYSTEM_PROMPT =
-  "You are an expert question generator. Given a flashcard topic and its study notes, generate different types of assessment questions: free-response, fill-in-the-blank, and multiple-choice. All content in markdown.";
+export interface SaveCardRequest {
+  aiModelId: string;
+  categoryTagId: string;
+  card: GeneratedCardData;
+  questions: QuestionsResponse;
+}
 
-// ─── Wizard Types ────────────────────────────────────────────────────
-
-export type WizardStep = 1 | 2 | 3;
+// ─── Domain Models ──────────────────────────────────────────────────
 
 export interface GeneratedCardData {
   topicMarkdown: string;
   notes: string[];
 }
 
-// ─── Form State & Validation ─────────────────────────────────────────
+// ─── Form State & Validation ────────────────────────────────────────
 
 export interface AddCardFormState {
   categoryTagId: string;
@@ -70,10 +87,7 @@ export const addCardFormSchema = z.object({
   categoryTagId: z.string().min(1, "Please select a category tag."),
   aiModelId: z.string().min(1, "Please select an AI model."),
   customPromptId: z.string(),
-  topicText: z
-    .string()
-    .trim()
-    .min(1, "Please enter a topic to generate a card."),
+  topicText: z.string().trim().min(1, "Please enter a topic to generate a card."),
 });
 
 export type AddCardFormErrors = Partial<
@@ -93,9 +107,7 @@ export function validateAddCardForm(form: AddCardFormState): {
   const errors: AddCardFormErrors = {};
   for (const issue of result.error.issues) {
     const field = issue.path[0] as keyof AddCardFormErrors;
-    if (!errors[field]) {
-      errors[field] = issue.message;
-    }
+    errors[field] ??= issue.message;
   }
   return { success: false, errors };
 }
@@ -103,10 +115,13 @@ export function validateAddCardForm(form: AddCardFormState): {
 export const EMPTY_FORM_STATE: AddCardFormState = {
   categoryTagId: "",
   aiModelId: "",
-  customPromptId: "",
+  customPromptId: NONE_PROMPT_VALUE,
   topicText: "",
 };
 
-// ─── Constants ───────────────────────────────────────────────────────
+// ─── Select Option Helper ───────────────────────────────────────────
 
-export const NONE_PROMPT_VALUE = "none";
+export interface SelectOption {
+  value: string;
+  label: string;
+}

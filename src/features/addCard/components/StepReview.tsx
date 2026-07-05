@@ -1,37 +1,64 @@
+import { useState } from "react";
 import { Textarea } from "../../../shared/components/controls/Textarea";
 import { Button } from "../../../shared/components/controls/Button";
 import ThinkingSphere from "../../../shared/components/thinkingSphere/ThinkingSphere";
-import type { GeneratedCardData } from "../types";
+import { CardService } from "../../../services/CardService";
+import type { GeneratedCardData, QuestionsResponse, AddCardFormState } from "../types";
 
 interface StepReviewProps {
   card: GeneratedCardData;
-  onCardChange: (updatedCard: GeneratedCardData) => void;
-  isGeneratingQuestions: boolean;
-  error: string | null;
-  onGenerateQuestions: () => void;
-  onDone: () => void;
+  formState: AddCardFormState;
+  onComplete: () => void;
   onGenerateNewCard: () => void;
-  isComplete: boolean;
+  onDone: () => void;
 }
 
 export default function StepReview({
-  card,
-  onCardChange,
-  isGeneratingQuestions,
-  error,
-  onGenerateQuestions,
-  onDone,
+  card: initialCard,
+  formState,
+  onComplete,
   onGenerateNewCard,
-  isComplete,
+  onDone,
 }: StepReviewProps) {
-  const handleTopicChange = (value: string) => {
-    onCardChange({ ...card, topicMarkdown: value });
-  };
+  const [card, setCard] = useState<GeneratedCardData>(initialCard);
+  const [questions, setQuestions] = useState<QuestionsResponse | null>(null);
+  const [isGeneratingQuestions, setIsGeneratingQuestions] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleNoteChange = (index: number, value: string) => {
-    const updated = [...card.notes];
-    updated[index] = value;
-    onCardChange({ ...card, notes: updated });
+  const handleTopicChange = (value: string) =>
+    setCard((prev) => ({ ...prev, topicMarkdown: value }));
+
+  const handleNoteChange = (index: number, value: string) =>
+    setCard((prev) => {
+      const notes = [...prev.notes];
+      notes[index] = value;
+      return { ...prev, notes };
+    });
+
+  const handleGenerateQuestions = async () => {
+    setIsGeneratingQuestions(true);
+    setError(null);
+    try {
+      const cardService = new CardService();
+      const generated = await cardService.generateQuestions(
+        formState.aiModelId,
+        card
+      );
+      setQuestions(generated);
+
+      const cardId = await cardService.saveCard({
+        aiModelId: formState.aiModelId,
+        categoryTagId: formState.categoryTagId,
+        card,
+        questions: generated,
+      });
+
+      if (cardId) onComplete();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to generate questions");
+    } finally {
+      setIsGeneratingQuestions(false);
+    }
   };
 
   return (
@@ -41,7 +68,7 @@ export default function StepReview({
           <ThinkingSphere />
           <p className="loading-text">Generating questions...</p>
         </div>
-      ) : isComplete ? (
+      ) : questions ? (
         <div className="step-complete-review">
           <p className="complete-message">
             Card and questions saved successfully!
@@ -86,7 +113,7 @@ export default function StepReview({
           {error && <p className="field-error">{error}</p>}
 
           <div className="step-actions">
-            <Button label="Generate Questions" onClick={onGenerateQuestions} />
+            <Button label="Generate Questions" onClick={handleGenerateQuestions} />
           </div>
         </div>
       )}

@@ -1,15 +1,20 @@
-import type { WizardStep } from "../types";
+import { AddCardWizardStep } from "../types";
 
 interface WizardTabsProps {
-  currentStep: WizardStep;
-  onTabClick: (step: WizardStep) => void;
+  currentStep: AddCardWizardStep;
+  onTabClick: (step: AddCardWizardStep) => void;
 }
 
-const STEPS: WizardStep[] = [1, 2, 3];
-const LABELS: Record<WizardStep, string> = {
-  1: "Generate",
-  2: "Review",
-  3: "Done",
+const STEPS: AddCardWizardStep[] = [
+  AddCardWizardStep.Generate,
+  AddCardWizardStep.Review,
+  AddCardWizardStep.Complete,
+];
+
+const LABELS: Record<AddCardWizardStep, string> = {
+  [AddCardWizardStep.Generate]: "Generate",
+  [AddCardWizardStep.Review]: "Review",
+  [AddCardWizardStep.Complete]: "Done",
 };
 
 export function WizardTabs({ currentStep, onTabClick }: WizardTabsProps) {

@@ -1,33 +1,111 @@
+import { useEffect, useState } from "react";
+import { Select } from "../../../shared/components/controls/Select";
 import { Textarea } from "../../../shared/components/controls/Textarea";
 import { Button } from "../../../shared/components/controls/Button";
 import ThinkingSphere from "../../../shared/components/thinkingSphere/ThinkingSphere";
-import { useSelectOptions } from "../hooks/useSelectOptions";
-import { NONE_PROMPT_VALUE } from "../types";
-import type { AddCardFormState, AddCardFormErrors } from "../types";
-import { SelectField } from "./SelectField";
+import { AiModelRepository } from "../../aiModels/repository/AiModelRepository";
+import { CustomPromptRepository } from "../../customPrompt/repository/CustomPromptRepository";
+import { CategoryTagRepository } from "../repository/CategoryTagRepository";
+import { CardService } from "../../../services/CardService";
+import { NONE_PROMPT_VALUE } from "../../../statics/prompts";
+import {
+  EMPTY_FORM_STATE,
+  validateAddCardForm,
+} from "../types";
+import type {
+  AddCardFormState,
+  AddCardFormErrors,
+  GeneratedCardData,
+  SelectOption,
+} from "../types";
 
 interface StepGenerateProps {
-  formState: AddCardFormState;
-  formErrors: AddCardFormErrors;
-  setCategoryTagId: (id: string) => void;
-  setAiModelId: (id: string) => void;
-  setCustomPromptId: (id: string) => void;
-  setTopicText: (text: string) => void;
-  isGenerating: boolean;
-  onGenerate: () => void;
+  onGenerated: (card: GeneratedCardData, form: AddCardFormState) => void;
 }
 
-export default function StepGenerate({
-  formState,
-  formErrors,
-  setCategoryTagId,
-  setAiModelId,
-  setCustomPromptId,
-  setTopicText,
-  isGenerating,
-  onGenerate,
-}: StepGenerateProps) {
-  const { categoryTags, aiModels, customPrompts } = useSelectOptions();
+const PLACEHOLDER_TAG: SelectOption = { value: "", label: "Select category tag..." };
+const PLACEHOLDER_MODEL: SelectOption = { value: "", label: "Select AI model..." };
+const NONE_PROMPT: SelectOption = { value: NONE_PROMPT_VALUE, label: "None" };
+
+type Optionable = {
+  Id: string;
+  Name?: string | null;
+  DisplayName?: string | null;
+  ModelName?: string | null;
+};
+
+function toOptions(items: Optionable[]): SelectOption[] {
+  return items.map((item) => ({
+    value: item.Id,
+    label: item.DisplayName ?? item.Name ?? item.ModelName ?? "Unnamed",
+  }));
+}
+
+export default function StepGenerate({ onGenerated }: StepGenerateProps) {
+  const [formState, setFormState] =
+    useState<AddCardFormState>(EMPTY_FORM_STATE);
+  const [formErrors, setFormErrors] = useState<AddCardFormErrors>({});
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const [categoryTags, setCategoryTags] = useState<SelectOption[]>([
+    PLACEHOLDER_TAG,
+  ]);
+  const [aiModels, setAiModels] = useState<SelectOption[]>([PLACEHOLDER_MODEL]);
+  const [customPrompts, setCustomPrompts] = useState<SelectOption[]>([
+    NONE_PROMPT,
+  ]);
+
+  useEffect(() => {
+    const loadOptions = async () => {
+      const [cats, models, prompts] = await Promise.all([
+        new CategoryTagRepository().getAll(),
+        new AiModelRepository().getAll(),
+        new CustomPromptRepository().getAll(),
+      ]);
+      setCategoryTags([PLACEHOLDER_TAG, ...toOptions(cats)]);
+      setAiModels([PLACEHOLDER_MODEL, ...toOptions(models)]);
+      setCustomPrompts([NONE_PROMPT, ...toOptions(prompts)]);
+    };
+    loadOptions();
+  }, []);
+
+  const updateField = (
+    field: keyof AddCardFormState,
+    value: string
+  ) => {
+    setFormState((prev) => ({ ...prev, [field]: value }));
+    setFormErrors((prev) => {
+      if (!(field in prev)) return prev;
+      const next = { ...prev };
+      delete next[field];
+      return next;
+    });
+  };
+
+  const handleGenerate = async () => {
+    const { success, errors } = validateAddCardForm(formState);
+    if (!success) {
+      setFormErrors(errors);
+      return;
+    }
+
+    setIsGenerating(true);
+    setError(null);
+    try {
+      const cardService = new CardService();
+      const card = await cardService.generateCard({
+        aiModelId: formState.aiModelId,
+        customPromptId: formState.customPromptId,
+        topicText: formState.topicText,
+      });
+      onGenerated(card, formState);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to generate card");
+    } finally {
+      setIsGenerating(false);
+    }
+  };
 
   if (isGenerating) {
     return (
@@ -41,28 +119,38 @@ export default function StepGenerate({
   return (
     <div className="step-generate">
       <div className="step-form">
-        <SelectField
-          label="Category Tag"
-          value={formState.categoryTagId}
-          items={categoryTags}
-          onChange={setCategoryTagId}
-          error={formErrors.categoryTagId}
-        />
+        <div>
+          <Select
+            label="Category Tag"
+            value={formState.categoryTagId}
+            items={categoryTags}
+            onChange={(value) => updateField("categoryTagId", value)}
+          />
+          {formErrors.categoryTagId && (
+            <p className="field-error">{formErrors.categoryTagId}</p>
+          )}
+        </div>
 
-        <SelectField
-          label="AI Model"
-          value={formState.aiModelId}
-          items={aiModels}
-          onChange={setAiModelId}
-          error={formErrors.aiModelId}
-        />
+        <div>
+          <Select
+            label="AI Model"
+            value={formState.aiModelId}
+            items={aiModels}
+            onChange={(value) => updateField("aiModelId", value)}
+          />
+          {formErrors.aiModelId && (
+            <p className="field-error">{formErrors.aiModelId}</p>
+          )}
+        </div>
 
-        <SelectField
-          label="Custom Prompt"
-          value={formState.customPromptId || NONE_PROMPT_VALUE}
-          items={customPrompts}
-          onChange={setCustomPromptId}
-        />
+        <div>
+          <Select
+            label="Custom Prompt"
+            value={formState.customPromptId || NONE_PROMPT_VALUE}
+            items={customPrompts}
+            onChange={(value) => updateField("customPromptId", value)}
+          />
+        </div>
 
         <div>
           <Textarea
@@ -70,15 +158,17 @@ export default function StepGenerate({
             placeholder="Explain the topic you want to learn..."
             defaultValue={formState.topicText}
             rows={6}
-            onChange={setTopicText}
+            onChange={(value) => updateField("topicText", value)}
           />
           {formErrors.topicText && (
             <p className="field-error">{formErrors.topicText}</p>
           )}
         </div>
 
+        {error && <p className="field-error">{error}</p>}
+
         <div className="step-actions">
-          <Button label="Generate" onClick={onGenerate} />
+          <Button label="Generate" onClick={handleGenerate} />
         </div>
       </div>
     </div>
