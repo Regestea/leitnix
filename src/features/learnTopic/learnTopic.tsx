@@ -234,7 +234,7 @@ export default function LearnTopic() {
 
   return (
     <MainContainer>
-      <div style={{ overflow: "scroll", maxHeight: "80dvh" }}>
+      <div style={{ overflow: "scroll", height: "80dvh" }}>
         <Tabs
           tabs={[
             {
@@ -252,7 +252,7 @@ export default function LearnTopic() {
           ]}
         />
       </div>
-      <Button style={{width:'100%'}} label="Generate Questions" />
+      <Button style={{width:'100%',marginTop:'2rem'}} label="Generate Questions" />
     </MainContainer>
   );
 }

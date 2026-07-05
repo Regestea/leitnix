@@ -16,11 +16,7 @@ export type AddCardWizardStep = (typeof AddCardWizardStep)[keyof typeof AddCardW
 
 export const cardNotesResponseSchema = z.object({
   topicMarkdown: z.string(),
-  notes: z.array(
-    z.object({
-      markdownContent: z.string(),
-    })
-  ),
+  markdownContent: z.string(),
 });
 
 export type CardNotesResponse = z.infer<typeof cardNotesResponseSchema>;
@@ -71,7 +67,7 @@ export interface SaveCardRequest {
 
 export interface GeneratedCardData {
   topicMarkdown: string;
-  notes: string[];
+  markdownContent: string;
 }
 
 // ─── Form State & Validation ────────────────────────────────────────

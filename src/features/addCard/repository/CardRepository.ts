@@ -5,13 +5,14 @@ export class CardRepository {
   async create(card: Card): Promise<void> {
     const db = await getDb();
     await db.run(
-      `INSERT INTO Cards (Id, BoxId, CategoryTagId, MarkdownTopic, LastReviewUnixTime, NextReviewUnixTime, StartedLearningUnixTime)
-       VALUES (?, ?, ?, ?, ?, ?, ?);`,
+      `INSERT INTO Cards (Id, BoxId, CategoryTagId, MarkdownTopic, MarkdownContent, LastReviewUnixTime, NextReviewUnixTime, StartedLearningUnixTime)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?);`,
       [
         card.Id,
         card.BoxId,
         card.CategoryTagId,
         card.MarkdownTopic,
+        card.MarkdownContent,
         card.LastReviewUnixTime,
         card.NextReviewUnixTime,
         card.StartedLearningUnixTime,

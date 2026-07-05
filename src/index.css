@@ -244,7 +244,8 @@ button {
   font-family: var(--app-font-family);
   color: #fff;
   padding: 0.5rem 1rem;
-  border-radius: 20px;
+  border-radius: 0.8rem;
+  cursor: pointer;
   transition: all 0.3s ease;
   -webkit-tap-highlight-color: transparent;
 }

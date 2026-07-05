@@ -54,19 +54,12 @@ export const CREATE_TABLE_STATEMENTS = [
       BoxId           TEXT NOT NULL,
       CategoryTagId    TEXT,
       MarkdownTopic TEXT,
+      MarkdownContent TEXT,
       LastReviewUnixTime      INTEGER,
       NextReviewUnixTime      INTEGER,
       StartedLearningUnixTime   INTEGER,
       FOREIGN KEY (BoxId) REFERENCES Boxes(Id) ON DELETE CASCADE,
       FOREIGN KEY (CategoryTagId) REFERENCES CategoryTags(Id) ON DELETE SET NULL
-    );
-  `,
-  `
-    CREATE TABLE IF NOT EXISTS Notes (
-      Id              TEXT PRIMARY KEY,
-      CardId          TEXT NOT NULL,
-      MarkdownContent TEXT,
-      FOREIGN KEY (CardId) REFERENCES Cards(Id) ON DELETE CASCADE
     );
   `,
   `

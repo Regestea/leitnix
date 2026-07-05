@@ -57,15 +57,10 @@ export interface Card {
   BoxId: string;
   CategoryTagId: string | null;
   MarkdownTopic: string | null;
+  MarkdownContent: string | null;
   LastReviewUnixTime: number | null;
   NextReviewUnixTime: number | null;
   StartedLearningUnixTime: number | null;
-}
-
-export interface Note {
-  Id: string;
-  CardId: string;
-  MarkdownContent: string | null;
 }
 
 export interface FreeResponseQuestion {

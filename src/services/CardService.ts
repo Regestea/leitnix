@@ -16,15 +16,11 @@ import type {
   SaveCardRequest,
 } from "../features/addCard/types";
 import { CardRepository } from "../features/addCard/repository/CardRepository";
-import { NoteRepository } from "../features/addCard/repository/NoteRepository";
 import { QuestionRepository } from "../features/addCard/repository/QuestionRepository";
 import { CustomPromptRepository } from "../features/customPrompt/repository/CustomPromptRepository";
 
 function buildCardPrompt(card: GeneratedCardData): string {
-  const notesText = card.notes
-    .map((note, i) => `Note ${i + 1}:\n${note}`)
-    .join("\n\n");
-  return `Topic:\n${card.topicMarkdown}\n\nNotes:\n${notesText}`;
+  return `Topic:\n${card.topicMarkdown}\n\nContent:\n${card.markdownContent}`;
 }
 
 function getErrorMessage(err: unknown, fallback: string): string {
@@ -46,13 +42,12 @@ async function resolveSystemPrompt(
  * CardService owns the card business logic:
  *  - Generates card content via the AI client.
  *  - Generates questions via the AI client.
- *  - Persists cards, notes and questions using repositories.
+ *  - Persists cards and questions using repositories.
  * Components call this service for any write/AI operation and use
  * repositories only for read operations (e.g. loading select options).
  */
 export class CardService {
   private cardRepo = new CardRepository();
-  private noteRepo = new NoteRepository();
   private questionRepo = new QuestionRepository();
 
   /** Step 1: generate the card topic + notes from a topic prompt. */
@@ -72,7 +67,7 @@ export class CardService {
 
       return {
         topicMarkdown: response.topicMarkdown,
-        notes: response.notes.map((n) => n.markdownContent),
+        markdownContent: response.markdownContent,
       };
     } catch (err) {
       throw new Error(getErrorMessage(err, "Failed to generate card"), {
@@ -100,7 +95,7 @@ export class CardService {
     }
   }
 
-  /** Persist the card, its notes and all generated questions. Returns the card Id. */
+  /** Persist the card and all generated questions. Returns the card Id. */
   async saveCard(request: SaveCardRequest): Promise<string> {
     try {
       const firstBoxId = await this.cardRepo.getFirstBoxId();
@@ -117,18 +112,11 @@ export class CardService {
         BoxId: firstBoxId,
         CategoryTagId: categoryTagId,
         MarkdownTopic: card.topicMarkdown,
+        MarkdownContent: card.markdownContent,
         LastReviewUnixTime: now,
         NextReviewUnixTime: now,
         StartedLearningUnixTime: now,
       });
-
-      await this.noteRepo.createMany(
-        card.notes.map((markdownContent) => ({
-          Id: crypto.randomUUID(),
-          CardId: cardId,
-          MarkdownContent: markdownContent,
-        })),
-      );
 
       await this.questionRepo.createFreeResponseQuestions(
         questions.freeResponseQuestions.map((q) => ({

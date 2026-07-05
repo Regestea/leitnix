@@ -14,7 +14,7 @@ export default function StepComplete({
       <div className="complete-icon">✓</div>
       <h2>Card Created!</h2>
       <p className="complete-message">
-        Your flashcard with notes and questions has been saved successfully.
+        Your flashcard with study content and questions has been saved successfully.
       </p>
       <div className="step-actions">
         <Button label="Generate New Card" onClick={onGenerateNewCard} />

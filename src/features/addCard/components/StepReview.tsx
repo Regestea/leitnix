@@ -32,12 +32,8 @@ export default function StepReview({
   const handleTopicChange = (value: string) =>
     setCard((prev) => ({ ...prev, topicMarkdown: value }));
 
-  const handleNoteChange = (index: number, value: string) =>
-    setCard((prev) => {
-      const notes = [...prev.notes];
-      notes[index] = value;
-      return { ...prev, notes };
-    });
+  const handleContentChange = (value: string) =>
+    setCard((prev) => ({ ...prev, markdownContent: value }));
 
   const handleGenerateQuestions = async () => {
     setIsGeneratingQuestions(true);
@@ -104,16 +100,13 @@ export default function StepReview({
           </div>
 
           <div className="review-section">
-            <h3>Notes ({card.notes.length})</h3>
-            {card.notes.map((note, index) => (
-              <Textarea
-                key={index}
-                label={`Note ${index + 1}`}
-                defaultValue={note}
-                rows={4}
-                onChange={(value) => handleNoteChange(index, value)}
-              />
-            ))}
+            <h3>Content</h3>
+            <Textarea
+              label="Content (Markdown)"
+              defaultValue={card.markdownContent}
+              rows={8}
+              onChange={handleContentChange}
+            />
           </div>
 
           {error && <p className="field-error">{error}</p>}
