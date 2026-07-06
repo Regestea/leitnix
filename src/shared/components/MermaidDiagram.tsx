@@ -10,11 +10,10 @@ const createMermaidId = (() => {
 
 function MermaidDiagram({ chart }: { chart: string }) {
   const diagramRef = useRef<HTMLDivElement>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(1);
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
-  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
 
   const scaleRef = useRef(1);
   const positionRef = useRef({ x: 0, y: 0 });
@@ -32,21 +31,29 @@ function MermaidDiagram({ chart }: { chart: string }) {
     }
   }, [chart]);
 
+  // Lock body scroll when expanded
   useEffect(() => {
-    const handleFullscreenChange = () => {
-      setIsFullscreen(!!document.fullscreenElement);
-    };
-    document.addEventListener("fullscreenchange", handleFullscreenChange);
-    return () => document.removeEventListener("fullscreenchange", handleFullscreenChange);
-  }, []);
-
-  const handleToggleFullscreen = useCallback(() => {
-    if (!containerRef.current) return;
-    if (!document.fullscreenElement) {
-      containerRef.current.requestFullscreen();
-    } else {
-      document.exitFullscreen();
+    if (isExpanded) {
+      const prev = document.body.style.overflow;
+      document.body.style.overflow = "hidden";
+      return () => {
+        document.body.style.overflow = prev;
+      };
     }
+  }, [isExpanded]);
+
+  // Close on Escape
+  useEffect(() => {
+    if (!isExpanded) return;
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setIsExpanded(false);
+    };
+    document.addEventListener("keydown", handleKey);
+    return () => document.removeEventListener("keydown", handleKey);
+  }, [isExpanded]);
+
+  const handleToggleExpanded = useCallback(() => {
+    setIsExpanded((prev) => !prev);
   }, []);
 
   const updateTransform = useCallback((newScale: number, newPos: { x: number; y: number }) => {
@@ -120,7 +127,8 @@ function MermaidDiagram({ chart }: { chart: string }) {
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
-    e.preventDefault();
+    // Note: no preventDefault() — React registers touch listeners as passive.
+    // The container's touch-action: none already prevents browser defaults.
     if (e.touches.length === 1 && isDraggingRef.current) {
       const newPos = {
         x: e.touches[0].clientX - touchStartRef.current.x,
@@ -144,20 +152,34 @@ function MermaidDiagram({ chart }: { chart: string }) {
     if (e.touches.length === 0) isDraggingRef.current = false;
   };
 
-  return (
-    <div
-      ref={containerRef}
-      style={{
+  const containerStyle: React.CSSProperties = isExpanded
+    ? {
+        position: "fixed",
+        top: 0,
+        left: 0,
+        width: "100vw",
+        height: "100vh",
+        zIndex: 9999,
+        overflow: "hidden",
+        cursor: isDragging ? "grabbing" : "grab",
+        background: "var(--mermaid-bg, #1e1e1e)",
+        touchAction: "none",
+      }
+    : {
         position: "relative",
         width: "100%",
-        height: isFullscreen ? "100%" : "500px",
+        height: "500px",
         overflow: "hidden",
         border: "1px solid var(--border-color, #444)",
         borderRadius: "8px",
         cursor: isDragging ? "grabbing" : "grab",
         background: "var(--mermaid-bg, #1e1e1e)",
         touchAction: "none",
-      }}
+      };
+
+  return (
+    <div
+      style={containerStyle}
       onWheel={handleWheel}
       onMouseDown={handleMouseDown}
       onMouseMove={handleMouseMove}
@@ -172,7 +194,8 @@ function MermaidDiagram({ chart }: { chart: string }) {
         style={{
           position: "absolute",
           top: 8,
-          right: 8,
+          left: "50%",
+          transform: "translateX(-50%)",
           zIndex: 10,
           display: "flex",
           gap: "6px",
@@ -195,8 +218,8 @@ function MermaidDiagram({ chart }: { chart: string }) {
         <button onClick={handleReset} style={btnStyle} title="Reset">
           ↺
         </button>
-        <button onClick={handleToggleFullscreen} style={btnStyle} title="Fullscreen">
-          {isFullscreen ? "⛶" : "⛶"}
+        <button onClick={handleToggleExpanded} style={btnStyle} title={isExpanded ? "Collapse" : "Expand"}>
+          {isExpanded ? "✕" : "⛶"}
         </button>
       </div>
 
