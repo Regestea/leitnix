@@ -54,6 +54,7 @@ export interface GenerateCardRequest {
   aiModelId: string;
   customPromptId: string;
   topicText: string;
+  images?: string[];
 }
 
 export interface SaveCardRequest {

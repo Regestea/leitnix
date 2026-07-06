@@ -63,6 +63,7 @@ export class CardService {
         schema: cardNotesResponseSchema,
         prompt: request.topicText,
         systemPrompt,
+        images: request.images,
       });
 
       return {

@@ -8,12 +8,13 @@ interface FetchStructuredAIByModelIdOptions<T> {
   schema: z.ZodType<T>;
   prompt: string;
   systemPrompt?: string;
+  images?: string[];
 }
 
 export async function fetchStructuredAIByModelId<T>(
   options: FetchStructuredAIByModelIdOptions<T>
 ): Promise<T> {
-  const { modelId, schema, prompt, systemPrompt } = options;
+  const { modelId, schema, prompt, systemPrompt, images } = options;
 
   const repository = new AiModelRepository();
   const model = await repository.getById(modelId);
@@ -41,5 +42,6 @@ export async function fetchStructuredAIByModelId<T>(
     schema,
     prompt,
     systemPrompt,
+    images,
   });
 }

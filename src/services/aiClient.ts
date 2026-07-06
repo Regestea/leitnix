@@ -9,13 +9,14 @@ interface AIServiceOptions<T> {
   schema: z.ZodType<T>;
   prompt: string;
   systemPrompt?: string;
+  images?: string[];
 }
 
 
 export async function fetchStructuredAI<T>(
   options: AIServiceOptions<T>
 ): Promise<T> {
-  const { url, apiKey, modelName, schema, prompt, systemPrompt } = options;
+  const { url, apiKey, modelName, schema, prompt, systemPrompt, images } = options;
 
   try {
     const client = new OpenAI({
@@ -24,13 +25,23 @@ export async function fetchStructuredAI<T>(
       dangerouslyAllowBrowser: true,
     });
 
+    const userContent = images && images.length > 0
+      ? [
+          { type: 'text' as const, text: prompt },
+          ...images.map((img) => ({
+            type: 'image_url' as const,
+            image_url: { url: img },
+          })),
+        ]
+      : prompt;
+
     const completion = await client.chat.completions.parse({
       model: modelName,
       messages: [
         ...(systemPrompt
           ? [{ role: 'system' as const, content: systemPrompt }]
           : []),
-        { role: 'user' as const, content: prompt },
+        { role: 'user' as const, content: userContent },
       ],
       response_format: zodResponseFormat(schema, 'response'),
     });

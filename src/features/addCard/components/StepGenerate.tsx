@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Select } from "../../../shared/components/controls/Select";
 import { Textarea } from "../../../shared/components/controls/Textarea";
 import { Button } from "../../../shared/components/controls/Button";
+import ImageUpload from "../../../shared/components/controls/ImageUpload";
 import ThinkingSphere from "../../../shared/components/thinkingSphere/ThinkingSphere";
 import { AiModelRepository } from "../../aiModels/repository/AiModelRepository";
 import { CustomPromptRepository } from "../../customPrompt/repository/CustomPromptRepository";
@@ -50,6 +51,7 @@ export default function StepGenerate({ onGenerated }: StepGenerateProps) {
   const [formErrors, setFormErrors] = useState<AddCardFormErrors>({});
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [images, setImages] = useState<string[]>([]);
 
   const [categoryTags, setCategoryTags] = useState<SelectOption[]>([
     PLACEHOLDER_TAG,
@@ -98,6 +100,7 @@ export default function StepGenerate({ onGenerated }: StepGenerateProps) {
         aiModelId: formState.aiModelId,
         customPromptId: formState.customPromptId,
         topicText: formState.topicText,
+        images: images.length > 0 ? images : undefined,
       });
       onGenerated(card, formState);
     } catch (err) {
@@ -164,6 +167,8 @@ export default function StepGenerate({ onGenerated }: StepGenerateProps) {
             <p className="field-error">{formErrors.topicText}</p>
           )}
         </div>
+
+        <ImageUpload images={images} onChange={setImages} />
 
         {error && <p className="field-error">{error}</p>}
 
