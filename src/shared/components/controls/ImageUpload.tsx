@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { Camera, CameraResultType } from "@capacitor/camera";
 import "./ImageUpload.css";
 
 const MAX_DEFAULT = 5;
@@ -14,33 +14,19 @@ export default function ImageUpload({
   onChange,
   max = MAX_DEFAULT,
 }: ImageUploadProps) {
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  const handleFiles = (files: FileList | null) => {
-    if (!files) return;
-
-    const remaining = max - images.length;
-    const toProcess = Array.from(files).slice(0, remaining);
-
-    if (toProcess.length === 0) return;
-
-    let loaded = 0;
-    const newImages: string[] = [];
-
-    toProcess.forEach((file) => {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const dataUrl = e.target?.result as string;
-        if (dataUrl) {
-          newImages.push(dataUrl);
-        }
-        loaded++;
-        if (loaded === toProcess.length) {
-          onChange([...images, ...newImages]);
-        }
-      };
-      reader.readAsDataURL(file);
-    });
+  const handleCamera = async () => {
+    if (images.length >= max) return;
+    try {
+      const photo = await Camera.getPhoto({
+        resultType: CameraResultType.Base64,
+        quality: 80,
+      });
+      const base64Url = `data:image/jpeg;base64,${photo.base64String}`;
+      onChange([...images, base64Url]);
+    } catch (err) {
+      // User cancelled or camera not available — silently ignore
+      console.warn("Camera canceled:", err);
+    }
   };
 
   const handleRemove = (index: number) => {
@@ -57,23 +43,13 @@ export default function ImageUpload({
         {canAddMore && (
           <button
             type="button"
-            className="image-upload-btn"
-            onClick={() => inputRef.current?.click()}
+            className="image-upload-btn camera-btn"
+            onClick={handleCamera}
           >
             + Add Image
           </button>
         )}
       </div>
-
-      <input
-        ref={inputRef}
-        type="file"
-        accept="image/jpeg,image/png,image/webp"
-        multiple
-        capture="environment"
-        className="hidden"
-        onChange={(e) => handleFiles(e.target.files)}
-      />
 
       {images.length > 0 && (
         <div className="image-upload-previews">

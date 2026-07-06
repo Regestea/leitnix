@@ -161,6 +161,7 @@ export default function StepGenerate({ onGenerated }: StepGenerateProps) {
             placeholder="Explain the topic you want to learn..."
             defaultValue={formState.topicText}
             rows={6}
+            style={{ width: "100%" }}
             onChange={(value) => updateField("topicText", value)}
           />
           {formErrors.topicText && (
@@ -173,7 +174,7 @@ export default function StepGenerate({ onGenerated }: StepGenerateProps) {
         {error && <p className="field-error">{error}</p>}
 
         <div className="step-actions">
-          <Button label="Generate" onClick={handleGenerate} />
+          <Button style={{width:'100%'}} label="Generate" onClick={handleGenerate} />
         </div>
       </div>
     </div>

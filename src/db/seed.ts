@@ -2,7 +2,7 @@ export async function seedDefaultData(db: {
   execute: (sql: string) => Promise<void>;
 }): Promise<void> {
   await db.execute(
-    `INSERT OR IGNORE INTO CategoryTags (Id, Name) VALUES ('${crypto.randomUUID()}', 'Default');`,
+    `INSERT INTO CategoryTags (Id, Name) SELECT '${crypto.randomUUID()}', 'Default' WHERE NOT EXISTS (SELECT 1 FROM CategoryTags);`,
   );
 
   const box1Id = crypto.randomUUID();

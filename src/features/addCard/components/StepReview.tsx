@@ -4,6 +4,7 @@ import ThinkingSphere from "../../../shared/components/thinkingSphere/ThinkingSp
 import Tabs from "../../../shared/components/Tabs";
 import MarkdownRender from "../../../shared/components/MarkdownRender";
 import MarkdownEditor from "../../../shared/components/MarkdownEditor";
+import { Input } from "../../../shared/components/controls/Input";
 import { CardService } from "../../../services/CardService";
 import type {
   GeneratedCardData,
@@ -92,27 +93,11 @@ export default function StepReview({
         >
           <div className="review-section">
             <h3>Card Topic</h3>
-            <div style={{ overflow: "scroll", height: "30dvh" }}>
-              <Tabs
-                tabs={[
-                  {
-                    id: "topic-view",
-                    label: "View",
-                    content: <MarkdownRender markdown={card.topicMarkdown} />,
-                  },
-                  {
-                    id: "topic-edit",
-                    label: "Edit",
-                    content: (
-                      <MarkdownEditor
-                        value={card.topicMarkdown}
-                        onChange={handleTopicChange}
-                      />
-                    ),
-                  },
-                ]}
-              />
-            </div>
+            <Input
+              defaultValue={card.topicMarkdown}
+              onChange={handleTopicChange}
+              placeholder="Enter card topic..."
+            />
           </div>
 
           <div className="review-section">
