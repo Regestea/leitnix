@@ -10,9 +10,11 @@ const createMermaidId = (() => {
 
 function MermaidDiagram({ chart }: { chart: string }) {
   const diagramRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(1);
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
 
   const scaleRef = useRef(1);
   const positionRef = useRef({ x: 0, y: 0 });
@@ -29,6 +31,23 @@ function MermaidDiagram({ chart }: { chart: string }) {
       });
     }
   }, [chart]);
+
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
+    return () => document.removeEventListener("fullscreenchange", handleFullscreenChange);
+  }, []);
+
+  const handleToggleFullscreen = useCallback(() => {
+    if (!containerRef.current) return;
+    if (!document.fullscreenElement) {
+      containerRef.current.requestFullscreen();
+    } else {
+      document.exitFullscreen();
+    }
+  }, []);
 
   const updateTransform = useCallback((newScale: number, newPos: { x: number; y: number }) => {
     scaleRef.current = newScale;
@@ -127,10 +146,11 @@ function MermaidDiagram({ chart }: { chart: string }) {
 
   return (
     <div
+      ref={containerRef}
       style={{
         position: "relative",
         width: "100%",
-        height: "500px",
+        height: isFullscreen ? "100%" : "500px",
         overflow: "hidden",
         border: "1px solid var(--border-color, #444)",
         borderRadius: "8px",
@@ -174,6 +194,9 @@ function MermaidDiagram({ chart }: { chart: string }) {
         </button>
         <button onClick={handleReset} style={btnStyle} title="Reset">
           ↺
+        </button>
+        <button onClick={handleToggleFullscreen} style={btnStyle} title="Fullscreen">
+          {isFullscreen ? "⛶" : "⛶"}
         </button>
       </div>
 
