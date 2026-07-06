@@ -8,6 +8,10 @@ const config: CapacitorConfig = {
     SplashScreen: {
       launchShowDuration: 0,
     },
+    // Add this block below to enable native network requests
+    CapacitorHttp: {
+      enabled: true,
+    },
   },
 };
 
