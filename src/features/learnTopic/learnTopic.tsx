@@ -399,30 +399,25 @@ export default function LearnTopic() {
   );
 
   return (
-    <MainContainer>
-      <div style={{ overflow: "scroll", height: "75dvh" }}>
-        <Tabs
-          tabs={[
-            {
-              id: "view",
-              label: "View",
-              content: <MarkdownRender markdown={markdown} />,
-            },
-            {
-              id: "edit",
-              label: "Edit",
-              content: (
-                <MarkdownEditor value={markdown} onChange={setMarkdown} />
-              ),
-            },
-          ]}
-        />
-      </div>
-      <div
-        style={{ display: "flex", justifyContent: "center", marginTop: "1rem" }}
-      >
-        <Button style={{ width: "100%" }} label="Generate Questions" />
-      </div>
+    <MainContainer
+      footer={<Button style={{ width: "100%" }} label="Generate Questions" />}
+    >
+      <Tabs
+        tabs={[
+          {
+            id: "view",
+            label: "View",
+            content: <MarkdownRender markdown={markdown} />,
+          },
+          {
+            id: "edit",
+            label: "Edit",
+            content: (
+              <MarkdownEditor value={markdown} onChange={setMarkdown} />
+            ),
+          },
+        ]}
+      />
     </MainContainer>
   );
 }

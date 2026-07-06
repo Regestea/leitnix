@@ -21,7 +21,7 @@
   background: rgba(30, 41, 59, 0.6);
   backdrop-filter: blur(12px);
   border-radius: 20px;
-  padding: 2.8rem 0.5rem 1rem;
+  padding: 2.8rem 0.5rem 0;
   border: 1px solid rgba(255, 255, 255, 0.1);
   position: relative;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
@@ -30,7 +30,27 @@
   margin-top: 2dvh;
   height: 87dvh !important;
   width: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.main-scroll-area {
+  flex: 1;
   overflow: auto;
+  padding-bottom: 1rem;
+}
+
+.main-header {
+  flex-shrink: 0;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.main-footer {
+  flex-shrink: 0;
+  padding: 0.5rem 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .fullscreen-wrapper {

@@ -4,9 +4,11 @@ import "./MainContainer.css";
 
 interface MainContainerProps {
   children: ReactNode;
+  header?: ReactNode;
+  footer?: ReactNode;
 }
 
-export default function MainContainer({ children }: MainContainerProps) {
+export default function MainContainer({ children, header, footer }: MainContainerProps) {
   const contentRef = useRef<HTMLDivElement>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -37,7 +39,11 @@ export default function MainContainer({ children }: MainContainerProps) {
           >
             {isFullscreen ? "✕" : "⛶"}
           </button>
-          {children}
+          {header && <div className="main-header">{header}</div>}
+          <div className="main-scroll-area">
+            {children}
+          </div>
+          {footer && <div className="main-footer">{footer}</div>}
         </div>
       </div>
     </div>
