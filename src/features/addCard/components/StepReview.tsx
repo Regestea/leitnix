@@ -101,7 +101,7 @@ export default function StepReview({
           </div>
 
           <div className="review-section">
-            <h3>Content</h3>
+            
             <div style={{ overflow: "scroll", height: "40dvh" }}>
               <Tabs
                 tabs={[
