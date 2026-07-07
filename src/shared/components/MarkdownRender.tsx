@@ -39,21 +39,47 @@ function isArabicDigit(cp: number): boolean {
   );
 }
 
-// First-strong-character detection (same idea as the browser's `dir="auto"`):
-// skip digits, spaces, punctuation and markdown markers (e.g. the "1-" prefix),
-// then let the FIRST actual letter decide the direction.
-//   "1- جمله فارسی" -> rtl   |   "1- hello" -> ltr
-function getDir(node: React.ReactNode): "rtl" | "ltr" | undefined {
-  const text = extractText(node);
-
-  for (const ch of text) {
+// Direction is decided by the DOMINANT language of the prose, counted per WORD
+// rather than per letter. Counting per letter lets one long Latin token
+// (e.g. "TypeScript" = 10 letters) drown out several short Persian function
+// words ("از", "در", "با"). Counting per word treats the sentence as Persian
+// as long as Persian/Arabic words make up the majority of the prose:
+//   "استفاده از useEffect در React با TypeScript" -> rtl  (4 fa vs 3 en words)
+//   "useEffect برای همگام‌سازی..."               -> rtl  (7 fa vs 1 en words)
+//   "1- hello world"                              -> ltr  (0 fa vs 2 en words)
+// Digits, spaces, punctuation and markdown markers are neutral and don't vote.
+function classifyWord(word: string): "rtl" | "ltr" | undefined {
+  for (const ch of word) {
     const cp = ch.codePointAt(0) ?? 0;
-    if (isArabicDigit(cp)) continue; // اعداد عربی/فارسی ضعیف هستند
+    if (isArabicDigit(cp)) continue; // اعداد عربی/فارسی خنثی هستند
     if (isRtlCodePoint(cp)) return "rtl";
     if (/[a-zA-Z]/.test(ch)) return "ltr";
-    // ارقام لاتین، فاصله‌ها، علائم نگارشی و نشانه‌های مارک‌داون نادیده گرفته می‌شن
+  }
+  return undefined; // فقط ارقام/علائم -> خنثی
+}
+
+function getDir(node: React.ReactNode): "rtl" | "ltr" | undefined {
+  const text = extractText(node);
+  let rtlWords = 0;
+  let ltrWords = 0;
+
+  for (const raw of text.split(/\s+/)) {
+    if (!raw) continue;
+    const cls = classifyWord(raw);
+    if (cls === "rtl") rtlWords++;
+    else if (cls === "ltr") ltrWords++;
   }
 
+  if (rtlWords > ltrWords) return "rtl";
+  if (ltrWords > rtlWords) return "ltr";
+
+  // مساوی یا بدون کلمه: تصمیم بر اساس اولین حرف قوی (شروع با فارسی -> rtl)
+  for (const ch of text) {
+    const cp = ch.codePointAt(0) ?? 0;
+    if (isArabicDigit(cp)) continue;
+    if (isRtlCodePoint(cp)) return "rtl";
+    if (/[a-zA-Z]/.test(ch)) return "ltr";
+  }
   return undefined;
 }
 
@@ -74,8 +100,16 @@ export default function MarkdownRender({ markdown }: { markdown: string }) {
       remarkPlugins={[remarkGfm, remarkMath]}
       rehypePlugins={[rehypeRaw, rehypeKatex]}
       components={{
-        input({ node, ...props }) {
-          const { ref: _ref, ...rest } = props as Record<string, unknown>;
+        input(props) {
+          // react-markdown may inject a `node` (hast) prop when `passNode` is on;
+          // strip it so it never reaches the DOM <input> (GFM task-list checkboxes).
+          // `ref` is reserved by React and never appears in `props`, so no need to
+          // pull it out here.
+          const { node, ...rest } = props as { node?: unknown } & Record<
+            string,
+            unknown
+          >;
+          void node;
           return <input {...rest} />;
         },
         p({ children }) {
