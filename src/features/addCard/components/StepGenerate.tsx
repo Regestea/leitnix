@@ -1,25 +1,27 @@
 import { useEffect, useState } from "react";
 import { Select } from "../../../shared/components/controls/Select";
 import { Textarea } from "../../../shared/components/controls/Textarea";
-import { Button } from "../../../shared/components/controls/Button";
 import ImageUpload from "../../../shared/components/controls/ImageUpload";
 import ThinkingSphere from "../../../shared/components/thinkingSphere/ThinkingSphere";
 import { AiModelRepository } from "../../aiModels/repository/AiModelRepository";
 import { CustomPromptRepository } from "../../customPrompt/repository/CustomPromptRepository";
 import { CategoryTagRepository } from "../repository/CategoryTagRepository";
-import { CardService } from "../../../services/CardService";
 import { NONE_PROMPT_VALUE } from "../../../statics/prompts";
 import { TOPIC_OPTIONS } from "../../../statics/topicPrompts";
-import { EMPTY_FORM_STATE, validateAddCardForm } from "../types";
 import type {
   AddCardFormState,
   AddCardFormErrors,
-  GeneratedCardData,
   SelectOption,
 } from "../types";
 
 interface StepGenerateProps {
-  onGenerated: (card: GeneratedCardData, form: AddCardFormState) => void;
+  formState: AddCardFormState;
+  formErrors: AddCardFormErrors;
+  images: string[];
+  isGenerating: boolean;
+  error: string | null;
+  onFieldChange: (field: keyof AddCardFormState, value: string) => void;
+  onImagesChange: (images: string[]) => void;
 }
 
 const PLACEHOLDER_TAG: SelectOption = {
@@ -46,14 +48,15 @@ function toOptions(items: Optionable[]): SelectOption[] {
   }));
 }
 
-export default function StepGenerate({ onGenerated }: StepGenerateProps) {
-  const [formState, setFormState] =
-    useState<AddCardFormState>(EMPTY_FORM_STATE);
-  const [formErrors, setFormErrors] = useState<AddCardFormErrors>({});
-  const [isGenerating, setIsGenerating] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [images, setImages] = useState<string[]>([]);
-
+export default function StepGenerate({
+  formState,
+  formErrors,
+  images,
+  isGenerating,
+  error,
+  onFieldChange,
+  onImagesChange,
+}: StepGenerateProps) {
   const [categoryTags, setCategoryTags] = useState<SelectOption[]>([
     PLACEHOLDER_TAG,
   ]);
@@ -76,42 +79,6 @@ export default function StepGenerate({ onGenerated }: StepGenerateProps) {
     loadOptions();
   }, []);
 
-  const updateField = (field: keyof AddCardFormState, value: string) => {
-    setFormState((prev) => ({ ...prev, [field]: value }));
-    setFormErrors((prev) => {
-      if (!(field in prev)) return prev;
-      const next = { ...prev };
-      delete next[field];
-      return next;
-    });
-  };
-
-  const handleGenerate = async () => {
-    const { success, errors } = validateAddCardForm(formState);
-    if (!success) {
-      setFormErrors(errors);
-      return;
-    }
-
-    setIsGenerating(true);
-    setError(null);
-    try {
-      const cardService = new CardService();
-      const card = await cardService.generateCard({
-        topicType: formState.topicType,
-        aiModelId: formState.aiModelId,
-        customPromptId: formState.customPromptId,
-        topicText: formState.topicText,
-        images: images.length > 0 ? images : undefined,
-      });
-      onGenerated(card, formState);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to generate card");
-    } finally {
-      setIsGenerating(false);
-    }
-  };
-
   if (isGenerating) {
     return (
       <div className="step-loading">
@@ -129,7 +96,7 @@ export default function StepGenerate({ onGenerated }: StepGenerateProps) {
             label="Topic"
             value={formState.topicType}
             items={TOPIC_OPTIONS}
-            onChange={(value) => updateField("topicType", value)}
+            onChange={(value) => onFieldChange("topicType", value)}
           />
           {formErrors.topicType && (
             <p className="field-error">{formErrors.topicType}</p>
@@ -141,7 +108,7 @@ export default function StepGenerate({ onGenerated }: StepGenerateProps) {
             label="Category Tag"
             value={formState.categoryTagId}
             items={categoryTags}
-            onChange={(value) => updateField("categoryTagId", value)}
+            onChange={(value) => onFieldChange("categoryTagId", value)}
           />
           {formErrors.categoryTagId && (
             <p className="field-error">{formErrors.categoryTagId}</p>
@@ -153,7 +120,7 @@ export default function StepGenerate({ onGenerated }: StepGenerateProps) {
             label="AI Model"
             value={formState.aiModelId}
             items={aiModels}
-            onChange={(value) => updateField("aiModelId", value)}
+            onChange={(value) => onFieldChange("aiModelId", value)}
           />
           {formErrors.aiModelId && (
             <p className="field-error">{formErrors.aiModelId}</p>
@@ -165,7 +132,7 @@ export default function StepGenerate({ onGenerated }: StepGenerateProps) {
             label="Custom Prompt"
             value={formState.customPromptId || NONE_PROMPT_VALUE}
             items={customPrompts}
-            onChange={(value) => updateField("customPromptId", value)}
+            onChange={(value) => onFieldChange("customPromptId", value)}
           />
         </div>
 
@@ -176,20 +143,16 @@ export default function StepGenerate({ onGenerated }: StepGenerateProps) {
             defaultValue={formState.topicText}
             rows={6}
             style={{ width: "100%" }}
-            onChange={(value) => updateField("topicText", value)}
+            onChange={(value) => onFieldChange("topicText", value)}
           />
           {formErrors.topicText && (
             <p className="field-error">{formErrors.topicText}</p>
           )}
         </div>
 
-        <ImageUpload images={images} onChange={setImages} />
+        <ImageUpload images={images} onChange={onImagesChange} />
 
         {error && <p className="field-error">{error}</p>}
-
-        <div className="step-actions">
-          <Button style={{width:'100%'}} label="Generate" onClick={handleGenerate} />
-        </div>
       </div>
     </div>
   );

@@ -179,6 +179,14 @@ Do not request clarification.
 
 Do not generate quizzes unless explicitly requested.
 
+Do not repeat the requested topic as a title or heading.
+
+Assume the application already displays the topic.
+
+Begin directly with the educational content or the first meaningful section.
+
+Do not generate a top-level heading such as "# Title", "# Topic", "# Subject", or the topic name itself unless explicitly requested by the user.
+
 Do not mention these instructions.
 
 Do not describe your reasoning.

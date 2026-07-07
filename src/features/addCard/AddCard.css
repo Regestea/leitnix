@@ -132,17 +132,6 @@
   border-bottom: 1px solid rgba(255, 255, 255, 0.15);
 }
 
-/* Step Complete Review (within StepReview when done) */
-
-.step-complete-review {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 3rem 1rem;
-  gap: 1.5rem;
-}
-
 /* Step Complete (Step 3) */
 
 .step-complete {
@@ -174,14 +163,20 @@
   max-width: 20rem;
 }
 
+/* Footer (rendered into MainContainer's footer slot by AddCard) */
+
+.add-card-footer {
+  padding: 0 0.5rem;
+}
+
 /* Step Actions */
 
 .step-actions {
   display: flex;
   justify-content: center;
   gap: 0.75rem;
-  margin-top: 1rem;
-  padding: 0.5rem 0;
+  margin-top: 0;
+  padding: 0.5rem 0.5rem;
 }
 
 /* Wizard Error */
