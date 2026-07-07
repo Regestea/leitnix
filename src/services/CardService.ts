@@ -33,19 +33,28 @@ function getErrorMessage(err: unknown, fallback: string): string {
 async function resolveSystemPrompt(
   topicType: TopicType,
   customPromptId: string,
+  topicText: string,
 ): Promise<string> {
   // 1. Base prompt from the selected topic
   const basePrompt = TOPIC_SYSTEM_PROMPTS[topicType] ?? TOPIC_SYSTEM_PROMPTS[TopicType.Custom];
 
-  // 2. If no custom prompt, just return the topic prompt
-  if (!customPromptId || customPromptId === NONE_PROMPT_VALUE) return basePrompt;
+  // 2. Inject the user's topic into a clearly labeled section
+  const topicBlock = `<user_topic>\n${topicText.trim()}\n</user_topic>`;
 
-  // 3. Fetch the saved custom prompt and append it to the base
+  // 3. If no custom prompt, return base + user topic only
+  if (!customPromptId || customPromptId === NONE_PROMPT_VALUE) {
+    return `${basePrompt}\n\n${topicBlock}`;
+  }
+
+  // 4. Fetch the saved custom prompt and put it in its own labeled section
   const promptRepo = new CustomPromptRepository();
   const customPrompt = await promptRepo.getById(customPromptId);
-  if (!customPrompt?.Prompt) return basePrompt;
+  if (!customPrompt?.Prompt) {
+    return `${basePrompt}\n\n${topicBlock}`;
+  }
 
-  return `${basePrompt}\n\n---\nAdditional instructions:\n${customPrompt.Prompt}`;
+  const customBlock = `<custom_instructions>\n${customPrompt.Prompt.trim()}\n</custom_instructions>`;
+  return `${basePrompt}\n\n${topicBlock}\n\n${customBlock}`;
 }
 
 /**
@@ -66,12 +75,13 @@ export class CardService {
       const systemPrompt = await resolveSystemPrompt(
         request.topicType,
         request.customPromptId,
+        request.topicText,
       );
 
       const response = await fetchStructuredAIByModelId<CardNotesResponse>({
         modelId: request.aiModelId,
         schema: cardNotesResponseSchema,
-        prompt: request.topicText,
+        prompt: "Generate the educational pamphlet described in the system prompt for the topic in <user_topic>.",
         systemPrompt,
         images: request.images,
       });
