@@ -22,30 +22,39 @@ function extractText(node: React.ReactNode): string {
   return "";
 }
 
+function isRtlCodePoint(cp: number): boolean {
+  return (
+    (cp >= 0x0590 && cp <= 0x05ff) || // Hebrew
+    (cp >= 0x0600 && cp <= 0x06ff) || // Arabic
+    (cp >= 0x0750 && cp <= 0x077f) || // Arabic Supplement
+    (cp >= 0xfb50 && cp <= 0xfdff) || // Arabic Presentation Forms-A
+    (cp >= 0xfe70 && cp <= 0xfeff) // Arabic Presentation Forms-B
+  );
+}
+
+function isArabicDigit(cp: number): boolean {
+  return (
+    (cp >= 0x0660 && cp <= 0x0669) || // Arabic-Indic digits ٠-٩
+    (cp >= 0x06f0 && cp <= 0x06f9) // Extended Arabic-Indic (Persian) digits ۰-۹
+  );
+}
+
+// First-strong-character detection (same idea as the browser's `dir="auto"`):
+// skip digits, spaces, punctuation and markdown markers (e.g. the "1-" prefix),
+// then let the FIRST actual letter decide the direction.
+//   "1- جمله فارسی" -> rtl   |   "1- hello" -> ltr
 function getDir(node: React.ReactNode): "rtl" | "ltr" | undefined {
   const text = extractText(node);
-  let rtlCount = 0;
-  let ltrCount = 0;
 
   for (const ch of text) {
     const cp = ch.codePointAt(0) ?? 0;
-    if (
-      (cp >= 0x0590 && cp <= 0x05ff) || // Hebrew
-      (cp >= 0x0600 && cp <= 0x06ff) || // Arabic
-      (cp >= 0x0750 && cp <= 0x077f) || // Arabic Supplement
-      (cp >= 0xfb50 && cp <= 0xfdff) || // Arabic Presentation Forms-A
-      (cp >= 0xfe70 && cp <= 0xfeff)    // Arabic Presentation Forms-B
-    ) {
-      rtlCount++;
-    } else if (/[a-zA-Z]/.test(ch)) {
-      ltrCount++;
-    }
-    // اعداد، فاصله، علائم نگارشی نادیده گرفته می‌شن
+    if (isArabicDigit(cp)) continue; // اعداد عربی/فارسی ضعیف هستند
+    if (isRtlCodePoint(cp)) return "rtl";
+    if (/[a-zA-Z]/.test(ch)) return "ltr";
+    // ارقام لاتین، فاصله‌ها، علائم نگارشی و نشانه‌های مارک‌داون نادیده گرفته می‌شن
   }
 
-  const total = rtlCount + ltrCount;
-  if (total === 0) return undefined;
-  return rtlCount / total > 0.5 ? "rtl" : "ltr";
+  return undefined;
 }
 
 function dirProps(children: React.ReactNode): {
