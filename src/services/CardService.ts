@@ -1,9 +1,12 @@
 import { fetchStructuredAIByModelId } from "./aiModelClient";
 import {
-  CARD_GENERATION_SYSTEM_PROMPT,
   QUESTION_GENERATION_SYSTEM_PROMPT,
   NONE_PROMPT_VALUE,
 } from "../statics/prompts";
+import {
+  TopicType,
+  TOPIC_SYSTEM_PROMPTS,
+} from "../statics/topicPrompts";
 import {
   cardNotesResponseSchema,
   questionsResponseSchema,
@@ -28,14 +31,21 @@ function getErrorMessage(err: unknown, fallback: string): string {
 }
 
 async function resolveSystemPrompt(
+  topicType: TopicType,
   customPromptId: string,
-  fallback: string,
 ): Promise<string> {
-  if (!customPromptId || customPromptId === NONE_PROMPT_VALUE) return fallback;
+  // 1. Base prompt from the selected topic
+  const basePrompt = TOPIC_SYSTEM_PROMPTS[topicType] ?? TOPIC_SYSTEM_PROMPTS[TopicType.Custom];
 
+  // 2. If no custom prompt, just return the topic prompt
+  if (!customPromptId || customPromptId === NONE_PROMPT_VALUE) return basePrompt;
+
+  // 3. Fetch the saved custom prompt and append it to the base
   const promptRepo = new CustomPromptRepository();
   const customPrompt = await promptRepo.getById(customPromptId);
-  return customPrompt?.Prompt ?? fallback;
+  if (!customPrompt?.Prompt) return basePrompt;
+
+  return `${basePrompt}\n\n---\nAdditional instructions:\n${customPrompt.Prompt}`;
 }
 
 /**
@@ -54,8 +64,8 @@ export class CardService {
   async generateCard(request: GenerateCardRequest): Promise<GeneratedCardData> {
     try {
       const systemPrompt = await resolveSystemPrompt(
+        request.topicType,
         request.customPromptId,
-        CARD_GENERATION_SYSTEM_PROMPT,
       );
 
       const response = await fetchStructuredAIByModelId<CardNotesResponse>({

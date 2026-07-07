@@ -9,6 +9,7 @@ import { CustomPromptRepository } from "../../customPrompt/repository/CustomProm
 import { CategoryTagRepository } from "../repository/CategoryTagRepository";
 import { CardService } from "../../../services/CardService";
 import { NONE_PROMPT_VALUE } from "../../../statics/prompts";
+import { TOPIC_OPTIONS } from "../../../statics/topicPrompts";
 import { EMPTY_FORM_STATE, validateAddCardForm } from "../types";
 import type {
   AddCardFormState,
@@ -97,6 +98,7 @@ export default function StepGenerate({ onGenerated }: StepGenerateProps) {
     try {
       const cardService = new CardService();
       const card = await cardService.generateCard({
+        topicType: formState.topicType,
         aiModelId: formState.aiModelId,
         customPromptId: formState.customPromptId,
         topicText: formState.topicText,
@@ -122,6 +124,18 @@ export default function StepGenerate({ onGenerated }: StepGenerateProps) {
   return (
     <div className="step-generate">
       <div className="step-form">
+        <div>
+          <Select
+            label="Topic"
+            value={formState.topicType}
+            items={TOPIC_OPTIONS}
+            onChange={(value) => updateField("topicType", value)}
+          />
+          {formErrors.topicType && (
+            <p className="field-error">{formErrors.topicType}</p>
+          )}
+        </div>
+
         <div>
           <Select
             label="Category Tag"

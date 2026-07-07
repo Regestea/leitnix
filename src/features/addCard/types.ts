@@ -1,5 +1,7 @@
 import { z } from "zod";
 import { NONE_PROMPT_VALUE } from "../../statics/prompts";
+import { TopicType } from "../../statics/topicPrompts";
+import { TOPIC_OPTIONS } from "../../statics/topicPrompts";
 
 // ─── Wizard Steps ───────────────────────────────────────────────────
 // Const object drives which step tab is rendered.
@@ -51,6 +53,7 @@ export type QuestionsResponse = z.infer<typeof questionsResponseSchema>;
 // ─── Request Models passed to CardService ──────────────────────────
 
 export interface GenerateCardRequest {
+  topicType: TopicType;
   aiModelId: string;
   customPromptId: string;
   topicText: string;
@@ -74,6 +77,7 @@ export interface GeneratedCardData {
 // ─── Form State & Validation ────────────────────────────────────────
 
 export interface AddCardFormState {
+  topicType: TopicType;
   categoryTagId: string;
   aiModelId: string;
   customPromptId: string;
@@ -81,6 +85,7 @@ export interface AddCardFormState {
 }
 
 export const addCardFormSchema = z.object({
+  topicType: z.enum(TOPIC_OPTIONS.map((o) => o.value) as [string, ...string[]], { message: "Please select a topic." }),
   categoryTagId: z.string().min(1, "Please select a category tag."),
   aiModelId: z.string().min(1, "Please select an AI model."),
   customPromptId: z.string(),
@@ -110,6 +115,7 @@ export function validateAddCardForm(form: AddCardFormState): {
 }
 
 export const EMPTY_FORM_STATE: AddCardFormState = {
+  topicType: TopicType.Science,
   categoryTagId: "",
   aiModelId: "",
   customPromptId: NONE_PROMPT_VALUE,
