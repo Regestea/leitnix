@@ -15,7 +15,6 @@ import type {
   GeneratedCardData,
 } from "./types";
 import "./AddCard.css";
-import Modal from "../../shared/components/Modal";
 
 export default function AddCard() {
   const navigate = useNavigate();
