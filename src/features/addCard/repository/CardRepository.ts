@@ -20,6 +20,27 @@ export class CardRepository {
     );
   }
 
+  async getByCategoryTagId(tagId: string): Promise<Card[]> {
+    const db = await getDb();
+    const result = await db.query(
+      "SELECT * FROM Cards WHERE CategoryTagId = ?;",
+      [tagId]
+    );
+    return (result.values ?? []) as Card[];
+  }
+
+  async updateCategoryTagId(
+    cardIds: string[],
+    newTagId: string
+  ): Promise<void> {
+    const db = await getDb();
+    const placeholders = cardIds.map(() => "?").join(", ");
+    await db.run(
+      `UPDATE Cards SET CategoryTagId = ? WHERE Id IN (${placeholders});`,
+      [newTagId, ...cardIds]
+    );
+  }
+
   async getFirstBoxId(): Promise<string | null> {
     const db = await getDb();
     const result = await db.query(

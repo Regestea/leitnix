@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Select } from "../../../shared/components/controls/Select";
 import { Textarea } from "../../../shared/components/controls/Textarea";
 import ImageUpload from "../../../shared/components/controls/ImageUpload";
@@ -6,6 +8,7 @@ import ThinkingSphere from "../../../shared/components/thinkingSphere/ThinkingSp
 import { AiModelRepository } from "../../aiModels/repository/AiModelRepository";
 import { CustomPromptRepository } from "../../customPrompt/repository/CustomPromptRepository";
 import { CategoryTagRepository } from "../repository/CategoryTagRepository";
+import CategoryTagManagerModal from "../categoryTagManager/components/CategoryTagManagerModal";
 import { NONE_PROMPT_VALUE } from "../../../statics/prompts";
 import { TOPIC_OPTIONS } from "../../../statics/topicPrompts";
 import type {
@@ -64,6 +67,12 @@ export default function StepGenerate({
   const [customPrompts, setCustomPrompts] = useState<SelectOption[]>([
     NONE_PROMPT,
   ]);
+  const [isTagManagerOpen, setIsTagManagerOpen] = useState(false);
+
+  const loadCategoryTags = async () => {
+    const cats = await new CategoryTagRepository().getAll();
+    setCategoryTags([PLACEHOLDER_TAG, ...toOptions(cats)]);
+  };
 
   useEffect(() => {
     const loadOptions = async () => {
@@ -104,12 +113,23 @@ export default function StepGenerate({
         </div>
 
         <div>
-          <Select
-            label="Category Tag"
-            value={formState.categoryTagId}
-            items={categoryTags}
-            onChange={(value) => onFieldChange("categoryTagId", value)}
-          />
+          <div style={{ display: "flex", alignItems: "flex-end", gap: "0.5rem" }}>
+            <div style={{ flex: 1 }}>
+              <Select
+                label="Category Tag"
+                value={formState.categoryTagId}
+                items={categoryTags}
+                onChange={(value) => onFieldChange("categoryTagId", value)}
+              />
+            </div>
+            <button
+              type="button"
+              onClick={() => setIsTagManagerOpen(true)}
+              aria-label="Manage category tags"
+            >
+              <FontAwesomeIcon icon={faPlus} />
+            </button>
+          </div>
           {formErrors.categoryTagId && (
             <p className="field-error">{formErrors.categoryTagId}</p>
           )}
@@ -154,6 +174,12 @@ export default function StepGenerate({
 
         {error && <p className="field-error">{error}</p>}
       </div>
+
+      <CategoryTagManagerModal
+        isOpen={isTagManagerOpen}
+        onClose={() => setIsTagManagerOpen(false)}
+        onTagsChange={loadCategoryTags}
+      />
     </div>
   );
 }
