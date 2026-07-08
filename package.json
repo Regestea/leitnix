@@ -4,9 +4,8 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "tsc -b && vite build && npx cap sync android && concurrently \"vite\" \"npx cap run android",
     "live": "adb reverse tcp:5173 tcp:5173 && tsc -b && vite build && npx cap sync android && concurrently \"vite --host 0.0.0.0\" \"npx cap run android -l --host localhost --port 5173 --forwardPorts 5173:5173 --target Samsung_A15\"",
-    "build": "tsc -b && vite build && npx cap sync android",
+    "dev": "tsc -b && vite build && npx cap sync android && npx cap run android",
     "find-unused-css": "node find-unused-css.mjs",
     "lint": "eslint .",
     "preview": "vite preview"
