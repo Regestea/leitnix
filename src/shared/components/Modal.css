@@ -106,3 +106,20 @@
   margin-bottom: 0.4rem;
   margin-top: 1rem;
 }
+
+/* ─── Modal Sizes ─────────────────────────────────────────────────────────── */
+
+.modal-sm {
+  max-width: 28rem;
+  margin: 0 auto;
+}
+
+.modal-md {
+  max-width: 48rem;
+  margin: 0 auto;
+}
+
+.modal-lg {
+  max-width: 72rem;
+  margin: 0 auto;
+}

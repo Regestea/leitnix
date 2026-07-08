@@ -121,7 +121,7 @@ export default function CategoryTagManagerModal({
           }}
         >
           <Button
-            className="form-add-new-prompt"
+            className="form-add-new-tag"
             label="Add New Tag"
             onClick={openAddModal}
           />

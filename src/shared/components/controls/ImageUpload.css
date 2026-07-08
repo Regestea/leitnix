@@ -32,6 +32,22 @@
   box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
 }
 
+.camera-btn {
+  background: rgba(0, 255, 255, 0.1);
+  border: 1px solid rgba(0, 255, 255, 0.4);
+  color: #ffffff;
+  padding: 0.35rem 0.55rem;
+  border-radius: 0.6rem;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: all 0.3s ease;
+}
+
+.camera-btn:hover {
+  background: rgba(0, 255, 255, 0.2);
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+}
+
 .image-upload-previews {
   display: flex;
   flex-wrap: wrap;
