@@ -42,12 +42,12 @@ export function useBoxForm() {
   const handleRepeatPeriodChange = (value: number) => {
     setFormBox((prev: Box) => ({
       ...prev,
-      RepeatPeriodUnixTime: value,
+      RepeatIntervalSeconds: value,
     }));
     setFormErrors((prev: BoxFormErrors) => {
-      if (!("RepeatPeriodUnixTime" in prev)) return prev;
+      if (!("RepeatIntervalSeconds" in prev)) return prev;
       const next = { ...prev };
-      delete next.RepeatPeriodUnixTime;
+      delete next.RepeatIntervalSeconds;
       return next;
     });
   };

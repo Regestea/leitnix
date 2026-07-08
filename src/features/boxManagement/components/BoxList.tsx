@@ -27,7 +27,7 @@ export default function BoxList({
   return (
     <div className="box-list">
       {boxes.map((box, index) => {
-        const isFinishBox = box.RepeatPeriodUnixTime === 0;
+        const isFinishBox = box.RepeatIntervalSeconds === 0;
         const cardCount = cardCounts.get(box.Id) ?? 0;
 
         return (
@@ -38,7 +38,7 @@ export default function BoxList({
                 <div>
                   <h4>{box.Name ?? "Unnamed Box"}</h4>
                   <span className="box-period">
-                    {formatRepeatPeriod(box.RepeatPeriodUnixTime ?? 0)}
+                    {formatRepeatPeriod(box.RepeatIntervalSeconds ?? 0)}
                   </span>
                 </div>
               </div>

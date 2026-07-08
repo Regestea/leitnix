@@ -4,7 +4,7 @@ import type { Box } from "../../shared/types/entities";
 export const EMPTY_BOX: Box = {
   Id: "",
   Name: null,
-  RepeatPeriodUnixTime: null,
+  RepeatIntervalSeconds: null,
   NextBoxId: null,
   PreviousBoxId: null,
 };
@@ -61,7 +61,7 @@ export function formatRepeatPeriod(minutes: number): string {
 
 export const boxFormSchema = z.object({
   Name: z.string().trim().min(1, "Name is required."),
-  RepeatPeriodUnixTime: z
+  RepeatIntervalSeconds: z
     .number({ error: "Repeat period is required." })
     .int({ error: "Repeat period must be a whole number." })
     .min(1, { message: "Repeat period must be at least 6 hours." }),
@@ -77,7 +77,7 @@ export function validateFormBox(box: Box): {
 } {
   const result = boxFormSchema.safeParse({
     Name: box.Name ?? "",
-    RepeatPeriodUnixTime: box.RepeatPeriodUnixTime,
+    RepeatIntervalSeconds: box.RepeatIntervalSeconds,
   });
 
   if (result.success) {

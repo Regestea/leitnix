@@ -47,7 +47,7 @@ export interface CategoryTag {
 export interface Box {
   Id: string;
   Name: string | null;
-  RepeatPeriodUnixTime: number | null;
+  RepeatIntervalSeconds: number | null;
   NextBoxId: string | null;
   PreviousBoxId: string | null;
 }

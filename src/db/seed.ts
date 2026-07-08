@@ -15,7 +15,7 @@ export async function seedDefaultData(db: {
   const finishId = crypto.randomUUID();
 
   await db.execute(`
-    INSERT OR IGNORE INTO Boxes (Id, Name, RepeatPeriodUnixTime, NextBoxId, PreviousBoxId) VALUES
+    INSERT OR IGNORE INTO Boxes (Id, Name, RepeatIntervalSeconds, NextBoxId, PreviousBoxId) VALUES
       ('${box1Id}', 'box1', 1440, '${box2Id}', NULL),
       ('${box2Id}', 'box2', 2880, '${box3Id}', '${box1Id}'),
       ('${box3Id}', 'box3', 5760, '${box4Id}', '${box2Id}'),

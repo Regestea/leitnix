@@ -10,7 +10,7 @@ interface BoxFormModalProps {
   isEditing: boolean;
   formBox: {
     Name: string | null;
-    RepeatPeriodUnixTime: number | null;
+    RepeatIntervalSeconds: number | null;
   };
   formErrors: Record<string, string | undefined>;
   onNameChange: (value: string) => void;
@@ -29,8 +29,8 @@ export default function BoxFormModal({
   onSave,
 }: BoxFormModalProps) {
   const periodValue =
-    formBox.RepeatPeriodUnixTime != null
-      ? String(formBox.RepeatPeriodUnixTime)
+    formBox.RepeatIntervalSeconds != null
+      ? String(formBox.RepeatIntervalSeconds)
       : "";
 
   return (
@@ -66,8 +66,8 @@ export default function BoxFormModal({
             }))}
             onChange={(val: string) => onRepeatPeriodChange(Number(val))}
           />
-          {formErrors.RepeatPeriodUnixTime && (
-            <p className="field-error">{formErrors.RepeatPeriodUnixTime}</p>
+          {formErrors.RepeatIntervalSeconds && (
+            <p className="field-error">{formErrors.RepeatIntervalSeconds}</p>
           )}
         </div>
       </div>

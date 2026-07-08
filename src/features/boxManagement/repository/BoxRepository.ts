@@ -59,7 +59,7 @@ export class BoxRepository {
     const ordered = await this.getChainOrdered();
 
     const finishBox =
-      ordered.length > 0 && ordered[ordered.length - 1].RepeatPeriodUnixTime === 0
+      ordered.length > 0 && ordered[ordered.length - 1].RepeatIntervalSeconds === 0
         ? ordered[ordered.length - 1]
         : null;
 
@@ -72,9 +72,9 @@ export class BoxRepository {
     const nextBoxId = finishBox ? finishBox.Id : null;
 
     await db.run(
-      `INSERT INTO Boxes (Id, Name, RepeatPeriodUnixTime, NextBoxId, PreviousBoxId)
+      `INSERT INTO Boxes (Id, Name, RepeatIntervalSeconds, NextBoxId, PreviousBoxId)
        VALUES (?, ?, ?, ?, ?);`,
-      [box.Id, box.Name, box.RepeatPeriodUnixTime, nextBoxId, null],
+      [box.Id, box.Name, box.RepeatIntervalSeconds, nextBoxId, null],
     );
 
     if (previousBox) {
@@ -106,13 +106,13 @@ export class BoxRepository {
     const db = await getDb();
     await db.run(
       `UPDATE Boxes
-       SET Name = ?, RepeatPeriodUnixTime = ?
+       SET Name = ?, RepeatIntervalSeconds = ?
        WHERE Id = ?;`,
-      [box.Name, box.RepeatPeriodUnixTime, box.Id],
+      [box.Name, box.RepeatIntervalSeconds, box.Id],
     );
 
     // Recalculate NextReviewUnixTime for all cards in this box
-    const repeatMinutes = box.RepeatPeriodUnixTime ?? 0;
+    const repeatSeconds = box.RepeatIntervalSeconds ?? 0;
     const cardsResult = await db.query(
       "SELECT Id, LastReviewUnixTime FROM Cards WHERE BoxId = ? AND LastReviewUnixTime IS NOT NULL;",
       [box.Id],
@@ -121,7 +121,7 @@ export class BoxRepository {
       const c = card as { Id: string; LastReviewUnixTime: number };
       await db.run(
         "UPDATE Cards SET NextReviewUnixTime = ? WHERE Id = ?;",
-        [c.LastReviewUnixTime + repeatMinutes, c.Id],
+        [c.LastReviewUnixTime + repeatSeconds, c.Id],
       );
     }
   }
@@ -137,9 +137,9 @@ export class BoxRepository {
       : (await this.getFirst())?.Id ?? null;
 
     if (destinationBoxId) {
-      // Get destination box's repeat period
+      // Get destination box's repeat interval
       const destBox = await this.getById(destinationBoxId);
-      const repeatMinutes = destBox?.RepeatPeriodUnixTime ?? 0;
+      const repeatSeconds = destBox?.RepeatIntervalSeconds ?? 0;
 
       // Move cards and recalculate their NextReviewUnixTime
       const cardsResult = await db.query(
@@ -150,7 +150,7 @@ export class BoxRepository {
         const c = card as { Id: string; LastReviewUnixTime: number };
         await db.run(
           "UPDATE Cards SET BoxId = ?, NextReviewUnixTime = ? WHERE Id = ?;",
-          [destinationBoxId, c.LastReviewUnixTime + repeatMinutes, c.Id],
+          [destinationBoxId, c.LastReviewUnixTime + repeatSeconds, c.Id],
         );
       }
 

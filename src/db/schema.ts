@@ -2,17 +2,24 @@ export const CREATE_TABLE_STATEMENTS = [
   `
     CREATE TABLE IF NOT EXISTS Setting (
       Id TEXT PRIMARY KEY,
-      WrongAnswerPunishment TEXT NOT NULL DEFAULT 'None'
-      CHECK (WrongAnswerPunishment IN ('None','JumpOneBoxBack', 'JumpToFirstBox'))
+      WrongAnswerPunishment TEXT NOT NULL
+      DEFAULT 'None'
+      CHECK (
+        WrongAnswerPunishment IN (
+          'None',
+          'JumpOneBoxBack',
+          'JumpToFirstBox'
+        )
+      )
     );
   `,
   `
     CREATE TABLE IF NOT EXISTS Theme (
       Id TEXT PRIMARY KEY,
       FontFamily TEXT,
-      FontSize   TEXT,
+      FontSize TEXT,
       FontWeight TEXT,
-      Theme      TEXT,
+      Theme TEXT,
       AndroidNavigation BOOLEAN
     );
   `,
@@ -20,10 +27,18 @@ export const CREATE_TABLE_STATEMENTS = [
     CREATE TABLE IF NOT EXISTS AiModels (
       Id TEXT PRIMARY KEY,
       DisplayName TEXT,
-      URL   TEXT,
+      URL TEXT,
       ModelName TEXT,
       APIKey TEXT,
-      Provider TEXT CHECK (Provider IN ('GoogleGemini', 'OpenRouter', 'AvalAi','OpenAi','OpenAiCompatible'))
+      Provider TEXT CHECK (
+        Provider IN (
+          'GoogleGemini',
+          'OpenRouter',
+          'AvalAi',
+          'OpenAi',
+          'OpenAiCompatible'
+        )
+      )
     );
   `,
   `
@@ -41,23 +56,23 @@ export const CREATE_TABLE_STATEMENTS = [
   `,
   `
     CREATE TABLE IF NOT EXISTS Boxes (
-      Id            TEXT PRIMARY KEY,
-      Name          TEXT,
-      RepeatPeriodUnixTime  INTEGER,
-      NextBoxId     TEXT,
+      Id TEXT PRIMARY KEY,
+      Name TEXT,
+      RepeatIntervalSeconds INTEGER NOT NULL,
+      NextBoxId TEXT,
       PreviousBoxId TEXT
     );
   `,
   `
     CREATE TABLE IF NOT EXISTS Cards (
-      Id    TEXT PRIMARY KEY,
-      BoxId           TEXT NOT NULL,
-      CategoryTagId    TEXT,
+      Id TEXT PRIMARY KEY,
+      BoxId TEXT NOT NULL,
+      CategoryTagId TEXT,
       MarkdownTopic TEXT,
       MarkdownContent TEXT,
-      LastReviewUnixTime      INTEGER,
-      NextReviewUnixTime      INTEGER,
-      StartedLearningUnixTime   INTEGER,
+      LastReviewUnixTime INTEGER,
+      NextReviewUnixTime INTEGER,
+      StartedLearningUnixTime INTEGER,
       FOREIGN KEY (BoxId) REFERENCES Boxes(Id) ON DELETE CASCADE,
       FOREIGN KEY (CategoryTagId) REFERENCES CategoryTags(Id) ON DELETE SET NULL
     );
@@ -65,31 +80,32 @@ export const CREATE_TABLE_STATEMENTS = [
   `
     CREATE TABLE IF NOT EXISTS FreeResponseQuestions (
       Id TEXT PRIMARY KEY,
-      CardId   TEXT NOT NULL,
-      MarkdownQuestion TEXT,
-      MarkdownAnswer   TEXT,
+      CardId TEXT NOT NULL,
+      MarkdownQuestion TEXT NOT NULL,
+      MarkdownAnswer TEXT NOT NULL,
       FOREIGN KEY (CardId) REFERENCES Cards(Id) ON DELETE CASCADE
     );
   `,
   `
     CREATE TABLE IF NOT EXISTS FillTheBlankQuestions (
       Id TEXT PRIMARY KEY,
-      CardId   TEXT NOT NULL,
-      MarkdownQuestion TEXT,
-      MarkdownAnswer   TEXT,
+      CardId TEXT NOT NULL,
+      MarkdownQuestion TEXT NOT NULL,
+      MarkdownAnswer TEXT NOT NULL,
       FOREIGN KEY (CardId) REFERENCES Cards(Id) ON DELETE CASCADE
     );
   `,
   `
     CREATE TABLE IF NOT EXISTS MultipleChoiceQuestions (
-      Id            TEXT PRIMARY KEY,
-      CardId        TEXT NOT NULL,
-      MarkdownQuestion      TEXT,
-      MarkdownOptionA       TEXT,
-      MarkdownOptionB       TEXT,
-      MarkdownOptionC       TEXT,
-      MarkdownOptionD       TEXT,
-      CorrectOption TEXT CHECK (CorrectOption IN ('A', 'B', 'C', 'D')),
+      Id TEXT PRIMARY KEY,
+      CardId TEXT NOT NULL,
+      MarkdownQuestion TEXT NOT NULL,
+      MarkdownOptionA TEXT NOT NULL,
+      MarkdownOptionB TEXT NOT NULL,
+      MarkdownOptionC TEXT NOT NULL,
+      MarkdownOptionD TEXT NOT NULL,
+      CorrectOption TEXT NOT NULL
+      CHECK (CorrectOption IN ('A', 'B', 'C', 'D')),
       FOREIGN KEY (CardId) REFERENCES Cards(Id) ON DELETE CASCADE
     );
   `,
