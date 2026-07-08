@@ -117,10 +117,13 @@ export default function Nav() {
                 title={item.title}
                 onClick={(e) => handleParentClick(e, index)}
               >
-                <FontAwesomeIcon
+                    <FontAwesomeIcon
                   icon={isExpanded ? faXmark : item.icon}
                   className="nav-icon"
                 />
+                {item.badge != null && item.badge > 0 && (
+                  <span className="nav-badge">{item.badge}</span>
+                )}
               </button>
             );
           })}

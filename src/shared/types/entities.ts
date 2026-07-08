@@ -54,7 +54,7 @@ export interface Box {
 
 export interface Card {
   Id: string;
-  BoxId: string;
+  BoxId: string | null;
   CategoryTagId: string | null;
   MarkdownTopic: string | null;
   MarkdownContent: string | null;

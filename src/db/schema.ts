@@ -66,7 +66,7 @@ export const CREATE_TABLE_STATEMENTS = [
   `
     CREATE TABLE IF NOT EXISTS Cards (
       Id TEXT PRIMARY KEY,
-      BoxId TEXT NOT NULL,
+      BoxId TEXT,
       CategoryTagId TEXT,
       MarkdownTopic TEXT,
       MarkdownContent TEXT,

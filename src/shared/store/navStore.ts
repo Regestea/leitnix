@@ -10,6 +10,7 @@ export interface NavItem {
   icon: IconDefinition;
   title: string;
   onClick?: () => void;
+  badge?: number;
   children?: NavChild[];
 }
 export interface NavState {

@@ -119,24 +119,18 @@ export class CardService {
   /** Persist the card and all generated questions. Returns the card Id. */
   async saveCard(request: SaveCardRequest): Promise<string> {
     try {
-      const firstBoxId = await this.cardRepo.getFirstBoxId();
-      if (!firstBoxId) {
-        throw new Error("No box found. Please set up boxes first.");
-      }
-
       const cardId = crypto.randomUUID();
-      const now = Date.now();
       const { card, questions, categoryTagId } = request;
 
       await this.cardRepo.create({
         Id: cardId,
-        BoxId: firstBoxId,
+        BoxId: null,
         CategoryTagId: categoryTagId,
         MarkdownTopic: card.topicMarkdown,
         MarkdownContent: card.markdownContent,
-        LastReviewUnixTime: now,
-        NextReviewUnixTime: now,
-        StartedLearningUnixTime: now,
+        LastReviewUnixTime: null,
+        NextReviewUnixTime: null,
+        StartedLearningUnixTime: null,
       });
 
       await this.questionRepo.createFreeResponseQuestions(

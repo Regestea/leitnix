@@ -5,6 +5,10 @@ export async function seedDefaultData(db: {
     `INSERT INTO CategoryTags (Id, Name) SELECT '${crypto.randomUUID()}', 'Default' WHERE NOT EXISTS (SELECT 1 FROM CategoryTags);`,
   );
 
+  await db.execute(
+    `INSERT OR IGNORE INTO Setting (Id, WrongAnswerPunishment) VALUES ('default-setting', 'None');`,
+  );
+
   const box1Id = crypto.randomUUID();
   const box2Id = crypto.randomUUID();
   const box3Id = crypto.randomUUID();

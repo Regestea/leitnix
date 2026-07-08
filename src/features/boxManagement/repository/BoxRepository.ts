@@ -24,6 +24,15 @@ export class BoxRepository {
     return rows.length > 0 ? (rows[0] as Box) : null;
   }
 
+  async getFinish(): Promise<Box | null> {
+    const db = await getDb();
+    const result = await db.query(
+      "SELECT * FROM Boxes WHERE RepeatIntervalSeconds = 0 LIMIT 1;",
+    );
+    const rows = result.values ?? [];
+    return rows.length > 0 ? (rows[0] as Box) : null;
+  }
+
   async getChainOrdered(): Promise<Box[]> {
     const allBoxes = await this.getAll();
     const boxMap = new Map<string, Box>();
@@ -121,7 +130,7 @@ export class BoxRepository {
       const c = card as { Id: string; LastReviewUnixTime: number };
       await db.run(
         "UPDATE Cards SET NextReviewUnixTime = ? WHERE Id = ?;",
-        [c.LastReviewUnixTime + repeatSeconds, c.Id],
+        [c.LastReviewUnixTime + repeatSeconds * 60, c.Id],
       );
     }
   }
@@ -150,7 +159,7 @@ export class BoxRepository {
         const c = card as { Id: string; LastReviewUnixTime: number };
         await db.run(
           "UPDATE Cards SET BoxId = ?, NextReviewUnixTime = ? WHERE Id = ?;",
-          [destinationBoxId, c.LastReviewUnixTime + repeatSeconds, c.Id],
+          [destinationBoxId, c.LastReviewUnixTime + repeatSeconds * 60, c.Id],
         );
       }
 
