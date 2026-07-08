@@ -60,8 +60,13 @@ export default function CategoryTagManagerModal({
   const handleDeleteClick = async (id: string) => {
     const cardRepo = new CardRepository();
     const cards = await cardRepo.getByCategoryTagId(id);
+    // Default the reassignment target to the first remaining tag so the
+    // Select's controlled value matches an actual option. Otherwise the
+    // visually-preselected first option never fires a `change` event,
+    // reassignTagId stays "" and the button stays disabled.
+    const fallbackTag = tags.find((t) => t.Id !== id);
     setDeleteTargetId(id);
-    setReassignTagId("");
+    setReassignTagId(fallbackTag?.Id ?? "");
     setHasAttachedCards(cards.length > 0);
   };
 

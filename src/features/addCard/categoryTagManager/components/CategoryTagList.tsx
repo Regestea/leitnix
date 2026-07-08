@@ -15,14 +15,14 @@ export default function CategoryTagList({
 }: CategoryTagListProps) {
   if (tags.length === 0) {
     return (
-      <div className="custom-prompt-form">
+      <div className="custom-taglist">
         <p className="no-prompts-text">No category tags added yet.</p>
       </div>
     );
   }
 
   return (
-    <div className="custom-prompt-form">
+    <div className="custom-taglist">
       {tags.map((tag) => (
         <div className="prompt-item" key={tag.Id}>
           <h4>{tag.Name ?? "Untitled Tag"}</h4>
