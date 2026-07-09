@@ -1,7 +1,8 @@
-import { getDb } from "../../../db/connection";
-import type { Card } from "../../../shared/types/entities";
+import { getDb } from "../db/connection";
+import type { Card } from "../shared/types/entities";
+import type { ICardRepository } from "../iRepositories/ICardRepository.ts";
 
-export class CardRepository {
+export class CardRepository implements ICardRepository {
   async create(card: Card): Promise<void> {
     const db = await getDb();
     await db.run(
@@ -124,3 +125,5 @@ export class CardRepository {
     return rows.length > 0 ? (rows[0] as { Count: number }).Count : 0;
   }
 }
+
+export const cardRepository: ICardRepository = new CardRepository();

@@ -1,9 +1,10 @@
-import { useEffect, useMemo, useState } from "react";
-import { CustomPromptRepository } from "../repository/CustomPromptRepository";
+import { useEffect, useState } from "react";
 import type { CustomPrompt } from "../../../shared/types/entities";
+import { customPromptRepository } from "../../../repositories/CustomPromptRepository";
+import type { ICustomPromptRepository } from "../../../iRepositories/ICustomPromptRepository";
 
 export function useCustomPrompts() {
-  const repository = useMemo(() => new CustomPromptRepository(), []);
+  const repository: ICustomPromptRepository = customPromptRepository;
   const [prompts, setPrompts] = useState<CustomPrompt[]>([]);
 
   useEffect(() => {

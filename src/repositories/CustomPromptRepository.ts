@@ -1,8 +1,8 @@
-import { getDb } from "../../../db/connection";
-import type { CustomPrompt } from "../../../shared/types/entities";
+import { getDb } from "../db/connection";
+import type { CustomPrompt } from "../shared/types/entities";
+import type { ICustomPromptRepository } from "../iRepositories/ICustomPromptRepository.ts";
 
-
-export class CustomPromptRepository {
+export class CustomPromptRepository implements ICustomPromptRepository {
   async getAll(): Promise<CustomPrompt[]> {
     const db = await getDb();
     const result = await db.query("SELECT * FROM CustomPrompts;");
@@ -42,3 +42,5 @@ export class CustomPromptRepository {
     await db.run("DELETE FROM CustomPrompts WHERE Id = ?;", [id]);
   }
 }
+
+export const customPromptRepository: ICustomPromptRepository = new CustomPromptRepository();

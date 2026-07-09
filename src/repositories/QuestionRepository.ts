@@ -1,4 +1,5 @@
-import { getDb } from "../../../db/connection";
+import { getDb } from "../db/connection";
+import type { IQuestionRepository } from "../iRepositories/IQuestionRepository.ts";
 
 interface QuestionRow {
   Id: string;
@@ -6,7 +7,7 @@ interface QuestionRow {
   [column: string]: unknown;
 }
 
-export class QuestionRepository {
+export class QuestionRepository implements IQuestionRepository {
   private async createMany(table: string, columns: string, rows: QuestionRow[]): Promise<void> {
     const db = await getDb();
     const placeholders = columns.split(", ").map(() => "?").join(", ");
@@ -53,3 +54,5 @@ export class QuestionRepository {
     );
   }
 }
+
+export const questionRepository: IQuestionRepository = new QuestionRepository();

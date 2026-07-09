@@ -1,7 +1,8 @@
-import { getDb } from "../../../db/connection.ts";
-import type { Box } from "../../../shared/types/entities";
+import { getDb } from "../db/connection";
+import type { Box } from "../shared/types/entities";
+import type { IBoxRepository } from "../iRepositories/IBoxRepository.ts";
 
-export class BoxRepository {
+export class BoxRepository implements IBoxRepository {
   async getAll(): Promise<Box[]> {
     const db = await getDb();
     const result = await db.query("SELECT * FROM Boxes;");
@@ -187,3 +188,5 @@ export class BoxRepository {
     await db.run("DELETE FROM Boxes WHERE Id = ?;", [id]);
   }
 }
+
+export const boxRepository: IBoxRepository = new BoxRepository();

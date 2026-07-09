@@ -1,13 +1,15 @@
 import { useEffect, useMemo, useState } from "react";
 import { ReviewService } from "../../../services/ReviewService";
-import { CardRepository } from "../../addCard/repository/CardRepository";
-import { CategoryTagRepository } from "../../addCard/repository/CategoryTagRepository";
+import { cardRepository } from "../../../repositories/CardRepository";
+import type { ICardRepository } from "../../../iRepositories/ICardRepository.ts";
+import { categoryTagRepository } from "../../../repositories/CategoryTagRepository";
+import type { ICategoryTagRepository } from "../../../iRepositories/ICategoryTagRepository.ts";
 import type { Card, CategoryTag } from "../../../shared/types/entities";
 
 export function useLearnTopic() {
   const reviewService = useMemo(() => new ReviewService(), []);
-  const cardRepo = useMemo(() => new CardRepository(), []);
-  const tagRepo = useMemo(() => new CategoryTagRepository(), []);
+  const cardRepo: ICardRepository = cardRepository;
+  const tagRepo: ICategoryTagRepository = categoryTagRepository;
 
   const [tags, setTags] = useState<CategoryTag[]>([]);
   const [pendingCounts, setPendingCounts] = useState<Map<string, number>>(new Map());

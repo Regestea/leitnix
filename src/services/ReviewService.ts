@@ -1,6 +1,9 @@
-import { CardRepository } from "../features/addCard/repository/CardRepository";
-import { BoxRepository } from "../features/boxManagement/repository/BoxRepository";
-import { SettingRepository } from "../features/settings/repository/SettingRepository";
+import { cardRepository } from "../repositories/CardRepository";
+import type { ICardRepository } from "../iRepositories/ICardRepository.ts";
+import { boxRepository } from "../repositories/BoxRepository";
+import type { IBoxRepository } from "../iRepositories/IBoxRepository.ts";
+import { settingRepository } from "../repositories/SettingRepository";
+import type { ISettingRepository } from "../iRepositories/ISettingRepository.ts";
 import type { WrongAnswerPunishment } from "../shared/types/entities";
 
 function nowUnix(): number {
@@ -13,9 +16,9 @@ function nowUnix(): number {
  *  - Advances cards between boxes on correct/incorrect reviews.
  */
 export class ReviewService {
-  private cardRepo = new CardRepository();
-  private boxRepo = new BoxRepository();
-  private settingRepo = new SettingRepository();
+  private cardRepo: ICardRepository = cardRepository;
+  private boxRepo: IBoxRepository = boxRepository;
+  private settingRepo: ISettingRepository = settingRepository;
 
   /** Activate a pending card into Box 1 (Start Learning). */
   async startLearning(cardId: string): Promise<void> {

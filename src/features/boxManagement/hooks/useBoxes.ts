@@ -1,9 +1,10 @@
-import { useEffect, useMemo, useState } from "react";
-import { BoxRepository } from "../repository/BoxRepository";
+import { useEffect, useState } from "react";
 import type { Box } from "../../../shared/types/entities";
+import { boxRepository } from "../../../repositories/BoxRepository";
+import type { IBoxRepository } from "../../../iRepositories/IBoxRepository";
 
 export function useBoxes() {
-  const repository = useMemo(() => new BoxRepository(), []);
+  const repository: IBoxRepository = boxRepository;
   const [boxes, setBoxes] = useState<Box[]>([]);
   const [cardCounts, setCardCounts] = useState<Map<string, number>>(new Map());
 

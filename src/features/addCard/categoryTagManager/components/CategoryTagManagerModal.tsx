@@ -3,7 +3,7 @@ import { Button } from "../../../../shared/components/controls/Button";
 import { Select } from "../../../../shared/components/controls/Select";
 import ConfirmModal from "../../../../shared/components/ConfirmModal";
 import Modal from "../../../../shared/components/Modal";
-import { CardRepository } from "../../repository/CardRepository";
+import { CardRepository } from "../../../../repositories/CardRepository";
 import { useCategoryTags } from "../hooks/useCategoryTags";
 import { useCategoryTagForm } from "../hooks/useCategoryTagForm";
 import CategoryTagList from "./CategoryTagList";

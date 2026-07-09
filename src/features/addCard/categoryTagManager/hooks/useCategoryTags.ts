@@ -1,11 +1,13 @@
-import { useEffect, useMemo, useState } from "react";
-import { CategoryTagRepository } from "../../repository/CategoryTagRepository";
-import { CardRepository } from "../../repository/CardRepository";
+import { useEffect, useState } from "react";
 import type { CategoryTag } from "../../../../shared/types/entities";
+import { categoryTagRepository } from "../../../../repositories/CategoryTagRepository";
+import { cardRepository } from "../../../../repositories/CardRepository";
+import type { ICardRepository } from "../../../../iRepositories/ICardRepository";
+import type { ICategoryTagRepository } from "../../../../iRepositories/ICategoryTagRepository";
 
 export function useCategoryTags() {
-  const tagRepo = useMemo(() => new CategoryTagRepository(), []);
-  const cardRepo = useMemo(() => new CardRepository(), []);
+  const tagRepo: ICategoryTagRepository = categoryTagRepository;
+  const cardRepo: ICardRepository = cardRepository;
   const [tags, setTags] = useState<CategoryTag[]>([]);
 
   useEffect(() => {

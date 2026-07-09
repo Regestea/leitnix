@@ -1,7 +1,8 @@
-import { getDb } from "../../../db/connection";
-import type { Setting } from "../../../shared/types/entities";
+import { getDb } from "../db/connection";
+import type { Setting } from "../shared/types/entities";
+import type { ISettingRepository } from "../iRepositories/ISettingRepository.ts";
 
-export class SettingRepository {
+export class SettingRepository implements ISettingRepository {
   async get(): Promise<Setting | null> {
     const db = await getDb();
     const result = await db.query("SELECT * FROM Setting LIMIT 1;");
@@ -18,3 +19,5 @@ export class SettingRepository {
     );
   }
 }
+
+export const settingRepository: ISettingRepository = new SettingRepository();

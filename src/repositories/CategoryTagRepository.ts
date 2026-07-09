@@ -1,7 +1,8 @@
-import { getDb } from "../../../db/connection";
-import type { CategoryTag } from "../../../shared/types/entities";
+import { getDb } from "../db/connection";
+import type { CategoryTag } from "../shared/types/entities";
+import type { ICategoryTagRepository } from "../iRepositories/ICategoryTagRepository.ts";
 
-export class CategoryTagRepository {
+export class CategoryTagRepository implements ICategoryTagRepository {
   async getAll(): Promise<CategoryTag[]> {
     const db = await getDb();
     const result = await db.query("SELECT * FROM CategoryTags;");
@@ -38,3 +39,5 @@ export class CategoryTagRepository {
     await db.run("DELETE FROM CategoryTags WHERE Id = ?;", [id]);
   }
 }
+
+export const categoryTagRepository: ICategoryTagRepository = new CategoryTagRepository();

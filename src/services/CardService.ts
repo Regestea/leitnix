@@ -18,9 +18,12 @@ import type {
   GenerateCardRequest,
   SaveCardRequest,
 } from "../features/addCard/types";
-import { CardRepository } from "../features/addCard/repository/CardRepository";
-import { QuestionRepository } from "../features/addCard/repository/QuestionRepository";
-import { CustomPromptRepository } from "../features/customPrompt/repository/CustomPromptRepository";
+import { cardRepository } from "../repositories/CardRepository";
+import type { ICardRepository } from "../iRepositories/ICardRepository.ts";
+import { questionRepository } from "../repositories/QuestionRepository";
+import type { IQuestionRepository } from "../iRepositories/IQuestionRepository.ts";
+import { customPromptRepository } from "../repositories/CustomPromptRepository";
+import type { ICustomPromptRepository } from "../iRepositories/ICustomPromptRepository.ts";
 
 function buildCardPrompt(card: GeneratedCardData): string {
   return `Topic:\n${card.topicMarkdown}\n\nContent:\n${card.markdownContent}`;
@@ -47,7 +50,7 @@ async function resolveSystemPrompt(
   }
 
   // 4. Fetch the saved custom prompt and put it in its own labeled section
-  const promptRepo = new CustomPromptRepository();
+  const promptRepo: ICustomPromptRepository = customPromptRepository;
   const customPrompt = await promptRepo.getById(customPromptId);
   if (!customPrompt?.Prompt) {
     return `${basePrompt}\n\n${topicBlock}`;
@@ -66,8 +69,8 @@ async function resolveSystemPrompt(
  * repositories only for read operations (e.g. loading select options).
  */
 export class CardService {
-  private cardRepo = new CardRepository();
-  private questionRepo = new QuestionRepository();
+  private cardRepo: ICardRepository = cardRepository;
+  private questionRepo: IQuestionRepository = questionRepository;
 
   /** Step 1: generate the card topic + notes from a topic prompt. */
   async generateCard(request: GenerateCardRequest): Promise<GeneratedCardData> {

@@ -5,7 +5,9 @@ import {
   type StateStorage,
 } from "zustand/middleware";
 import { SystemBars, SystemBarType } from "@capacitor/core";
-import { ThemeRepository } from "../repository/ThemeRepository";
+import { themeRepository } from "../../../repositories/ThemeRepository";
+
+// (removed unused repository import)
 
 export type ThemeName = "Light" | "Dark";
 
@@ -127,7 +129,7 @@ const sqliteStorage: StateStorage = {
   getItem: async (name) => {
     void name;
 
-    const row = await ThemeRepository.getOrCreateDefaults();
+    const row = await themeRepository.getOrCreateDefaults();
 
     const state = {
       theme: row.Theme as ThemeName,
@@ -145,7 +147,7 @@ const sqliteStorage: StateStorage = {
 
     const { state } = JSON.parse(value);
 
-    await ThemeRepository.upsert({
+    await themeRepository.upsert({
       FontFamily: state.fontFamily,
       FontSize: state.fontSize,
       FontWeight: state.fontWeight,

@@ -1,9 +1,10 @@
-import { useEffect, useMemo, useState } from "react";
-import { AiModelRepository } from "../../aiModels/repository/AiModelRepository";
+import { useEffect, useState } from "react";
 import type { AiModel } from "../../../shared/types/entities";
+import { aiModelRepository } from "../../../repositories/AiModelRepository";
+import type { IAiModelRepository } from "../../../iRepositories/IAiModelRepository";
 
 export function useAiModels() {
-  const repository = useMemo(() => new AiModelRepository(), []);
+  const repository: IAiModelRepository = aiModelRepository;
   const [models, setModels] = useState<AiModel[]>([]);
 
   useEffect(() => {

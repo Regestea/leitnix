@@ -1,7 +1,8 @@
-import { getDb } from "../../../db/connection.ts";
-import type { AiModel } from "../../../shared/types/entities.ts";
+import { getDb } from "../db/connection";
+import type { AiModel } from "../shared/types/entities";
+import type { IAiModelRepository } from "../iRepositories/IAiModelRepository.ts";
 
-export class AiModelRepository {
+export class AiModelRepository implements IAiModelRepository {
   async getAll(): Promise<AiModel[]> {
     const db = await getDb();
     const result = await db.query("SELECT * FROM AiModels;");
@@ -55,3 +56,5 @@ export class AiModelRepository {
     await db.run("DELETE FROM AiModels WHERE Id = ?;", [id]);
   }
 }
+
+export const aiModelRepository: IAiModelRepository = new AiModelRepository();
