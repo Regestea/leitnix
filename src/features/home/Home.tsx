@@ -2,26 +2,18 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router";
 import { useNavStore } from "../../shared/store/navStore";
 import { getHomeNavItems } from "./homeNavConfig";
-import { useLearnBadge } from "../learnTopic/hooks/useLearnBadge";
 import ProgressCircle from "./ProgressCircle";
 import LearningProgress from "./LearningProgress";
 
 export default function Home() {
   const setIsShowing = useNavStore((s) => s.setIsShowing);
   const setItems = useNavStore((s) => s.setItems);
-  const updateItem = useNavStore((s) => s.updateItem);
-
   const navigate = useNavigate();
-  const learnBadgeCount = useLearnBadge();
 
   useEffect(() => {
     setItems(getHomeNavItems(navigate));
     setIsShowing(true);
   }, [setItems, setIsShowing, navigate]);
-
-  useEffect(() => {
-    updateItem("Learn", { badge: learnBadgeCount });
-  }, [learnBadgeCount, updateItem]);
 
   return (
     <>

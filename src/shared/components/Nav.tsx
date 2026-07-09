@@ -121,9 +121,7 @@ export default function Nav() {
                   icon={isExpanded ? faXmark : item.icon}
                   className="nav-icon"
                 />
-                {item.badge != null && item.badge > 0 && (
-                  <span className="nav-badge">{item.badge}</span>
-                )}
+                
               </button>
             );
           })}
