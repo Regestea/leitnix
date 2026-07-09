@@ -1,5 +1,5 @@
 import { useCallback, useRef, useState } from 'react';
-import './MarkdownEditor.css';
+import styles from './MarkdownEditor.module.css';
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -394,17 +394,17 @@ export default function MarkdownEditor({
 
   // ─── Render ─────────────────────────────────────────────
   return (
-    <div className={`md-editor${className ? ` ${className}` : ''}`} style={style}>
+    <div className={`${styles.mdEditor}${className ? ` ${className}` : ''}`} style={style}>
       {/* Toolbar */}
-      <div className="md-toolbar" role="toolbar" aria-label="Markdown formatting">
+      <div className={styles.mdToolbar} role="toolbar" aria-label="Markdown formatting">
         {TOOLBAR_ACTIONS.map((item, i) => {
           if (item.type === 'separator') {
-            return <div key={`sep-${i}`} className="md-toolbar-separator" aria-hidden="true" />;
+            return <div key={`sep-${i}`} className={styles.mdToolbarSeparator} aria-hidden="true" />;
           }
           return (
             <button
               key={item.tooltip}
-              className="md-btn"
+              className={styles.mdBtn}
               data-tooltip={item.tooltip}
               data-shortcut={item.shortcut}
               aria-label={item.tooltip}
@@ -422,10 +422,10 @@ export default function MarkdownEditor({
       </div>
 
       {/* Editor */}
-      <div className="md-textarea-wrap">
+      <div className={styles.mdTextareaWrap}>
         <textarea
           ref={textareaRef}
-          className="md-textarea"
+          className={styles.mdTextarea}
           value={value}
           onChange={handleChange}
           onKeyDown={handleKeyDown}
@@ -438,9 +438,9 @@ export default function MarkdownEditor({
       </div>
 
       {/* Status bar */}
-      <div className="md-statusbar">
+      <div className={styles.mdStatusbar}>
         <span>Markdown</span>
-        <div className="md-statusbar-right">
+        <div className={styles.mdStatusbarRight}>
           <span>{wordCount} words</span>
           <span>{lineCount} lines</span>
           <span>{charCount} chars</span>

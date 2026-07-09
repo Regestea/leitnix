@@ -16,6 +16,7 @@ import type {
   AddCardFormErrors,
   SelectOption,
 } from "../types";
+import styles from "../AddCard.module.css";
 
 interface StepGenerateProps {
   formState: AddCardFormState;
@@ -90,16 +91,16 @@ export default function StepGenerate({
 
   if (isGenerating) {
     return (
-      <div className="step-loading">
+      <div className={styles.stepLoading}>
         <ThinkingSphere />
-        <p className="loading-text">Generating your card...</p>
+        <p className={styles.loadingText}>Generating your card...</p>
       </div>
     );
   }
 
   return (
-    <div className="step-generate">
-      <div className="step-form">
+    <div className={styles.stepGenerate}>
+      <div className={styles.stepForm}>
         <div>
           <Select
             label="Topic"

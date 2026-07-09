@@ -1,6 +1,6 @@
 import { useRef, useState, useEffect, useCallback } from "react";
 import type { ReactNode } from "react";
-import "./MainContainer.css";
+import styles from "./MainContainer.module.css";
 
 interface MainContainerProps {
   children: ReactNode;
@@ -29,21 +29,21 @@ export default function MainContainer({ children, header, footer }: MainContaine
   }, []);
 
   return (
-    <div className="main-container">
-      <div className="fullscreen-wrapper" ref={wrapperRef}>
-        <div className="main-content custom-font-style" ref={contentRef}>
+    <div className={styles.mainContainer}>
+      <div className={styles.fullscreenWrapper} ref={wrapperRef}>
+        <div className={`${styles.mainContent} custom-font-style`} ref={contentRef}>
           <button
-            className="fullscreen-btn"
+            className={styles.fullscreenBtn}
             onClick={handleToggle}
             title={isFullscreen ? "Exit fullscreen" : "Fullscreen"}
           >
             {isFullscreen ? "✕" : "⛶"}
           </button>
-          {header && <div className="main-header">{header}</div>}
-          <div className="main-scroll-area">
+          {header && <div className={styles.mainHeader}>{header}</div>}
+          <div className={styles.mainScrollArea}>
             {children}
           </div>
-          {footer && <div className="main-footer">{footer}</div>}
+          {footer && <div className={styles.mainFooter}>{footer}</div>}
         </div>
       </div>
     </div>

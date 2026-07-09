@@ -8,7 +8,7 @@ import rehypeKatex from "rehype-katex";
 import rehypeRaw from "rehype-raw";
 import MarkdownTable from "./MarkdownTable";
 import MermaidDiagram from "./MermaidDiagram";
-import "./MarkdownRender.css";
+import styles from "./MarkdownRender.module.css";
 
 // RTL helper
 function extractText(node: React.ReactNode): string {
@@ -51,11 +51,11 @@ function isArabicDigit(cp: number): boolean {
 function classifyWord(word: string): "rtl" | "ltr" | undefined {
   for (const ch of word) {
     const cp = ch.codePointAt(0) ?? 0;
-    if (isArabicDigit(cp)) continue; // اعداد عربی/فارسی خنثی هستند
+    if (isArabicDigit(cp)) continue; // Arabic/Persian digits are neutral
     if (isRtlCodePoint(cp)) return "rtl";
     if (/[a-zA-Z]/.test(ch)) return "ltr";
   }
-  return undefined; // فقط ارقام/علائم -> خنثی
+  return undefined; // only digits/symbols -> neutral
 }
 
 function getDir(node: React.ReactNode): "rtl" | "ltr" | undefined {
@@ -73,7 +73,7 @@ function getDir(node: React.ReactNode): "rtl" | "ltr" | undefined {
   if (rtlWords > ltrWords) return "rtl";
   if (ltrWords > rtlWords) return "ltr";
 
-  // مساوی یا بدون کلمه: تصمیم بر اساس اولین حرف قوی (شروع با فارسی -> rtl)
+  // Equal or no words: decide by first strong letter (start with Persian -> rtl)
   for (const ch of text) {
     const cp = ch.codePointAt(0) ?? 0;
     if (isArabicDigit(cp)) continue;
@@ -156,13 +156,13 @@ export default function MarkdownRender({ markdown }: { markdown: string }) {
               style={vscDarkPlus}
               language={match[1]}
               PreTag="div"
-              className="markdown-code-block"
+              className={styles.markdownCodeBlock}
               customStyle={{ margin: 0 }}
             >
               {String(children).replace(/\n$/, "")}
             </SyntaxHighlighter>
           ) : (
-            <code className="markdown-inline-code">{children}</code>
+            <code className={styles.markdownInlineCode}>{children}</code>
           );
         },
       }}

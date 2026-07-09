@@ -1,4 +1,4 @@
-.nav-btn.hide {
+.navBtnHide {
   opacity: 0;
   pointer-events: none;
   width: 0 !important;
@@ -14,7 +14,7 @@
     margin 0.25s ease;
 }
 
-.bottom-nav {
+.bottomNav {
   position: fixed;
   bottom: 1rem;
   left: 50%;
@@ -27,7 +27,7 @@
   transition: padding 0.25s ease;
 }
 
-.nav-items {
+.navItems {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -35,11 +35,11 @@
   transition: gap 0.25s ease;
 }
 
-.nav-items:has(.nav-btn.hide) {
+.navItems:has(.navBtnHide) {
   gap: 0;
 }
 
-.nav-btn {
+.navBtn {
   position: relative;
   display: flex;
   flex-direction: column;
@@ -62,25 +62,25 @@
     transform 0.25s ease;
 }
 
-.nav-btn:hover {
+.navBtn:hover {
   background-color: rgba(255, 255, 255, 0.15);
   box-shadow:
     0 10px 15px -3px rgba(0, 0, 0, 0.1),
     0 0 15px rgba(34, 211, 238, 0.3);
 }
 
-.nav-btn.active {
+.navBtnActive {
   background-color: rgba(0, 255, 255, 0.15);
   box-shadow:
     0 0 15px rgba(0, 255, 255, 0.4);
 }
 
-.nav-icon {
+.navIcon {
   font-size: 0.875rem;
   color: white;
 }
 
-.nav-badge {
+.navBadge {
   position: absolute;
   top: -4px;
   right: -4px;
@@ -98,38 +98,38 @@
 }
 
 @media (min-width: 640px) {
-  .bottom-nav {
+  .bottomNav {
     padding: 1rem 1.5rem;
   }
-  .nav-items {
+  .navItems {
     gap: 1.5rem;
   }
-  .nav-btn {
+  .navBtn {
     width: 3rem;
     height: 3rem;
   }
-  .nav-icon {
+  .navIcon {
     font-size: 1rem;
   }
 }
 
 @media (min-width: 1024px) {
-  .bottom-nav {
+  .bottomNav {
     padding: 1rem 2rem;
   }
-  .nav-items {
+  .navItems {
     gap: 2.5rem;
   }
-  .nav-btn {
+  .navBtn {
     width: 3.5rem;
     height: 3.5rem;
   }
-  .nav-icon {
+  .navIcon {
     font-size: 1.125rem;
   }
 }
 
-.radial-menu {
+.radialMenu {
   position: absolute;
   left: 50%;
   bottom: 32px;
@@ -138,7 +138,7 @@
   pointer-events: none;
 }
 
-.radial-item {
+.radialItem {
   position: absolute;
   left: 50%;
   bottom: 0;
@@ -163,17 +163,17 @@
   cursor: pointer;
 }
 
-.radial-item:hover {
+.radialItem:hover {
   box-shadow:
     0 10px 15px -3px rgba(0, 0, 0, 0.1),
     0 0 15px rgba(34, 211, 238, 0.3);
 }
 
-.radial-menu.open {
+.radialMenuOpen {
   pointer-events: auto;
 }
 
-.radial-menu.open .radial-item {
+.radialMenuOpen .radialItem {
   opacity: 1;
   transform: translateX(-50%) rotate(var(--angle))
     translateY(var(--radial-distance)) rotate(calc(-1 * var(--angle))) scale(1);
@@ -181,39 +181,39 @@
 }
 
 @media (max-width: 480px) {
-  .radial-menu {
+  .radialMenu {
     --radial-distance: -120px;
   }
 }
 @media (max-width: 360px) {
-  .radial-menu {
+  .radialMenu {
     --radial-distance: -100px;
   }
 }
 
-.radial-item:nth-child(1) {
+.radialItemNth1 {
   transition-delay: 0ms;
 }
-.radial-item:nth-child(2) {
-  transition-delay: 40ms;
+.radialItemNth2 {
+  transition-delay: 100ms;
 }
-.radial-item:nth-child(3) {
-  transition-delay: 80ms;
-}
-.radial-item:nth-child(4) {
-  transition-delay: 120ms;
-}
-.radial-item:nth-child(5) {
-  transition-delay: 160ms;
-}
-.radial-item:nth-child(6) {
+.radialItemNth3 {
   transition-delay: 200ms;
 }
-.radial-item:nth-child(7) {
-  transition-delay: 240ms;
+.radialItemNth4 {
+  transition-delay: 300ms;
+}
+.radialItemNth5 {
+  transition-delay: 400ms;
+}
+.radialItemNth6 {
+  transition-delay: 500ms;
+}
+.radialItemNth7 {
+  transition-delay: 600ms;
 }
 
-.page-overlay {
+.pageOverlay {
   position: fixed;
   inset: 0;
   z-index: 40;
@@ -224,7 +224,7 @@
   transition: opacity 0.3s ease;
 }
 
-.page-overlay.open {
+.pageOverlayOpen {
   opacity: 1;
   pointer-events: auto;
 }

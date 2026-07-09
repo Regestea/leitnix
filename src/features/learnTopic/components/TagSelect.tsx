@@ -1,4 +1,5 @@
 import type { CategoryTag } from "../../../shared/types/entities";
+import styles from "../learnTopic.module.css";
 
 interface TagSelectProps {
   tags: CategoryTag[];
@@ -11,26 +12,26 @@ export default function TagSelect({ tags, pendingCounts, onSelect }: TagSelectPr
 
   if (tagsWithPending.length === 0) {
     return (
-      <div className="tag-select-empty">
+      <div className={styles.tagSelectEmpty}>
         <p>No pending topics to learn.</p>
-        <p className="tag-select-hint">Add new cards first, then come back to learn them.</p>
+        <p className={styles.tagSelectHint}>Add new cards first, then come back to learn them.</p>
       </div>
     );
   }
 
   return (
-    <div className="tag-select">
-      <p className="tag-select-title">Choose a category to study</p>
-      <div className="tag-select-list">
+    <div className={styles.tagSelect}>
+      <p className={styles.tagSelectTitle}>Choose a category to study</p>
+      <div className={styles.tagSelectList}>
         {tagsWithPending.map((tag) => (
           <button
             key={tag.Id}
-            className="card glass tag-select-item"
+            className={`card glass ${styles.tagSelectItem}`}
             type="button"
             onClick={() => onSelect(tag.Id)}
           >
-            <span className="tag-select-name">{tag.Name ?? "Untitled"}</span>
-            <span className="tag-select-count">{pendingCounts.get(tag.Id) ?? 0} remaining</span>
+            <span className={styles.tagSelectName}>{tag.Name ?? "Untitled"}</span>
+            <span className={styles.tagSelectCount}>{pendingCounts.get(tag.Id) ?? 0} remaining</span>
           </button>
         ))}
       </div>

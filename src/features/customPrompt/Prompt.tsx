@@ -6,7 +6,7 @@ import { useCustomPrompts } from "./hooks/useCustomPrompts";
 import { usePromptForm } from "./hooks/usePromptForm";
 import PromptList from "./components/PromptList";
 import PromptFormModal from "./components/PromptFormModal";
-import "./Prompt.css";
+import styles from "./Prompt.module.css";
 
 export default function Prompt() {
   const { prompts, deletePrompt, updatePrompt, addPrompt } = useCustomPrompts();
@@ -67,7 +67,7 @@ export default function Prompt() {
           }}
         >
           <Button
-            className="form-add-new-prompt"
+            className={styles.formAddNewPrompt}
             label={"Add New Prompt"}
             onClick={openAddModal}
           />

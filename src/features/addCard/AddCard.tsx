@@ -15,7 +15,7 @@ import type {
   AddCardFormErrors,
   GeneratedCardData,
 } from "./types";
-import "./AddCard.css";
+import styles from "./AddCard.module.css";
 
 export default function AddCard() {
   const navigate = useNavigate();
@@ -158,7 +158,7 @@ export default function AddCard() {
   if (!isThinking) {
     if (currentStep === AddCardWizardStep.Generate) {
       footer = (
-        <div className="add-card-footer">
+        <div className={styles.addCardFooter}>
           <Button
             style={{ width: "100%" }}
             label="Generate"
@@ -168,7 +168,7 @@ export default function AddCard() {
       );
     } else if (currentStep === AddCardWizardStep.Review && card) {
       footer = (
-        <div className="add-card-footer">
+        <div className={styles.addCardFooter}>
           <Button
             style={{ width: "100%" }}
             label="Generate Questions"
@@ -178,7 +178,7 @@ export default function AddCard() {
       );
     } else if (currentStep === AddCardWizardStep.Complete) {
       footer = (
-        <div className="step-actions">
+        <div className={styles.stepActions}>
           <Button label="Generate New Card" onClick={handleGenerateNewCard} />
           <Button label="Done" onClick={handleDone} />
         </div>
@@ -188,10 +188,10 @@ export default function AddCard() {
 
   return (
     <MainContainer footer={footer}>
-      <div className="add-card-wizard">
+      <div className={styles.addCardWizard}>
         <WizardTabs currentStep={currentStep} onTabClick={handleTabClick} />
 
-        <div className="wizard-content">
+        <div className={styles.wizardContent}>
           {currentStep === AddCardWizardStep.Generate && (
             <StepGenerate
               formState={formState}

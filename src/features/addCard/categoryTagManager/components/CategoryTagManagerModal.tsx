@@ -8,6 +8,7 @@ import { useCategoryTags } from "../hooks/useCategoryTags";
 import { useCategoryTagForm } from "../hooks/useCategoryTagForm";
 import CategoryTagList from "./CategoryTagList";
 import CategoryTagFormModal from "./CategoryTagFormModal";
+import styles from "../../AddCard.module.css";
 
 interface CategoryTagManagerModalProps {
   isOpen: boolean;
@@ -121,7 +122,7 @@ export default function CategoryTagManagerModal({
           }}
         >
           <Button
-            className="form-add-new-tag"
+            className={styles.formAddNewTag}
             label="Add New Tag"
             onClick={openAddModal}
           />

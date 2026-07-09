@@ -6,6 +6,7 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type { Box } from "../../../shared/types/entities";
 import { formatRepeatPeriod } from "../types";
+import styles from "../BoxManagement.module.css";
 
 interface BoxListProps {
   boxes: Box[];
@@ -21,31 +22,31 @@ export default function BoxList({
   onDelete,
 }: BoxListProps) {
   if (boxes.length === 0) {
-    return <p className="no-boxes-text">No boxes created yet.</p>;
+    return <p className={styles.noBoxesText}>No boxes created yet.</p>;
   }
 
   return (
-    <div className="box-list">
+    <div className={styles.boxList}>
       {boxes.map((box, index) => {
         const isFinishBox = box.RepeatIntervalSeconds === 0;
         const cardCount = cardCounts.get(box.Id) ?? 0;
 
         return (
           <div key={box.Id}>
-            <div className={`box-item ${isFinishBox ? "box-item-finish" : ""}`}>
-              <div className="box-item-info">
-                <span className="box-card-count">{cardCount}</span>
+            <div className={`${styles.boxItem} ${isFinishBox ? styles.boxItemFinish : ""}`}>
+              <div className={styles.boxItemInfo}>
+                <span className={styles.boxCardCount}>{cardCount}</span>
                 <div>
                   <h4>{box.Name ?? "Unnamed Box"}</h4>
-                  <span className="box-period">
+                  <span className={styles.boxPeriod}>
                     {formatRepeatPeriod(box.RepeatIntervalSeconds ?? 0)}
                   </span>
                 </div>
               </div>
-              <div className="box-control-menu">
+              <div className={styles.boxControlMenu}>
                 {!isFinishBox && (
                   <span
-                    className="box-control-menu"
+                    className={styles.boxControlMenu}
                     onClick={() => onEdit(box)}
                   >
                     <FontAwesomeIcon icon={faPenToSquare} />
@@ -53,7 +54,7 @@ export default function BoxList({
                 )}
                 {!isFinishBox && (
                   <span
-                    className="box-control-menu"
+                    className={styles.boxControlMenu}
                     onClick={() => onDelete(box.Id)}
                   >
                     <FontAwesomeIcon icon={faTrashCan} />
@@ -62,7 +63,7 @@ export default function BoxList({
               </div>
             </div>
             {index < boxes.length - 1 && (
-              <div className="chain-arrow">
+              <div className={styles.chainArrow}>
                 <FontAwesomeIcon icon={faArrowDown} />
               </div>
             )}

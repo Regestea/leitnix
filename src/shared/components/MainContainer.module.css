@@ -1,4 +1,4 @@
-.main-container {
+.mainContainer {
   margin-left: auto;
   margin-right: auto;
   margin-top: -5dvh;
@@ -17,7 +17,7 @@
   }
 }
 
-.main-content {
+.mainContent {
   background: rgba(30, 41, 59, 0.6);
   backdrop-filter: blur(12px);
   border-radius: 20px;
@@ -35,30 +35,30 @@
   overflow: hidden;
 }
 
-.main-scroll-area {
+.mainScrollArea {
   flex: 1;
   overflow: auto;
   padding-bottom: 1rem;
 }
 
-.main-header {
+.mainHeader {
   flex-shrink: 0;
   padding: 0.5rem 0;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-.main-footer {
+.mainFooter {
   flex-shrink: 0;
   padding: 0.5rem 0;
   border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-.fullscreen-wrapper {
+.fullscreenWrapper {
   display: flex;
   justify-content: center;
 }
 
-.fullscreen-wrapper:fullscreen {
+.fullscreenWrapper:fullscreen {
   background-color: var(--background, #0f172a);
   background-image: var(--background-image);
   background-size: cover;
@@ -69,12 +69,12 @@
   align-items: center;
 }
 
-.fullscreen-wrapper:fullscreen .main-content {
+.fullscreenWrapper:fullscreen .mainContent {
   height: 100% !important;
   margin-top: 0;
 }
 
-.fullscreen-btn {
+.fullscreenBtn {
   position: absolute;
   top: 10px;
   right: 10px;
@@ -94,8 +94,7 @@
   transition: background 0.2s, color 0.2s;
 }
 
-.fullscreen-btn:hover {
+.fullscreenBtn:hover {
   background: rgba(255, 255, 255, 0.15);
   color: rgba(255, 255, 255, 0.9);
 }
-

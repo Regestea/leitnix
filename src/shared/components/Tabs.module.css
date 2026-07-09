@@ -8,7 +8,7 @@
 }
 
 /* ─── Header (tab list) ─────────────────────────────────── */
-.tabs-header {
+.tabsHeader {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -21,7 +21,7 @@
 }
 
 /* ─── Tab Button ────────────────────────────────────────── */
-.tabs-btn {
+.tabsBtn {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -39,12 +39,12 @@
   user-select: none;
 }
 
-.tabs-btn:hover {
+.tabsBtn:hover {
   background: rgba(255, 255, 255, 0.08);
   color: rgba(255, 255, 255, 0.95);
 }
 
-.tabs-btn--active {
+.tabsBtnActive {
   background: rgba(255, 255, 255, 0.15);
   color: #ffffff;
   box-shadow:
@@ -53,7 +53,7 @@
 }
 
 /* ─── Body ─────────────────────────────────────────────── */
-.tabs-body {
+.tabsBody {
   flex: 1;
   min-height: 0;
   overflow: auto;

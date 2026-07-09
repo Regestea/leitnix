@@ -1,4 +1,4 @@
-.markdown-code-block {
+.markdownCodeBlock {
   border-radius: 1rem;
   overflow-x: auto;
   overflow-y: hidden;
@@ -6,11 +6,9 @@
   margin: 1rem 0;
 }
 
-.markdown-inline-code {
+.markdownInlineCode {
   background: #2d2d2d;
   padding: 2px 6px;
   border-radius: 0.5rem;
   font-size: 0.9em;
 }
-
-

@@ -1,10 +1,10 @@
 // MarkdownTable.tsx
 import React from "react";
-import "./MarkdownTable.css";
+import styles from "./MarkdownTable.module.css";
 
 function MarkdownTable({ children }: { children?: React.ReactNode }) {
   return (
-    <div className="markdown-table-wrapper">
+    <div className={styles.markdownTableWrapper}>
       <table>{children}</table>
     </div>
   );

@@ -1,6 +1,6 @@
 /* Add Card Wizard */
 
-.add-card-wizard {
+.addCardWizard {
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -8,14 +8,14 @@
 
 /* Wizard Tabs */
 
-.wizard-tabs {
+.wizardTabs {
   display: flex;
   justify-content: center;
   gap: 0.5rem;
   padding: 0.5rem 0;
 }
 
-.wizard-tab {
+.wizardTab {
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -29,30 +29,30 @@
   font-size: 0.9rem;
 }
 
-.wizard-tab:disabled {
+.wizardTab:disabled {
   cursor: not-allowed;
   opacity: 0.4;
 }
 
-.wizard-tab:not(:disabled):hover {
+.wizardTab:not(:disabled):hover {
   background: rgba(255, 255, 255, 0.1);
   box-shadow: 0 0 15px rgba(0, 255, 255, 0.2);
 }
 
-.wizard-tab.active {
+.wizardTab.active {
   background: rgba(0, 255, 255, 0.1);
   border-color: rgba(0, 255, 255, 0.5);
   color: #ffffff;
   box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
 }
 
-.wizard-tab.completed {
+.wizardTab.completed {
   background: rgba(0, 255, 209, 0.08);
   border-color: rgba(0, 255, 209, 0.4);
   color: #00ffd1;
 }
 
-.wizard-tab-number {
+.wizardTabNumber {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -63,32 +63,32 @@
   font-weight: 600;
 }
 
-.wizard-tab.active .wizard-tab-number {
+.wizardTab.active .wizardTabNumber {
   background: rgba(0, 255, 255, 0.2);
 }
 
-.wizard-tab.completed .wizard-tab-number {
+.wizardTab.completed .wizardTabNumber {
   background: rgba(0, 255, 209, 0.2);
 }
 
-.wizard-tab-label {
+.wizardTabLabel {
   font-weight: 500;
 }
 
 /* Wizard Content */
 
-.wizard-content {
+.wizardContent {
   flex: 1;
   overflow: auto;
 }
 
 /* Step Generate */
 
-.step-generate {
+.stepGenerate {
   padding: 0.5rem;
 }
 
-.step-form {
+.stepForm {
   overflow: auto;
   display: flex;
   flex-direction: column;
@@ -97,7 +97,7 @@
 
 /* Step Loading */
 
-.step-loading {
+.stepLoading {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -106,24 +106,24 @@
   gap: 1.5rem;
 }
 
-.loading-text {
+.loadingText {
   color: rgba(255, 255, 255, 0.7);
   font-size: 1rem;
 }
 
 /* Step Review */
 
-.step-review {
+.stepReview {
   padding: 0.5rem;
 }
 
-.review-section {
+.reviewSection {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
 }
 
-.review-section h3 {
+.reviewSection h3 {
   color: rgba(255, 255, 255, 0.8);
   font-size: 1rem;
   font-weight: 600;
@@ -134,7 +134,7 @@
 
 /* Step Complete (Step 3) */
 
-.step-complete {
+.stepComplete {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -144,7 +144,7 @@
   text-align: center;
 }
 
-.complete-icon {
+.completeIcon {
   width: 4rem;
   height: 4rem;
   border-radius: 50%;
@@ -157,7 +157,7 @@
   color: #00ffd1;
 }
 
-.complete-message {
+.completeMessage {
   color: rgba(255, 255, 255, 0.7);
   font-size: 1rem;
   max-width: 20rem;
@@ -165,13 +165,13 @@
 
 /* Footer (rendered into MainContainer's footer slot by AddCard) */
 
-.add-card-footer {
+.addCardFooter {
   padding: 0 0.5rem;
 }
 
 /* Step Actions */
 
-.step-actions {
+.stepActions {
   display: flex;
   justify-content: center;
   gap: 0.75rem;
@@ -183,26 +183,26 @@
 /* Responsive */
 
 @media (max-width: 768px) {
-  .wizard-tabs {
+  .wizardTabs {
     gap: 0.25rem;
   }
 
-  .wizard-tab {
+  .wizardTab {
     padding: 0.5rem 0.8rem;
     font-size: 0.8rem;
   }
 
-  .wizard-tab-label {
+  .wizardTabLabel {
     display: none;
   }
 
-  .wizard-tab-number {
+  .wizardTabNumber {
     width: 2rem;
     height: 2rem;
   }
 }
 
-.custom-taglist {
+.customTaglist {
   padding: 1rem;
   overflow-y: auto;
   height: 45dvh;
@@ -215,7 +215,7 @@
 
 /* ─── Category Tag List ──────────────────────────────────────────────────── */
 
-.tag-item {
+.tagItem {
   padding: 1rem;
   margin-bottom: 1rem;
   border-radius: 1.5rem;
@@ -225,20 +225,20 @@
   justify-content: space-between;
 }
 
-.tag-control-menu {
+.tagControlMenu {
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 1rem;
 }
 
-.no-tags-text {
+.noTagsText {
   text-align: center;
   font-size: 1.2rem;
   color: rgba(255, 255, 255, 0.7);
 }
 
-.form-add-new-tag {
+.formAddNewTag {
   margin-top: 2rem;
   width: 50%;
   align-self: center;

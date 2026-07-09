@@ -3,7 +3,7 @@ import MarkdownRender from "../../shared/components/MarkdownRender";
 import { Button } from "../../shared/components/controls/Button";
 import { useLearnTopic } from "./hooks/useLearnTopic";
 import TagSelect from "./components/TagSelect";
-import "./learnTopic.css";
+import styles from "./learnTopic.module.css";
 
 export default function LearnTopic() {
   const {
@@ -45,13 +45,13 @@ export default function LearnTopic() {
       header={
         <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
           <Button label="←" onClick={goBackToTags} />
-          <span className="learn-card-progress">
+          <span className={styles.learnCardProgress}>
             {learnedLast24h} learned today
           </span>
         </div>
       }
       footer={
-        <div className="learn-footer">
+        <div className={styles.learnFooter}>
           <Button label="I Know" onClick={markAsKnown} />
           
           <Button label="Learn" onClick={startLearning} />

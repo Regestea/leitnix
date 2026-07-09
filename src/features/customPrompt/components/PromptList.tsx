@@ -1,6 +1,7 @@
 import { faPenToSquare, faTrashCan } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type { CustomPrompt } from "../../../shared/types/entities";
+import styles from "../Prompt.module.css";
 
 interface PromptListProps {
   prompts: CustomPrompt[];
@@ -14,23 +15,23 @@ export default function PromptList({
   onDelete,
 }: PromptListProps) {
   if (prompts.length === 0) {
-    return  <div className="custom-prompt-form"><p className="no-prompts-text">No custom prompts added yet.</p></div>;
+    return  <div className={styles.customPromptForm}><p className={styles.noPromptsText}>No custom prompts added yet.</p></div>;
   }
 
   return (
-    <div className="custom-prompt-form">
+    <div className={styles.customPromptForm}>
       {prompts.map((prompt) => (
-        <div className="prompt-item" key={prompt.Id}>
+        <div className={styles.promptItem} key={prompt.Id}>
           <h4>{prompt.Name ?? "Untitled Prompt"}</h4>
-          <div className="prompt-control-menu">
+          <div className={styles.promptControlMenu}>
             <span
-              className="prompt-control-menu"
+              className={styles.promptControlMenu}
               onClick={() => onEdit(prompt)}
             >
               <FontAwesomeIcon icon={faPenToSquare} />
             </span>
             <span
-              className="prompt-control-menu"
+              className={styles.promptControlMenu}
               onClick={() => onDelete(prompt.Id)}
             >
               <FontAwesomeIcon icon={faTrashCan} />

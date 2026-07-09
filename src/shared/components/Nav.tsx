@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, type CSSProperties } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
-import "./Nav.css";
+import styles from "./Nav.module.css";
 import {
   useNavStore,
   type NavState,
@@ -71,7 +71,7 @@ export default function Nav() {
 
   return (
     <>
-      <nav ref={navRef} className="bottom-nav glass">
+      <nav ref={navRef} className={`${styles.bottomNav} glass`}>
         {items.map((item: NavItem, index: number) => {
           if (!item.children?.length) return null;
           const isOpen = expandedIndex === index;
@@ -80,12 +80,12 @@ export default function Nav() {
           return (
             <div
               key={item.title}
-              className={`radial-menu${isOpen ? " open" : ""}`}
+              className={`${styles.radialMenu}${isOpen ? ` ${styles.radialMenuOpen}` : ""}`}
             >
               {item.children.map((child: NavChild, i: number) => (
                 <div
                   key={child.title}
-                  className="radial-item"
+                  className={`${styles.radialItem} ${styles[`radialItemNth${i + 1}` as keyof typeof styles]}`}
                   style={{ "--angle": angles[i] } as CSSProperties}
                   onClick={() => handleChildClick(child)}
                   title={child.title}
@@ -97,7 +97,7 @@ export default function Nav() {
           );
         })}
 
-        <div className="nav-items">
+        <div className={styles.navItems}>
           {items.map((item: NavItem, index: number) => {
             const isExpanded = expandedIndex === index;
             const isHidden = isAnyExpanded && !isExpanded;
@@ -106,10 +106,10 @@ export default function Nav() {
               <button
                 key={item.title}
                 className={[
-                  "nav-btn",
+                  styles.navBtn,
                   "glass",
-                  isExpanded ? "active" : "",
-                  isHidden ? "hide" : "",
+                  isExpanded ? styles.navBtnActive : "",
+                  isHidden ? styles.navBtnHide : "",
                 ]
                   .filter(Boolean)
                   .join(" ")}
@@ -117,11 +117,10 @@ export default function Nav() {
                 title={item.title}
                 onClick={(e) => handleParentClick(e, index)}
               >
-                    <FontAwesomeIcon
+                <FontAwesomeIcon
                   icon={isExpanded ? faXmark : item.icon}
-                  className="nav-icon"
+                  className={styles.navIcon}
                 />
-                
               </button>
             );
           })}
@@ -130,7 +129,7 @@ export default function Nav() {
 
       <div
         id="pageOverlay"
-        className={`page-overlay${isAnyExpanded ? " open" : ""}`}
+        className={`${styles.pageOverlay}${isAnyExpanded ? ` ${styles.pageOverlayOpen}` : ""}`}
         aria-hidden="true"
         onClick={() => updateExpanded(null)}
       />

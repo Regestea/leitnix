@@ -1,4 +1,4 @@
-.custom-prompt-form {
+.customPromptForm {
   padding: 1rem;
   overflow-y: auto;
   height: 65dvh;
@@ -9,7 +9,7 @@
     inset 0 -20px 20px -20px rgba(0, 0, 0, 0.5);
 }
 
-.prompt-item {
+.promptItem {
   padding: 1rem;
   margin-bottom: 1rem;
   border-radius: 1.5rem;
@@ -19,21 +19,21 @@
   justify-content: space-between;
 }
 
-.prompt-control-menu {
+.promptControlMenu {
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 1rem;
 }
 
-.form-add-new-prompt {
+.formAddNewPrompt {
   margin-top: 2rem;
   width: 50%;
   align-self: center;
   border-radius: 0.8rem;
 }
 
-.no-prompts-text {
+.noPromptsText {
   text-align: center;
   font-size: 1.2rem;
   color: rgba(255, 255, 255, 0.7);

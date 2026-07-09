@@ -1,5 +1,5 @@
 import { Camera, CameraResultType } from "@capacitor/camera";
-import "./ImageUpload.css";
+import styles from "./ImageUpload.module.css";
 
 const MAX_DEFAULT = 5;
 
@@ -37,13 +37,13 @@ export default function ImageUpload({
   const canAddMore = images.length < max;
 
   return (
-    <div className="image-upload">
-      <div className="image-upload-header">
-        <span className="image-upload-label">Images</span>
+    <div className={styles.imageUpload}>
+      <div className={styles.imageUploadHeader}>
+        <span className={styles.imageUploadLabel}>Images</span>
         {canAddMore && (
           <button
             type="button"
-            className="image-upload-btn camera-btn"
+            className={`${styles.imageUploadBtn} ${styles.cameraBtn}`}
             onClick={handleCamera}
           >
             + Add Image
@@ -52,13 +52,13 @@ export default function ImageUpload({
       </div>
 
       {images.length > 0 && (
-        <div className="image-upload-previews">
+        <div className={styles.imageUploadPreviews}>
           {images.map((src, i) => (
-            <div key={i} className="image-upload-thumb">
+            <div key={i} className={styles.imageUploadThumb}>
               <img src={src} alt={`Upload ${i + 1}`} />
               <button
                 type="button"
-                className="image-upload-remove"
+                className={styles.imageUploadRemove}
                 onClick={() => handleRemove(i)}
               >
                 ×
@@ -68,7 +68,7 @@ export default function ImageUpload({
         </div>
       )}
 
-      <span className="image-upload-count">
+      <span className={styles.imageUploadCount}>
         {images.length} / {max}
       </span>
     </div>

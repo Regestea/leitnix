@@ -1,4 +1,4 @@
-﻿.modal-overlay {
+.modalOverlay {
   position: fixed;
   inset: 0;
   z-index: 1000;
@@ -8,10 +8,15 @@
   align-items: center;
   justify-content: center;
   padding: 1rem;
-  animation: overlay-in 250ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: overlayIn 250ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  /* Force own compositing layer to escape backdrop-filter containing block */
+  /* from any ancestor (including fullscreen MainContainer's .mainContent) */
+  transform: translate3d(0, 0, 0);
+  will-change: transform;
+  isolation: isolate;
 }
 
-@keyframes overlay-in {
+@keyframes overlayIn {
   from {
     opacity: 0;
   }
@@ -20,7 +25,7 @@
   }
 }
 
-.modal-dialog {
+.modalDialog {
   font-weight: bold;
   position: relative;
   width: 100%;
@@ -31,12 +36,16 @@
   box-shadow:
     0 8px 32px rgba(0, 0, 0, 0.35),
     0 2px 8px rgba(0, 0, 0, 0.2);
-  animation: dialog-in 380ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: dialogIn 380ms cubic-bezier(0.16, 1, 0.3, 1) both;
   animation-delay: 40ms;
   overflow: hidden;
+  /* Force own compositing layer */
+  transform: translate3d(0, 0, 0);
+  will-change: transform;
+  isolation: isolate;
 }
 
-@keyframes dialog-in {
+@keyframes dialogIn {
   from {
     opacity: 0;
     transform: translateY(32px) scale(0.97);
@@ -47,14 +56,14 @@
   }
 }
 
-.modal-header {
+.modalHeader {
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 1.4rem 1.5rem 0.5rem;
 }
 
-.modal-title {
+.modalTitle {
   font-size: 1.5rem;
   background: linear-gradient(45deg, var(--primary), var(--secondary));
   background-clip: text;
@@ -62,7 +71,7 @@
   -webkit-text-fill-color: transparent;
 }
 
-.modal-close-btn {
+.modalCloseBtn {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -80,15 +89,15 @@
   line-height: 1;
 }
 
-.modal-close-btn:hover {
+.modalCloseBtn:hover {
   color: #ffffff;
   transform: scale(1.15);
 }
-.modal-close-btn:active {
+.modalCloseBtn:active {
   transform: scale(0.92);
 }
 
-.modal-body {
+.modalBody {
   padding: 0.75rem 1.5rem 1.75rem;
   color: rgba(255, 255, 255, 0.9);
   font-size: 0.9375rem;
@@ -98,7 +107,7 @@
   height: calc(90dvh - 10rem);
 }
 
-.modal-body label {
+.modalBody label {
   display: block;
   font-size: 0.875rem;
   font-weight: 600;
@@ -109,17 +118,17 @@
 
 /* ─── Modal Sizes ─────────────────────────────────────────────────────────── */
 
-.modal-sm {
+.modalSm {
   max-width: 28rem;
   margin: 0 auto;
 }
 
-.modal-md {
+.modalMd {
   max-width: 48rem;
   margin: 0 auto;
 }
 
-.modal-lg {
+.modalLg {
   max-width: 72rem;
   margin: 0 auto;
 }

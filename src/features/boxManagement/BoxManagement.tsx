@@ -6,7 +6,7 @@ import { useBoxes } from "./hooks/useBoxes";
 import { useBoxForm } from "./hooks/useBoxForm";
 import BoxList from "./components/BoxList";
 import BoxFormModal from "./components/BoxFormModal";
-import "./BoxManagement.css";
+import styles from "./BoxManagement.module.css";
 
 export default function BoxManagement() {
   const { boxes, cardCounts, deleteBox, updateBox, addBox } = useBoxes();
@@ -71,7 +71,7 @@ export default function BoxManagement() {
           }}
         >
           <Button
-            className="form-add-new-box"
+            className={styles.formAddNewBox}
             label={"Add New Box"}
             onClick={openAddModal}
           />

@@ -4,6 +4,7 @@ import MarkdownRender from "../../../shared/components/MarkdownRender";
 import MarkdownEditor from "../../../shared/components/MarkdownEditor";
 import { Input } from "../../../shared/components/controls/Input";
 import type { GeneratedCardData } from "../types";
+import styles from "../AddCard.module.css";
 
 interface StepReviewProps {
   card: GeneratedCardData;
@@ -23,15 +24,15 @@ export default function StepReview({
 }: StepReviewProps) {
   if (isGenerating) {
     return (
-      <div className="step-loading">
+      <div className={styles.stepLoading}>
         <ThinkingSphere />
-        <p className="loading-text">Generating questions...</p>
+        <p className={styles.loadingText}>Generating questions...</p>
       </div>
     );
   }
 
   return (
-    <div className="step-review">
+    <div className={styles.stepReview}>
       <div
         style={{
           display: "flex",
@@ -39,7 +40,7 @@ export default function StepReview({
           gap: "1rem",
         }}
       >
-        <div className="review-section">
+        <div className={styles.reviewSection}>
           <h3>Card Topic</h3>
           <Input
             defaultValue={card.topicMarkdown}
@@ -48,7 +49,7 @@ export default function StepReview({
           />
         </div>
 
-        <div className="review-section">
+        <div className={styles.reviewSection}>
           <div style={{ overflow: "scroll" }}>
             <Tabs
               tabs={[

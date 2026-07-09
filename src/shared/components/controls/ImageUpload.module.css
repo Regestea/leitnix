@@ -1,22 +1,22 @@
-.image-upload {
+.imageUpload {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
 }
 
-.image-upload-header {
+.imageUploadHeader {
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
-.image-upload-label {
+.imageUploadLabel {
   color: rgba(255, 255, 255, 0.8);
   font-size: 0.9rem;
   font-weight: 500;
 }
 
-.image-upload-btn {
+.imageUploadBtn {
   background: rgba(0, 255, 255, 0.1);
   border: 1px solid rgba(0, 255, 255, 0.4);
   color: #ffffff;
@@ -27,12 +27,12 @@
   transition: all 0.3s ease;
 }
 
-.image-upload-btn:hover {
+.imageUploadBtn:hover {
   background: rgba(0, 255, 255, 0.2);
   box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
 }
 
-.camera-btn {
+.cameraBtn {
   background: rgba(0, 255, 255, 0.1);
   border: 1px solid rgba(0, 255, 255, 0.4);
   color: #ffffff;
@@ -43,18 +43,18 @@
   transition: all 0.3s ease;
 }
 
-.camera-btn:hover {
+.cameraBtn:hover {
   background: rgba(0, 255, 255, 0.2);
   box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
 }
 
-.image-upload-previews {
+.imageUploadPreviews {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
 }
 
-.image-upload-thumb {
+.imageUploadThumb {
   position: relative;
   width: 4.5rem;
   height: 4.5rem;
@@ -64,14 +64,14 @@
   flex-shrink: 0;
 }
 
-.image-upload-thumb img {
+.imageUploadThumb img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
 }
 
-.image-upload-remove {
+.imageUploadRemove {
   position: absolute;
   top: 0.15rem;
   right: 0.15rem;
@@ -91,11 +91,11 @@
   transition: background 0.2s ease;
 }
 
-.image-upload-remove:hover {
+.imageUploadRemove:hover {
   background: rgba(255, 59, 48, 1);
 }
 
-.image-upload-count {
+.imageUploadCount {
   color: rgba(255, 255, 255, 0.45);
   font-size: 0.8rem;
 }

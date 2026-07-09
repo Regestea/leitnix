@@ -6,7 +6,7 @@ import { useAiModels } from "./hooks/useAiModels";
 import { useAiModelForm } from "./hooks/useAiModelForm";
 import ModelList from "./components/ModelList";
 import AiModelFormModal from "./components/AiModelFormModal";
-import "./AiModels.css";
+import styles from "./AiModels.module.css";
 
 export default function AiModels() {
   const { models, deleteModel, updateModel, addModel } = useAiModels();
@@ -67,7 +67,7 @@ export default function AiModels() {
           }}
         >
           <Button
-            className="form-add-new-model"
+            className={styles.formAddNewModel}
             label={"Add New Model"}
             onClick={openAddModal}
           />
