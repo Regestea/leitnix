@@ -68,7 +68,11 @@ async function resolveSystemPrompt(
  * Components call this service for any write/AI operation and use
  * repositories only for read operations (e.g. loading select options).
  */
-export class CardService {
+import type { ICardService } from "./ICardService";
+
+// ... existing imports
+
+export class CardService implements ICardService {
   private cardRepo: ICardRepository = cardRepository;
   private questionRepo: IQuestionRepository = questionRepository;
 
@@ -184,3 +188,5 @@ export class CardService {
     return this.saveCard({ ...request, questions });
   }
 }
+
+export const cardService: ICardService = new CardService();

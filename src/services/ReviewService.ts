@@ -15,7 +15,11 @@ function nowUnix(): number {
  *  - Activates pending cards (Start Learning / I Know It).
  *  - Advances cards between boxes on correct/incorrect reviews.
  */
-export class ReviewService {
+import type { IReviewService } from "./IReviewService";
+
+// ... existing imports
+
+export class ReviewService implements IReviewService {
   private cardRepo: ICardRepository = cardRepository;
   private boxRepo: IBoxRepository = boxRepository;
   private settingRepo: ISettingRepository = settingRepository;
@@ -109,3 +113,5 @@ export class ReviewService {
     }
   }
 }
+
+export const reviewService: IReviewService = new ReviewService();

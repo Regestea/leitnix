@@ -1,7 +1,8 @@
 import type { z } from "zod";
-import { fetchStructuredAI } from "./aiClient";
+import { aiService } from "./aiClient";
 import { resolveProviderBaseUrl } from "./aiProviderConfig.ts";
-import { AiModelRepository } from "../repositories/AiModelRepository";
+import { aiModelRepository } from "../repositories/AiModelRepository";
+import type { IAiModelRepository } from "../iRepositories/IAiModelRepository";
 
 interface FetchStructuredAIByModelIdOptions<T> {
   modelId: string;
@@ -16,7 +17,7 @@ export async function fetchStructuredAIByModelId<T>(
 ): Promise<T> {
   const { modelId, schema, prompt, systemPrompt, images } = options;
 
-  const repository = new AiModelRepository();
+  const repository: IAiModelRepository = aiModelRepository;
   const model = await repository.getById(modelId);
 
   if (!model) {
@@ -35,7 +36,7 @@ export async function fetchStructuredAIByModelId<T>(
 
   const url = resolveProviderBaseUrl(model);
 
-  return fetchStructuredAI<T>({
+  return aiService.fetchStructuredAI<T>({
     url,
     apiKey: model.APIKey,
     modelName: model.ModelName,

@@ -1,5 +1,6 @@
-import { useEffect, useMemo, useState } from "react";
-import { ReviewService } from "../../../services/ReviewService";
+import { useEffect, useState } from "react";
+import { reviewService } from "../../../services/ReviewService";
+import type { IReviewService } from "../../../services/IReviewService";
 import { cardRepository } from "../../../repositories/CardRepository";
 import type { ICardRepository } from "../../../iRepositories/ICardRepository.ts";
 import { categoryTagRepository } from "../../../repositories/CategoryTagRepository";
@@ -7,7 +8,7 @@ import type { ICategoryTagRepository } from "../../../iRepositories/ICategoryTag
 import type { Card, CategoryTag } from "../../../shared/types/entities";
 
 export function useLearnTopic() {
-  const reviewService = useMemo(() => new ReviewService(), []);
+  const reviewServiceInstance: IReviewService = reviewService;
   const cardRepo: ICardRepository = cardRepository;
   const tagRepo: ICategoryTagRepository = categoryTagRepository;
 
@@ -59,14 +60,14 @@ export function useLearnTopic() {
   const startLearning = async () => {
     const card = queue[currentIndex];
     if (!card) return;
-    await reviewService.startLearning(card.Id);
+    await reviewServiceInstance.startLearning(card.Id);
     refreshAfterAction();
   };
 
   const markAsKnown = async () => {
     const card = queue[currentIndex];
     if (!card) return;
-    await reviewService.markAsKnown(card.Id);
+    await reviewServiceInstance.markAsKnown(card.Id);
     refreshAfterAction();
   };
 

@@ -1,6 +1,7 @@
 import OpenAI from 'openai';
 import { zodResponseFormat } from 'openai/helpers/zod';
 import { z } from 'zod';
+import type { IAIService } from "./IAIService";
 
 interface AIServiceOptions<T> {
   url: string;
@@ -12,52 +13,51 @@ interface AIServiceOptions<T> {
   images?: string[];
 }
 
+export const aiService: IAIService = {
+  fetchStructuredAI: async <T>(options: AIServiceOptions<T>): Promise<T> => {
+    const { url, apiKey, modelName, schema, prompt, systemPrompt, images } = options;
 
-export async function fetchStructuredAI<T>(
-  options: AIServiceOptions<T>
-): Promise<T> {
-  const { url, apiKey, modelName, schema, prompt, systemPrompt, images } = options;
+    try {
+      const client = new OpenAI({
+        baseURL: url,
+        apiKey: apiKey,
+        dangerouslyAllowBrowser: true,
+      });
 
-  try {
-    const client = new OpenAI({
-      baseURL: url,
-      apiKey: apiKey,
-      dangerouslyAllowBrowser: true,
-    });
+      const userContent = images && images.length > 0
+        ? [
+            { type: 'text' as const, text: prompt },
+            ...images.map((img) => ({
+              type: 'image_url' as const,
+              image_url: { url: img },
+            })),
+          ]
+        : prompt;
 
-    const userContent = images && images.length > 0
-      ? [
-          { type: 'text' as const, text: prompt },
-          ...images.map((img) => ({
-            type: 'image_url' as const,
-            image_url: { url: img },
-          })),
-        ]
-      : prompt;
+      const completion = await client.chat.completions.parse({
+        model: modelName,
+        messages: [
+          ...(systemPrompt
+            ? [{ role: 'system' as const, content: systemPrompt }]
+            : []),
+          { role: 'user' as const, content: userContent },
+        ],
+        response_format: zodResponseFormat(schema, 'response'),
+      });
 
-    const completion = await client.chat.completions.parse({
-      model: modelName,
-      messages: [
-        ...(systemPrompt
-          ? [{ role: 'system' as const, content: systemPrompt }]
-          : []),
-        { role: 'user' as const, content: userContent },
-      ],
-      response_format: zodResponseFormat(schema, 'response'),
-    });
+      const parsed = completion.choices[0]?.message?.parsed;
 
-    const parsed = completion.choices[0]?.message?.parsed;
+      if (!parsed) {
+        throw new Error('AI response could not be parsed against the schema.');
+      }
 
-    if (!parsed) {
-      throw new Error('AI response could not be parsed against the schema.');
+      return parsed;
+    } catch (error) {
+      console.error('AI Service Error:', error);
+      throw error;
     }
-
-    return parsed;
-  } catch (error) {
-    console.error('AI Service Error:', error);
-    throw error;
   }
-}
+};
 
 type SuccessResponse = {
   success: boolean;
@@ -75,7 +75,7 @@ export async function testApi(
   modelName: string
 ): Promise<boolean> {
   try {
-    const result = await fetchStructuredAI<SuccessResponse>({
+    const result = await aiService.fetchStructuredAI<SuccessResponse>({
       url,
       apiKey,
       modelName,

@@ -6,7 +6,8 @@ import { WizardTabs } from "./components/WizardTabs";
 import StepGenerate from "./components/StepGenerate";
 import StepReview from "./components/StepReview";
 import StepComplete from "./components/StepComplete";
-import { CardService } from "../../services/CardService";
+import { cardService } from "../../services/CardService";
+import type { ICardService } from "../../services/ICardService";
 import { AddCardWizardStep } from "./types";
 import { EMPTY_FORM_STATE, validateAddCardForm } from "./types";
 import type {
@@ -77,8 +78,8 @@ export default function AddCard() {
     setIsGeneratingCard(true);
     setCardError(null);
     try {
-      const cardService = new CardService();
-      const generated = await cardService.generateCard({
+      const service: ICardService = cardService;
+      const generated = await service.generateCard({
         topicType: formState.topicType,
         aiModelId: formState.aiModelId,
         customPromptId: formState.customPromptId,
@@ -111,13 +112,13 @@ export default function AddCard() {
     setIsGeneratingQuestions(true);
     setQuestionError(null);
     try {
-      const cardService = new CardService();
-      const questions = await cardService.generateQuestions(
+      const service: ICardService = cardService;
+      const questions = await service.generateQuestions(
         formStateSaved.aiModelId,
         card
       );
 
-      await cardService.saveCard({
+      await service.saveCard({
         aiModelId: formStateSaved.aiModelId,
         categoryTagId: formStateSaved.categoryTagId,
         card,
