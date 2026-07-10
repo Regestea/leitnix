@@ -20,7 +20,7 @@ import styles from "./AddCard.module.css";
 export default function AddCard() {
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState<AddCardWizardStep>(
-    AddCardWizardStep.Generate
+    AddCardWizardStep.Generate,
   );
 
   // ── Generate-step state (lifted from StepGenerate) ────────────────
@@ -39,14 +39,15 @@ export default function AddCard() {
   // Snapshot of the form at generation time — the saved card/questions
   // must use the category tag + AI model that were active when "Generate"
   // was clicked, even if the user later edits the form on a re-run.
-  const [formStateSaved, setFormStateSaved] =
-    useState<AddCardFormState | null>(null);
+  const [formStateSaved, setFormStateSaved] = useState<AddCardFormState | null>(
+    null,
+  );
 
   const handleTabClick = useCallback(
     (step: AddCardWizardStep) => {
       if (step < currentStep) setCurrentStep(step);
     },
-    [currentStep]
+    [currentStep],
   );
 
   // ── Generate handlers ─────────────────────────────────────────────
@@ -61,7 +62,7 @@ export default function AddCard() {
         return next;
       });
     },
-    []
+    [],
   );
 
   const handleImagesChange = useCallback((next: string[]) => {
@@ -91,7 +92,7 @@ export default function AddCard() {
       setCurrentStep(AddCardWizardStep.Review);
     } catch (err) {
       setCardError(
-        err instanceof Error ? err.message : "Failed to generate card"
+        err instanceof Error ? err.message : "Failed to generate card",
       );
     } finally {
       setIsGeneratingCard(false);
@@ -103,7 +104,7 @@ export default function AddCard() {
     (part: "topicMarkdown" | "markdownContent", value: string) => {
       setCard((prev) => (prev ? { ...prev, [part]: value } : prev));
     },
-    []
+    [],
   );
 
   const handleGenerateQuestions = useCallback(async () => {
@@ -115,7 +116,7 @@ export default function AddCard() {
       const service: ICardService = cardService;
       const questions = await service.generateQuestions(
         formStateSaved.aiModelId,
-        card
+        card,
       );
 
       await service.saveCard({
@@ -128,7 +129,7 @@ export default function AddCard() {
       setCurrentStep(AddCardWizardStep.Complete);
     } catch (err) {
       setQuestionError(
-        err instanceof Error ? err.message : "Failed to generate questions"
+        err instanceof Error ? err.message : "Failed to generate questions",
       );
     } finally {
       setIsGeneratingQuestions(false);
@@ -216,7 +217,6 @@ export default function AddCard() {
           {currentStep === AddCardWizardStep.Complete && <StepComplete />}
         </div>
       </div>
-      
     </MainContainer>
   );
 }

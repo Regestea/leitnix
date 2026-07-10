@@ -5,10 +5,16 @@ import styles from "./MainContainer.module.css";
 interface MainContainerProps {
   children: ReactNode;
   header?: ReactNode;
+  topBar?: ReactNode;
   footer?: ReactNode;
 }
 
-export default function MainContainer({ children, header, footer }: MainContainerProps) {
+export default function MainContainer({
+  children,
+  header,
+  topBar,
+  footer,
+}: MainContainerProps) {
   const contentRef = useRef<HTMLDivElement>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -31,18 +37,22 @@ export default function MainContainer({ children, header, footer }: MainContaine
   return (
     <div className={styles.mainContainer}>
       <div className={styles.fullscreenWrapper} ref={wrapperRef}>
-        <div className={`${styles.mainContent} custom-font-style`} ref={contentRef}>
-          <button
-            className={styles.fullscreenBtn}
-            onClick={handleToggle}
-            title={isFullscreen ? "Exit fullscreen" : "Fullscreen"}
-          >
-            {isFullscreen ? "✕" : "⛶"}
-          </button>
-          {header && <div className={styles.mainHeader}>{header}</div>}
-          <div className={styles.mainScrollArea}>
-            {children}
+        <div
+          className={`${styles.mainContent} custom-font-style`}
+          ref={contentRef}
+        >
+          <div className={styles.topBar}>
+            {topBar && <span>{topBar}</span>}
+            <button
+              className={styles.fullscreenBtn}
+              onClick={handleToggle}
+              title={isFullscreen ? "Exit fullscreen" : "Fullscreen"}
+            >
+              {isFullscreen ? "✕" : "⛶"}
+            </button>
           </div>
+          {header && <div className={styles.mainHeader}>{header}</div>}
+          <div className={styles.mainScrollArea}>{children}</div>
           {footer && <div className={styles.mainFooter}>{footer}</div>}
         </div>
       </div>
