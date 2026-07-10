@@ -35,19 +35,19 @@ export type AiModel = {
 
 export interface CustomPrompt {
   Id: string;
-  Name: string | null;
-  Prompt: string | null;
+  Name: string;
+  Prompt: string;
 }
 
 export interface CategoryTag {
   Id: string;
-  Name: string | null;
+  Name: string;
 }
 
 export interface Box {
   Id: string;
-  Name: string | null;
-  RepeatIntervalSeconds: number | null;
+  Name: string;
+  RepeatIntervalSeconds: number;
   NextBoxId: string | null;
   PreviousBoxId: string | null;
 }
@@ -56,8 +56,8 @@ export interface Card {
   Id: string;
   BoxId: string | null;
   CategoryTagId: string | null;
-  MarkdownTopic: string | null;
-  MarkdownContent: string | null;
+  MarkdownTopic: string;
+  MarkdownContent: string;
   LastReviewUnixTime: number | null;
   NextReviewUnixTime: number | null;
   StartedLearningUnixTime: number | null;

@@ -3,8 +3,8 @@ import type { Box } from "../../shared/types/entities";
 
 export const EMPTY_BOX: Box = {
   Id: "",
-  Name: null,
-  RepeatIntervalSeconds: null,
+  Name: "",
+  RepeatIntervalSeconds: 0,
   NextBoxId: null,
   PreviousBoxId: null,
 };

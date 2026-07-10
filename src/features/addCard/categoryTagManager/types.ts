@@ -3,7 +3,7 @@ import type { CategoryTag } from "../../../shared/types/entities";
 
 // ─── Empty default ─────────────────────────────────────────────────
 
-export const EMPTY_TAG: CategoryTag = { Id: "", Name: null };
+export const EMPTY_TAG: CategoryTag = { Id: "", Name: "" };
 
 // ─── Form validation ───────────────────────────────────────────────
 

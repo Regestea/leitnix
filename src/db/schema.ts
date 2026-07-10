@@ -44,38 +44,44 @@ export const CREATE_TABLE_STATEMENTS = [
   `
     CREATE TABLE IF NOT EXISTS CategoryTags (
       Id TEXT PRIMARY KEY,
-      Name TEXT
+      Name TEXT NOT NULL
     );
   `,
   `
     CREATE TABLE IF NOT EXISTS CustomPrompts (
       Id TEXT PRIMARY KEY,
-      Name TEXT,
-      Prompt TEXT
+      Name TEXT NOT NULL,
+      Prompt TEXT NOT NULL
     );
   `,
   `
     CREATE TABLE IF NOT EXISTS Boxes (
       Id TEXT PRIMARY KEY,
-      Name TEXT,
-      RepeatIntervalSeconds INTEGER NOT NULL,
+      Name TEXT NOT NULL,
+      RepeatIntervalSeconds INTEGER NOT NULL
+        CHECK (RepeatIntervalSeconds >= 0),
       NextBoxId TEXT,
-      PreviousBoxId TEXT
-    );
+      PreviousBoxId TEXT,
+      FOREIGN KEY (NextBoxId) REFERENCES Boxes(Id),
+      FOREIGN KEY (PreviousBoxId) REFERENCES Boxes(Id)
+);
   `,
   `
     CREATE TABLE IF NOT EXISTS Cards (
       Id TEXT PRIMARY KEY,
       BoxId TEXT,
       CategoryTagId TEXT,
-      MarkdownTopic TEXT,
-      MarkdownContent TEXT,
-      LastReviewUnixTime INTEGER,
-      NextReviewUnixTime INTEGER,
-      StartedLearningUnixTime INTEGER,
+      MarkdownTopic TEXT NOT NULL,
+      MarkdownContent TEXT NOT NULL,
+      LastReviewUnixTime INTEGER
+        CHECK (LastReviewUnixTime IS NULL OR LastReviewUnixTime >= 0),
+      NextReviewUnixTime INTEGER
+        CHECK (NextReviewUnixTime IS NULL OR NextReviewUnixTime >= 0),
+      StartedLearningUnixTime INTEGER
+        CHECK (StartedLearningUnixTime IS NULL OR StartedLearningUnixTime >= 0),
       FOREIGN KEY (BoxId) REFERENCES Boxes(Id) ON DELETE CASCADE,
       FOREIGN KEY (CategoryTagId) REFERENCES CategoryTags(Id) ON DELETE SET NULL
-    );
+);
   `,
   `
     CREATE TABLE IF NOT EXISTS FreeResponseQuestions (

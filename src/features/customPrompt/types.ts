@@ -3,8 +3,8 @@ import type { CustomPrompt } from "../../shared/types/entities";
 
 export const EMPTY_PROMPT: CustomPrompt = {
   Id: "",
-  Name: null,
-  Prompt: null,
+  Name: "",
+  Prompt: "",
 };
 
 export const customPromptFormSchema = z.object({

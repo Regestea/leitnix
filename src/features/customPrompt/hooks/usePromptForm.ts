@@ -33,7 +33,7 @@ export function usePromptForm() {
   ) => {
     setFormPrompt((prev: CustomPrompt) => ({
       ...prev,
-      [field]: value === "" ? null : value,
+      [field]: value,
     }));
     setFormErrors((prev: CustomPromptFormErrors) => {
       if (!(field in prev)) return prev;

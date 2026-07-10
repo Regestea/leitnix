@@ -29,7 +29,7 @@ export function useBoxForm() {
   const handleNameChange = (value: string) => {
     setFormBox((prev: Box) => ({
       ...prev,
-      Name: value === "" ? null : value,
+      Name: value,
     }));
     setFormErrors((prev: BoxFormErrors) => {
       if (!("Name" in prev)) return prev;

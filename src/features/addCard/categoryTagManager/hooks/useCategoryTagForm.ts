@@ -29,7 +29,7 @@ export function useCategoryTagForm() {
   const handleFieldChange = (value: string) => {
     setFormTag((prev) => ({
       ...prev,
-      Name: value === "" ? null : value,
+      Name: value,
     }));
     setFormErrors((prev) => {
       if (!("Name" in prev)) return prev;
