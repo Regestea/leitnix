@@ -9,7 +9,7 @@ export interface Setting {
 }
 
 export interface Theme {
-  Id: string;
+  Id: string; 
   FontFamily: string | null;
   FontSize: string | null;
   FontWeight: string | null;
