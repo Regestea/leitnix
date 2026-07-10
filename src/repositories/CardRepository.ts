@@ -42,15 +42,6 @@ export class CardRepository implements ICardRepository {
     );
   }
 
-  async getFirstBoxId(): Promise<string | null> {
-    const db = await getDb();
-    const result = await db.query(
-      "SELECT Id FROM Boxes WHERE PreviousBoxId IS NULL LIMIT 1;"
-    );
-    const rows = result.values ?? [];
-    return rows.length > 0 ? (rows[0].Id as string) : null;
-  }
-
   async getById(id: string): Promise<Card | null> {
     const db = await getDb();
     const result = await db.query("SELECT * FROM Cards WHERE Id = ?;", [id]);

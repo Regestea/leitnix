@@ -89,7 +89,7 @@ export const CREATE_TABLE_STATEMENTS = [
       CardId TEXT NOT NULL,
       MarkdownQuestion TEXT NOT NULL,
       MarkdownAnswer TEXT NOT NULL,
-      IsAsked BOOLEAN NOT NULL DEFAULT 0,
+      AskedTimes INTEGER NOT NULL DEFAULT 0,
       FOREIGN KEY (CardId) REFERENCES Cards(Id) ON DELETE CASCADE
     );
   `,
@@ -99,7 +99,7 @@ export const CREATE_TABLE_STATEMENTS = [
       CardId TEXT NOT NULL,
       MarkdownQuestion TEXT NOT NULL,
       MarkdownAnswer TEXT NOT NULL,
-      IsAsked BOOLEAN NOT NULL DEFAULT 0,
+      AskedTimes INTEGER NOT NULL DEFAULT 0,
       FOREIGN KEY (CardId) REFERENCES Cards(Id) ON DELETE CASCADE
     );
   `,
@@ -114,7 +114,7 @@ export const CREATE_TABLE_STATEMENTS = [
       MarkdownOptionD TEXT NOT NULL,
       CorrectOption TEXT NOT NULL
       CHECK (CorrectOption IN ('A', 'B', 'C', 'D')),
-      IsAsked BOOLEAN NOT NULL DEFAULT 0,
+      AskedTimes INTEGER NOT NULL DEFAULT 0,
       FOREIGN KEY (CardId) REFERENCES Cards(Id) ON DELETE CASCADE
     );
   `,

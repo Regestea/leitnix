@@ -4,7 +4,6 @@ export interface ICardRepository {
   create(card: Card): Promise<void>;
   getByCategoryTagId(tagId: string): Promise<Card[]>;
   updateCategoryTagId(cardIds: string[], newTagId: string): Promise<void>;
-  getFirstBoxId(): Promise<string | null>;
   getById(id: string): Promise<Card | null>;
   getPendingByTag(tagId: string): Promise<Card[]>;
   getTagPendingCounts(): Promise<Map<string, number>>;

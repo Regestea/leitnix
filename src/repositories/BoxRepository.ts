@@ -3,12 +3,6 @@ import type { Box } from "../db/entities.ts";
 import type { IBoxRepository } from "../iRepositories/IBoxRepository.ts";
 
 export class BoxRepository implements IBoxRepository {
-  async getAll(): Promise<Box[]> {
-    const db = await getDb();
-    const result = await db.query("SELECT * FROM Boxes;");
-    return (result.values ?? []) as Box[];
-  }
-
   async getById(id: string): Promise<Box | null> {
     const db = await getDb();
     const result = await db.query("SELECT * FROM Boxes WHERE Id = ?;", [id]);
@@ -35,7 +29,9 @@ export class BoxRepository implements IBoxRepository {
   }
 
   async getChainOrdered(): Promise<Box[]> {
-    const allBoxes = await this.getAll();
+    const db = await getDb();
+    const result = await db.query("SELECT * FROM Boxes;");
+    const allBoxes = (result.values ?? []) as Box[];
     const boxMap = new Map<string, Box>();
     for (const box of allBoxes) {
       boxMap.set(box.Id, box);

@@ -68,6 +68,7 @@ export interface FreeResponseQuestion {
   CardId: string;
   MarkdownQuestion: string | null;
   MarkdownAnswer: string | null;
+  AskedTimes: number;
 }
 
 export interface FillTheBlankQuestion {
@@ -75,6 +76,7 @@ export interface FillTheBlankQuestion {
   CardId: string;
   MarkdownQuestion: string | null;
   MarkdownAnswer: string | null;
+  AskedTimes: number;
 }
 
 export type MultipleChoiceOption = "A" | "B" | "C" | "D";
@@ -88,4 +90,5 @@ export interface MultipleChoiceQuestion {
   MarkdownOptionC: string | null;
   MarkdownOptionD: string | null;
   CorrectOption: MultipleChoiceOption | null;
+  AskedTimes: number;
 }
