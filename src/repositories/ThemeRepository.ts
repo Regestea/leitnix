@@ -12,21 +12,7 @@ const DEFAULT_Theme: Omit<Theme, "Id"> = {
   AndroidNavigation: true,
 };
 
-export class ThemeRepository implements IThemeRepository {
-  async get(): Promise<Theme | null> {
-    const db = await getDb();
-    const result = await db.query("SELECT * FROM Theme WHERE Id = ?;", [
-      Theme_ID,
-    ]);
-    const row = result.values?.[0];
-    if (!row) return null;
-
-    return {
-      ...(row as Theme),
-      AndroidNavigation: !!row.AndroidNavigation,
-    };
-  }
-
+export class ThemeRepository {
   async upsert(theme: Omit<Theme, "Id">): Promise<void> {
     const db = await getDb();
     await db.run(
@@ -50,8 +36,17 @@ export class ThemeRepository implements IThemeRepository {
   }
 
   async getOrCreateDefaults(): Promise<Theme> {
-    const existing = await this.get();
-    if (existing) return existing;
+    const db = await getDb();
+    const result = await db.query("SELECT * FROM Theme WHERE Id = ?;", [
+      Theme_ID,
+    ]);
+    const row = result.values?.[0];
+    if (row) {
+      return {
+        ...(row as Theme),
+        AndroidNavigation: !!row.AndroidNavigation,
+      };
+    }
 
     await this.upsert(DEFAULT_Theme);
     return { Id: Theme_ID, ...DEFAULT_Theme };

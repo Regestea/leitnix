@@ -146,6 +146,7 @@ export class CardService implements ICardService {
           CardId: cardId,
           MarkdownQuestion: q.markdownQuestion,
           MarkdownAnswer: q.markdownAnswer,
+          AskedTimes:0
         })),
       );
 
@@ -155,6 +156,7 @@ export class CardService implements ICardService {
           CardId: cardId,
           MarkdownQuestion: q.markdownQuestion,
           MarkdownAnswer: q.markdownAnswer,
+          AskedTimes:0
         })),
       );
 
@@ -168,6 +170,7 @@ export class CardService implements ICardService {
           MarkdownOptionC: q.markdownOptionC,
           MarkdownOptionD: q.markdownOptionD,
           CorrectOption: q.correctOption,
+          AskedTimes:0
         })),
       );
 

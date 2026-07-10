@@ -9,29 +9,20 @@ export class CategoryTagRepository implements ICategoryTagRepository {
     return (result.values ?? []) as CategoryTag[];
   }
 
-  async getById(id: string): Promise<CategoryTag | null> {
-    const db = await getDb();
-    const result = await db.query("SELECT * FROM CategoryTags WHERE Id = ?;", [
-      id,
-    ]);
-    const rows = result.values ?? [];
-    return rows.length > 0 ? (rows[0] as CategoryTag) : null;
-  }
-
   async create(tag: CategoryTag): Promise<void> {
     const db = await getDb();
-    await db.run(
-      `INSERT INTO CategoryTags (Id, Name) VALUES (?, ?);`,
-      [tag.Id, tag.Name]
-    );
+    await db.run(`INSERT INTO CategoryTags (Id, Name) VALUES (?, ?);`, [
+      tag.Id,
+      tag.Name,
+    ]);
   }
 
   async update(tag: CategoryTag): Promise<void> {
     const db = await getDb();
-    await db.run(
-      `UPDATE CategoryTags SET Name = ? WHERE Id = ?;`,
-      [tag.Name, tag.Id]
-    );
+    await db.run(`UPDATE CategoryTags SET Name = ? WHERE Id = ?;`, [
+      tag.Name,
+      tag.Id,
+    ]);
   }
 
   async delete(id: string): Promise<void> {
@@ -40,4 +31,5 @@ export class CategoryTagRepository implements ICategoryTagRepository {
   }
 }
 
-export const categoryTagRepository: ICategoryTagRepository = new CategoryTagRepository();
+export const categoryTagRepository: ICategoryTagRepository =
+  new CategoryTagRepository();

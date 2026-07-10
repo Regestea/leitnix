@@ -1,7 +1,6 @@
 import type { Box } from "../db/entities.ts";
 
 export interface IBoxRepository {
-  getAll(): Promise<Box[]>;
   getById(id: string): Promise<Box | null>;
   getFirst(): Promise<Box | null>;
   getFinish(): Promise<Box | null>;
