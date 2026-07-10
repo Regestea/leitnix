@@ -4,7 +4,7 @@ import {
   SQLiteDBConnection,
 } from "@capacitor-community/sqlite";
 import { CREATE_TABLE_STATEMENTS } from "./schema.ts";
-import { seedDefaultData } from "./seed.ts";
+import { SeedDatabase } from "./SeedDatabase.ts";
 
 const sqlite = new SQLiteConnection(CapacitorSQLite);
 
@@ -64,13 +64,17 @@ export async function initializeDatabase(): Promise<void> {
       await db!.execute(statement);
     }
 
-    const seedDb = {
+    const seeder = new SeedDatabase({
       execute: async (sql: string) => {
         await db!.execute(sql);
       },
-    };
+    });
 
-    await seedDefaultData(seedDb);
+    await seeder.seedEssential();
+
+    if (import.meta.env.DEV) {
+      await seeder.seedDev();
+    }
   });
 
   // Re-throw so callers still see failures, but the promise stays cached.
