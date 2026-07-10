@@ -1,5 +1,10 @@
 import { getDb } from "../db/connection";
 import type { IQuestionRepository } from "../iRepositories/IQuestionRepository.ts";
+import type {
+  FillTheBlankQuestion,
+  FreeResponseQuestion,
+  MultipleChoiceQuestion,
+} from "../db/entities.ts";
 
 interface QuestionRow {
   Id: string;
@@ -19,9 +24,7 @@ export class QuestionRepository implements IQuestionRepository {
     }
   }
 
-  async createFreeResponseQuestions(
-    questions: { Id: string; CardId: string; MarkdownQuestion: string; MarkdownAnswer: string }[]
-  ): Promise<void> {
+  async createFreeResponseQuestions(questions: FreeResponseQuestion[]): Promise<void> {
     await this.createMany(
       "FreeResponseQuestions",
       "Id, CardId, MarkdownQuestion, MarkdownAnswer",
@@ -29,9 +32,7 @@ export class QuestionRepository implements IQuestionRepository {
     );
   }
 
-  async createFillTheBlankQuestions(
-    questions: { Id: string; CardId: string; MarkdownQuestion: string; MarkdownAnswer: string }[]
-  ): Promise<void> {
+  async createFillTheBlankQuestions(questions: FillTheBlankQuestion[]): Promise<void> {
     await this.createMany(
       "FillTheBlankQuestions",
       "Id, CardId, MarkdownQuestion, MarkdownAnswer",
@@ -39,14 +40,7 @@ export class QuestionRepository implements IQuestionRepository {
     );
   }
 
-  async createMultipleChoiceQuestions(
-    questions: {
-      Id: string; CardId: string; MarkdownQuestion: string;
-      MarkdownOptionA: string; MarkdownOptionB: string;
-      MarkdownOptionC: string; MarkdownOptionD: string;
-      CorrectOption: string;
-    }[]
-  ): Promise<void> {
+  async createMultipleChoiceQuestions(questions: MultipleChoiceQuestion[]): Promise<void> {
     await this.createMany(
       "MultipleChoiceQuestions",
       "Id, CardId, MarkdownQuestion, MarkdownOptionA, MarkdownOptionB, MarkdownOptionC, MarkdownOptionD, CorrectOption",
