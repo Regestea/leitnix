@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { EMPTY_TAG, validateCategoryTagForm } from "../types";
 import type { CategoryTagFormErrors } from "../types";
-import type { CategoryTag } from "../../../../shared/types/entities";
+import type { CategoryTag } from "../../../../db/entities";
 
 export function useCategoryTagForm() {
   const [editingId, setEditingId] = useState<string | null>(null);

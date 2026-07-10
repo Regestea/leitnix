@@ -1,5 +1,5 @@
 import { getDb } from "../db/connection";
-import type { Card } from "../shared/types/entities";
+import type { Card } from "../db/entities.ts";
 import type { ICardRepository } from "../iRepositories/ICardRepository.ts";
 
 export class CardRepository implements ICardRepository {

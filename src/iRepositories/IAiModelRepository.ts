@@ -1,4 +1,4 @@
-import type { AiModel } from "../shared/types/entities.ts";
+import type { AiModel } from "../db/entities.ts";
 
 export interface IAiModelRepository {
   getAll(): Promise<AiModel[]>;

@@ -1,5 +1,5 @@
 import { z } from "zod";
-import type { CategoryTag } from "../../../shared/types/entities";
+import type { CategoryTag } from "../../../db/entities";
 
 // ─── Empty default ─────────────────────────────────────────────────
 

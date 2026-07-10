@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { EMPTY_MODEL, validateFormModel } from "../types";
 import type { AiModelFormErrors } from "../types";
-import type { AiModel } from "../../../shared/types/entities.ts";
+import type { AiModel } from "../../../db/entities.ts";
 import { resolveProviderBaseUrl } from "../../../services/aiProviderConfig.ts";
 import { testApi } from "../../../services/aiClient.ts";
 

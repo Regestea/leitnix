@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import type { CustomPrompt } from "../../../shared/types/entities";
+import type { CustomPrompt } from "../../../db/entities";
 import { customPromptRepository } from "../../../repositories/CustomPromptRepository";
 import type { ICustomPromptRepository } from "../../../iRepositories/ICustomPromptRepository";
 

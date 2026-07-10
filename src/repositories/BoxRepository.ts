@@ -1,5 +1,5 @@
 import { getDb } from "../db/connection";
-import type { Box } from "../shared/types/entities";
+import type { Box } from "../db/entities.ts";
 import type { IBoxRepository } from "../iRepositories/IBoxRepository.ts";
 
 export class BoxRepository implements IBoxRepository {

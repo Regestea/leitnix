@@ -1,6 +1,6 @@
 import { faPenToSquare, faTrashCan } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import type { CategoryTag } from "../../../../shared/types/entities";
+import type { CategoryTag } from "../../../../db/entities";
 import styles from "../../AddCard.module.css";
 
 interface CategoryTagListProps {

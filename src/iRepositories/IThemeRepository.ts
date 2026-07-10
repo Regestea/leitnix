@@ -1,4 +1,4 @@
-import type { Theme } from "../shared/types/entities.ts";
+import type { Theme } from "../db/entities.ts";
 
 export interface IThemeRepository {
   get(): Promise<Theme | null>;

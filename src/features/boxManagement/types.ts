@@ -1,5 +1,5 @@
 import { z } from "zod";
-import type { Box } from "../../shared/types/entities";
+import type { Box } from "../../db/entities";
 
 export const EMPTY_BOX: Box = {
   Id: "",

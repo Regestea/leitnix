@@ -1,4 +1,4 @@
-import type { Box } from "../shared/types/entities.ts";
+import type { Box } from "../db/entities.ts";
 
 export interface IBoxRepository {
   getAll(): Promise<Box[]>;

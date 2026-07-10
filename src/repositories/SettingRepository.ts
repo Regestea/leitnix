@@ -1,5 +1,5 @@
 import { getDb } from "../db/connection";
-import type { Setting } from "../shared/types/entities";
+import type { Setting } from "../db/entities.ts";
 import type { ISettingRepository } from "../iRepositories/ISettingRepository.ts";
 
 export class SettingRepository implements ISettingRepository {

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import type { CategoryTag } from "../../../../shared/types/entities";
+import type { CategoryTag } from "../../../../db/entities";
 import { categoryTagRepository } from "../../../../repositories/CategoryTagRepository";
 import { cardRepository } from "../../../../repositories/CardRepository";
 import type { ICardRepository } from "../../../../iRepositories/ICardRepository";

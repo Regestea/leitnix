@@ -1,5 +1,5 @@
 import { getDb } from "../db/connection";
-import type { AiModel } from "../shared/types/entities";
+import type { AiModel } from "../db/entities.ts";
 import type { IAiModelRepository } from "../iRepositories/IAiModelRepository.ts";
 
 export class AiModelRepository implements IAiModelRepository {

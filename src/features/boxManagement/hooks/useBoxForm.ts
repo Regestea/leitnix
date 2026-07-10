@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { EMPTY_BOX, validateFormBox } from "../types";
 import type { BoxFormErrors } from "../types";
-import type { Box } from "../../../shared/types/entities";
+import type { Box } from "../../../db/entities";
 
 export function useBoxForm() {
   const [editingId, setEditingId] = useState<string | null>(null);

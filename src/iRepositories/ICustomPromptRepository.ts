@@ -1,4 +1,4 @@
-import type { CustomPrompt } from "../shared/types/entities.ts";
+import type { CustomPrompt } from "../db/entities.ts";
 
 export interface ICustomPromptRepository {
   getAll(): Promise<CustomPrompt[]>;

@@ -1,4 +1,4 @@
-import type { CategoryTag } from "../shared/types/entities.ts";
+import type { CategoryTag } from "../db/entities.ts";
 
 export interface ICategoryTagRepository {
   getAll(): Promise<CategoryTag[]>;

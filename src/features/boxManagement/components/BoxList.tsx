@@ -4,7 +4,7 @@ import {
   faArrowDown,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import type { Box } from "../../../shared/types/entities";
+import type { Box } from "../../../db/entities";
 import { formatRepeatPeriod } from "../types";
 import styles from "../BoxManagement.module.css";
 

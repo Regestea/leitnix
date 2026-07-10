@@ -1,5 +1,5 @@
 import { getDb } from "../db/connection";
-import type { CategoryTag } from "../shared/types/entities";
+import type { CategoryTag } from "../db/entities.ts";
 import type { ICategoryTagRepository } from "../iRepositories/ICategoryTagRepository.ts";
 
 export class CategoryTagRepository implements ICategoryTagRepository {

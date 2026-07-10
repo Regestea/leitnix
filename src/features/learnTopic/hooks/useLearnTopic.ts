@@ -5,7 +5,7 @@ import { cardRepository } from "../../../repositories/CardRepository";
 import type { ICardRepository } from "../../../iRepositories/ICardRepository.ts";
 import { categoryTagRepository } from "../../../repositories/CategoryTagRepository";
 import type { ICategoryTagRepository } from "../../../iRepositories/ICategoryTagRepository.ts";
-import type { Card, CategoryTag } from "../../../shared/types/entities";
+import type { Card, CategoryTag } from "../../../db/entities.ts";
 
 export function useLearnTopic() {
   const reviewServiceInstance: IReviewService = reviewService;

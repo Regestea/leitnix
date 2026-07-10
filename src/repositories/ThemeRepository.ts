@@ -1,5 +1,5 @@
 import { getDb } from "../db/connection";
-import type { Theme } from "../shared/types/entities";
+import type { Theme } from "../db/entities.ts";
 import type { IThemeRepository } from "../iRepositories/IThemeRepository.ts";
 
 const Theme_ID = "app-theme";

@@ -1,4 +1,4 @@
-import type { CategoryTag } from "../../../shared/types/entities";
+import type { CategoryTag } from "../../../db/entities";
 import styles from "../learnTopic.module.css";
 
 interface TagSelectProps {

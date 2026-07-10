@@ -4,7 +4,7 @@ import { boxRepository } from "../repositories/BoxRepository";
 import type { IBoxRepository } from "../iRepositories/IBoxRepository.ts";
 import { settingRepository } from "../repositories/SettingRepository";
 import type { ISettingRepository } from "../iRepositories/ISettingRepository.ts";
-import type { WrongAnswerPunishment } from "../shared/types/entities";
+import type { WrongAnswerPunishment } from "../db/entities.ts";
 
 function nowUnix(): number {
   return Math.floor(Date.now() / 1000);

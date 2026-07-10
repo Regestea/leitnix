@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { EMPTY_PROMPT, validateFormPrompt } from "../types";
 import type { CustomPromptFormErrors } from "../types";
-import type { CustomPrompt } from "../../../shared/types/entities";
+import type { CustomPrompt } from "../../../db/entities";
 
 
 export function usePromptForm() {

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import type { AiModel } from "../../../shared/types/entities";
+import type { AiModel } from "../../../db/entities";
 import { aiModelRepository } from "../../../repositories/AiModelRepository";
 import type { IAiModelRepository } from "../../../iRepositories/IAiModelRepository";
 

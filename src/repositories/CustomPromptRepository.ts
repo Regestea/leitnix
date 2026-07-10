@@ -1,5 +1,5 @@
 import { getDb } from "../db/connection";
-import type { CustomPrompt } from "../shared/types/entities";
+import type { CustomPrompt } from "../db/entities.ts";
 import type { ICustomPromptRepository } from "../iRepositories/ICustomPromptRepository.ts";
 
 export class CustomPromptRepository implements ICustomPromptRepository {

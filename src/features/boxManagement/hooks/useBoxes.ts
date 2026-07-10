@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import type { Box } from "../../../shared/types/entities";
+import type { Box } from "../../../db/entities";
 import { boxRepository } from "../../../repositories/BoxRepository";
 import type { IBoxRepository } from "../../../iRepositories/IBoxRepository";
 

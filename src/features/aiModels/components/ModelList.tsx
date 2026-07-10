@@ -1,6 +1,6 @@
 import { faPenToSquare, faTrashCan } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import type { AiModel } from "../../../shared/types/entities";
+import type { AiModel } from "../../../db/entities";
 import styles from "../AiModels.module.css";
 
 interface ModelListProps {

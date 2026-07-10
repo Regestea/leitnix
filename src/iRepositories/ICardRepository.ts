@@ -1,4 +1,4 @@
-import type { Card } from "../shared/types/entities.ts";
+import type { Card } from "../db/entities.ts";
 
 export interface ICardRepository {
   create(card: Card): Promise<void>;
