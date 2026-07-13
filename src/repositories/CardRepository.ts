@@ -13,7 +13,7 @@ export class CardRepository implements ICardRepository {
     FROM Cards
     WHERE CategoryTagId = ?
       AND NextReviewUnixTime <= ?
-      AND NextReviewUnixTime != NULL;
+      AND NextReviewUnixTime IS NOT NULL;
     `,
       [tagId, unixTimeNow()],
     );
