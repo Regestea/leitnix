@@ -1,17 +1,30 @@
 import { getDb } from "../db/connection";
-import type { IQuestionRepository } from "../iRepositories/IQuestionRepository.ts";
+import type { IQuestionRepository, Question, QuestionType } from "../iRepositories/IQuestionRepository.ts";
 import type {
   FillTheBlankQuestion,
   FreeResponseQuestion,
   MultipleChoiceQuestion,
 } from "../db/entities.ts";
 
-export type Question =
-  | FreeResponseQuestion
-  | FillTheBlankQuestion
-  | MultipleChoiceQuestion;
-
 export class QuestionRepository implements IQuestionRepository {
+ async markQuestionAsReviewed(
+  question: QuestionType,
+  questionId: string,
+): Promise<void> {
+  const db = await getDb();
+
+  const table = `${question}`;
+
+  await db.run(
+    `
+    UPDATE ${table}
+    SET AskedTimes = AskedTimes + 1
+    WHERE Id = ?;
+    `,
+    [questionId],
+  );
+}
+
   async getRandomQuestion(cardId: string): Promise<Question> {
     const db = await getDb();
 

@@ -4,10 +4,16 @@ import type {
   MultipleChoiceQuestion,
 } from "../db/entities.ts";
 
-type Question =
+export type Question =
   | FreeResponseQuestion
   | FillTheBlankQuestion
   | MultipleChoiceQuestion;
+
+export type QuestionType =
+  | "FreeResponseQuestions"
+  | "FillTheBlankQuestions"
+  | "MultipleChoiceQuestions";
+
 
 export interface IQuestionRepository {
   createFreeResponseQuestions(questions: FreeResponseQuestion[]): Promise<void>;
@@ -16,4 +22,5 @@ export interface IQuestionRepository {
     questions: MultipleChoiceQuestion[],
   ): Promise<void>;
   getRandomQuestion(cardId: string): Promise<Question>;
+  markQuestionAsReviewed(questionType:QuestionType,questionId: string): Promise<void>;
 }

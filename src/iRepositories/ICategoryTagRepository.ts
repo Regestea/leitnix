@@ -5,4 +5,5 @@ export interface ICategoryTagRepository {
   create(tag: CategoryTag): Promise<void>;
   update(tag: CategoryTag): Promise<void>;
   delete(id: string): Promise<void>;
+  getReviewTags(): Promise<CategoryTag[]>;
 }

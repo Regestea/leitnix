@@ -1,8 +1,25 @@
 import { getDb } from "../db/connection";
 import type { CategoryTag } from "../db/entities.ts";
+import { unixTimeNow } from "../extensions/timeExtension.ts";
 import type { ICategoryTagRepository } from "../iRepositories/ICategoryTagRepository.ts";
 
 export class CategoryTagRepository implements ICategoryTagRepository {
+async getReviewTags(): Promise<CategoryTag[]> {
+  const db = await getDb();
+
+  const result = await db.query(
+    `
+    SELECT DISTINCT ct.*
+    FROM CategoryTags ct
+    JOIN Cards c ON c.CategoryTagId = ct.Id
+    WHERE c.NextReviewUnixTime IS NOT NULL
+      AND c.NextReviewUnixTime <= ?;
+    `,
+    [unixTimeNow()]
+  );
+
+  return (result.values ?? []) as CategoryTag[];
+}
   async getAll(): Promise<CategoryTag[]> {
     const db = await getDb();
     const result = await db.query("SELECT * FROM CategoryTags;");

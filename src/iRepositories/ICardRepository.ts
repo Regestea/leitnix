@@ -7,8 +7,16 @@ export interface ICardRepository {
   getById(id: string): Promise<Card | null>;
   getPendingByTag(tagId: string): Promise<Card[]>;
   getTagPendingCounts(): Promise<Map<string, number>>;
-  startLearning(cardId: string, box1Id: string, now: number, intervalMinutes: number): Promise<void>;
+  startLearning(
+    cardId: string,
+    box1Id: string,
+    now: number,
+    intervalMinutes: number,
+  ): Promise<void>;
   markAsKnown(cardId: string, finishBoxId: string, now: number): Promise<void>;
-  countStartedLearningLast24h(now: number): Promise<number>;
-  getCardsNeedToReview(tagId:string):Promise<Card[]>;
+  countStartedLearningLast24h(): Promise<number>;
+  countCardsNeedToReview(tagId:string):Promise<number>;
+  getCardNeedToReview(tagId: string): Promise<Card | null>;
+  startLearning(cardId: string): Promise<void>;
+  markAsKnown(cardId: string): Promise<void>;
 }
