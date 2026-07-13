@@ -115,7 +115,7 @@ export class QuestionRepository implements IQuestionRepository {
   ): Promise<void> {
     await this.createMany(
       "FreeResponseQuestions",
-      "Id, CardId, MarkdownQuestion, MarkdownAnswer",
+      "Id, CardId, MarkdownQuestion, MarkdownAnswer, AskedTimes",
       questions,
     );
   }
@@ -125,7 +125,7 @@ export class QuestionRepository implements IQuestionRepository {
   ): Promise<void> {
     await this.createMany(
       "FillTheBlankQuestions",
-      "Id, CardId, MarkdownQuestion, MarkdownAnswer",
+      "Id, CardId, MarkdownQuestion, MarkdownAnswer, AskedTimes",
       questions,
     );
   }
@@ -135,7 +135,7 @@ export class QuestionRepository implements IQuestionRepository {
   ): Promise<void> {
     await this.createMany(
       "MultipleChoiceQuestions",
-      "Id, CardId, MarkdownQuestion, MarkdownOptionA, MarkdownOptionB, MarkdownOptionC, MarkdownOptionD, CorrectOption",
+      "Id, CardId, MarkdownQuestion, MarkdownOptionA, MarkdownOptionB, MarkdownOptionC, MarkdownOptionD, CorrectOption, AskedTimes",
       questions,
     );
   }
