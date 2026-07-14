@@ -6,14 +6,14 @@ import TagSelect from "./components/TagSelect";
 import styles from "./learnTopic.module.css";
 import type { ICategoryTagRepository } from "../../iRepositories/ICategoryTagRepository";
 import { categoryTagRepository } from "../../repositories/CategoryTagRepository";
-import type { ReviewTagsDto } from "../../dtos/reviewTagsDto";
+import type { NewTopicTagsDto } from "../../dtos/newTopicTagsDto";
 import type { Card } from "../../db/entities";
 import type { ICardRepository } from "../../iRepositories/ICardRepository";
 import { cardRepository } from "../../repositories/CardRepository";
 
 export default function LearnTopic() {
   const [showTopic, setShowTopic] = useState(true);
-  const [tags, setTags] = useState<ReviewTagsDto[]>([]);
+  const [tags, setTags] = useState<NewTopicTagsDto[]>([]);
   const [card, setCard] = useState<Card | null>();
   const [learnedLast24h, setlearnedLast24h] = useState<number>(0);
   const [tagId, setTagId] = useState<string | null>(null);
@@ -22,8 +22,8 @@ export default function LearnTopic() {
 
   useEffect(() => {
     const load = async () => {
-      const reviewTags = await tagRepo.getReviewTags();
-      setTags(reviewTags);
+      const newTopicTags = await tagRepo.getNewTopicTags();
+      setTags(newTopicTags);
     };
     void load();
   }, [tagRepo]);
@@ -31,14 +31,14 @@ export default function LearnTopic() {
   const showCards = async (selectedTagId: string) => {
     setShowTopic(false);
     setTagId(selectedTagId);
-    const cardResult = await cardRepo.getCardNeedToReview(selectedTagId);
+    const cardResult = await cardRepo.getCardNewTopic(selectedTagId);
     setCard(cardResult);
     setlearnedLast24h(await cardRepo.countStartedLearningLast24h());
   };
 
   const loadNextCard = async () => {
     if (tagId != null) {
-      const cardResult = await cardRepo.getCardNeedToReview(tagId);
+      const cardResult = await cardRepo.getCardNewTopic(tagId);
       setCard(cardResult);
       setlearnedLast24h(await cardRepo.countStartedLearningLast24h());
     }

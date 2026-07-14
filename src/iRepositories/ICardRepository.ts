@@ -6,6 +6,7 @@ export interface ICardRepository {
   updateCategoryTagId(cardIds: string[], newTagId: string): Promise<void>;
   countStartedLearningLast24h(): Promise<number>;
   getCardNeedToReview(tagId: string): Promise<Card | null>;
+  getCardNewTopic(tagId: string): Promise<Card | null>;
   startLearning(cardId: string): Promise<void>;
   markAsKnown(cardId: string): Promise<void>;
 }

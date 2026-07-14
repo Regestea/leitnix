@@ -1,7 +1,6 @@
 import type { CategoryTag } from "../db/entities.ts";
+import type { NewTopicTagsDto } from "../dtos/newTopicTagsDto.tsx";
 import type { ReviewTagsDto } from "../dtos/reviewTagsDto.ts";
-
-
 
 export interface ICategoryTagRepository {
   getAll(): Promise<CategoryTag[]>;
@@ -9,4 +8,5 @@ export interface ICategoryTagRepository {
   update(tag: CategoryTag): Promise<void>;
   delete(id: string): Promise<void>;
   getReviewTags(): Promise<ReviewTagsDto[]>;
+  getNewTopicTags(): Promise<NewTopicTagsDto[]>;
 }

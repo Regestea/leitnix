@@ -12,7 +12,7 @@ export default function TagSelect({ tags, onSelect }: TagSelectProps) {
   if (tagsWithPending.length === 0) {
     return (
       <div className={styles.tagSelectEmpty}>
-        <p>No pending topics to learn.</p>
+        <p>No topics to learn.</p>
         <p className={styles.tagSelectHint}>Add new cards first, then come back to learn them.</p>
       </div>
     );

@@ -4,6 +4,25 @@ import { hoursToSeconds, unixTimeNow } from "../extensions/timeExtension.ts";
 import type { ICardRepository } from "../iRepositories/ICardRepository.ts";
 
 export class CardRepository implements ICardRepository {
+  async getCardNewTopic(tagId: string): Promise<Card | null> {
+    const db = await getDb();
+
+    const result = await db.query(
+      `
+    SELECT *
+    FROM Cards
+    WHERE CategoryTagId = ?
+      AND BoxId IS NULL
+    LIMIT 1;
+    `,
+      [tagId],
+    );
+
+    const rows = result.values ?? [];
+
+    return rows.length > 0 ? (rows[0] as Card) : null;
+  }
+
   async getCardNeedToReview(tagId: string): Promise<Card | null> {
     const db = await getDb();
 
