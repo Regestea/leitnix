@@ -6,12 +6,19 @@ import TagSelect from "./components/TagSelect";
 import styles from "./learnTopic.module.css";
 import type { ICategoryTagRepository } from "../../iRepositories/ICategoryTagRepository";
 import { categoryTagRepository } from "../../repositories/CategoryTagRepository";
-import type { CategoryTag } from "../../db/entities";
+import type { ReviewTagsDto } from "../../dtos/reviewTagsDto";
+import type { Card } from "../../db/entities";
+import type { ICardRepository } from "../../iRepositories/ICardRepository";
+import { cardRepository } from "../../repositories/CardRepository";
 
 export default function LearnTopic() {
   const [showTopic, setShowTopic] = useState(true);
-  const [tags, setTags] = useState<CategoryTag[]>([]);
+  const [tags, setTags] = useState<ReviewTagsDto[]>([]);
+  const [card, setCard] = useState<Card | null>();
+  const [learnedLast24h, setlearnedLast24h] = useState<number>(0);
+  const [tagId, setTagId] = useState<string | null>(null);
   const tagRepo: ICategoryTagRepository = categoryTagRepository;
+  const cardRepo: ICardRepository = cardRepository;
 
   useEffect(() => {
     const load = async () => {
@@ -21,28 +28,50 @@ export default function LearnTopic() {
     void load();
   }, [tagRepo]);
 
-  
-  // const {
-  //   tags,
-  //   pendingCounts,
-  //   learnedLast24h,
-  //   selectedTagId,
-  //   selectTag,
-  //   goBackToTags,
-  //   currentCard,
-  //   startLearning,
-  //   markAsKnown,
-  //   isLoading,
-  // } = useLearnTopic();
+  const showCards = async (selectedTagId: string) => {
+    setShowTopic(false);
+    setTagId(selectedTagId);
+    const cardResult = await cardRepo.getCardNeedToReview(selectedTagId);
+    setCard(cardResult);
+    setlearnedLast24h(await cardRepo.countStartedLearningLast24h());
+  };
+
+  const loadNextCard = async () => {
+    if (tagId != null) {
+      const cardResult = await cardRepo.getCardNeedToReview(tagId);
+      setCard(cardResult);
+      setlearnedLast24h(await cardRepo.countStartedLearningLast24h());
+    }
+  };
+
+  const markAsKnown = async (cardId: string) => {
+    await cardRepo.markAsKnown(cardId);
+    await loadNextCard();
+  };
+
+  const startLearning = async (cardId: string) => {
+    await cardRepo.startLearning(cardId);
+    await loadNextCard();
+  };
 
   if (showTopic) {
     return (
       <MainContainer>
-        <TagSelect
-          tags={tags}
-          pendingCounts={pendingCounts}
-          onSelect={selectTag}
-        />
+        <TagSelect tags={tags} onSelect={showCards} />
+      </MainContainer>
+    );
+  }
+
+  if (card == null) {
+    return (
+      <MainContainer
+        header={
+          <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+            <Button label="←" onClick={() => setShowTopic(true)} />
+          </div>
+        }
+      >
+        <h1>No cards to review for this category</h1>
       </MainContainer>
     );
   }
@@ -59,14 +88,13 @@ export default function LearnTopic() {
       }
       footer={
         <div className={styles.learnFooter}>
-          <Button label="I Know" onClick={markAsKnown} />
-
-          <Button label="Learn" onClick={startLearning} />
+          <Button label="I Know" onClick={() => markAsKnown(card.Id)} />
+          <Button label="Learn" onClick={() => startLearning(card.Id)} />
         </div>
       }
     >
-      <MarkdownRender markdown={currentCard.MarkdownTopic ?? ""} />
-      <MarkdownRender markdown={currentCard.MarkdownContent ?? ""} />
+      <MarkdownRender markdown={card.MarkdownTopic ?? ""} />
+      <MarkdownRender markdown={card.MarkdownContent ?? ""} />
     </MainContainer>
   );
 }

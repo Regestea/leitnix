@@ -1,14 +1,13 @@
-import type { CategoryTag } from "../../../db/entities";
+import type { ReviewTagsDto } from "../../../dtos/reviewTagsDto";
 import styles from "../learnTopic.module.css";
 
 interface TagSelectProps {
-  tags: CategoryTag[];
-  pendingCounts: Map<string, number>;
+  tags: ReviewTagsDto[];
   onSelect: (tagId: string) => void;
 }
 
-export default function TagSelect({ tags, pendingCounts, onSelect }: TagSelectProps) {
-  const tagsWithPending = tags.filter((t) => (pendingCounts.get(t.Id) ?? 0) > 0);
+export default function TagSelect({ tags, onSelect }: TagSelectProps) {
+  const tagsWithPending = tags.filter((t) => t.count > 0);
 
   if (tagsWithPending.length === 0) {
     return (
@@ -31,7 +30,7 @@ export default function TagSelect({ tags, pendingCounts, onSelect }: TagSelectPr
             onClick={() => onSelect(tag.Id)}
           >
             <span className={styles.tagSelectName}>{tag.Name ?? "Untitled"}</span>
-            <span className={styles.tagSelectCount}>{pendingCounts.get(tag.Id) ?? 0} remaining</span>
+            <span className={styles.tagSelectCount}>{tag.count} remaining</span>
           </button>
         ))}
       </div>

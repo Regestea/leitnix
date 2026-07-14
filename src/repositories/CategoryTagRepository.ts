@@ -1,24 +1,26 @@
 import { getDb } from "../db/connection";
 import type { CategoryTag } from "../db/entities.ts";
+import type { ReviewTagsDto } from "../dtos/reviewTagsDto.ts";
 import { unixTimeNow } from "../extensions/timeExtension.ts";
 import type { ICategoryTagRepository } from "../iRepositories/ICategoryTagRepository.ts";
 
 export class CategoryTagRepository implements ICategoryTagRepository {
-async getReviewTags(): Promise<CategoryTag[]> {
+async getReviewTags(): Promise<ReviewTagsDto[]> {
   const db = await getDb();
 
   const result = await db.query(
     `
-    SELECT DISTINCT ct.*
+    SELECT ct.*, COUNT(c.Id) AS Count
     FROM CategoryTags ct
     JOIN Cards c ON c.CategoryTagId = ct.Id
     WHERE c.NextReviewUnixTime IS NOT NULL
-      AND c.NextReviewUnixTime <= ?;
+      AND c.NextReviewUnixTime <= ?
+    GROUP BY ct.Id, ct.Name;
     `,
     [unixTimeNow()]
   );
 
-  return (result.values ?? []) as CategoryTag[];
+  return (result.values ?? []) as ReviewTagsDto[];
 }
   async getAll(): Promise<CategoryTag[]> {
     const db = await getDb();

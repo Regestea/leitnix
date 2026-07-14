@@ -4,22 +4,6 @@ import { hoursToSeconds, unixTimeNow } from "../extensions/timeExtension.ts";
 import type { ICardRepository } from "../iRepositories/ICardRepository.ts";
 
 export class CardRepository implements ICardRepository {
-  async countCardsNeedToReview(tagId: string): Promise<number> {
-    const db = await getDb();
-
-    const result = await db.query(
-      `
-    SELECT COUNT(*) AS Count
-    FROM Cards
-    WHERE CategoryTagId = ?
-      AND NextReviewUnixTime <= ?
-      AND NextReviewUnixTime IS NOT NULL;
-    `,
-      [tagId, unixTimeNow()],
-    );
-
-    return (result.values?.[0] as { Count: number }).Count;
-  }
   async getCardNeedToReview(tagId: string): Promise<Card | null> {
     const db = await getDb();
 
@@ -78,35 +62,6 @@ export class CardRepository implements ICardRepository {
       `UPDATE Cards SET CategoryTagId = ? WHERE Id IN (${placeholders});`,
       [newTagId, ...cardIds],
     );
-  }
-
-  async getById(id: string): Promise<Card | null> {
-    const db = await getDb();
-    const result = await db.query("SELECT * FROM Cards WHERE Id = ?;", [id]);
-    const rows = result.values ?? [];
-    return rows.length > 0 ? (rows[0] as Card) : null;
-  }
-
-  async getPendingByTag(tagId: string): Promise<Card[]> {
-    const db = await getDb();
-    const result = await db.query(
-      "SELECT * FROM Cards WHERE CategoryTagId = ? AND BoxId IS NULL;",
-      [tagId],
-    );
-    return (result.values ?? []) as Card[];
-  }
-
-  async getTagPendingCounts(): Promise<Map<string, number>> {
-    const db = await getDb();
-    const result = await db.query(
-      "SELECT CategoryTagId, COUNT(*) as Count FROM Cards WHERE BoxId IS NULL AND CategoryTagId IS NOT NULL GROUP BY CategoryTagId;",
-    );
-    const map = new Map<string, number>();
-    for (const row of result.values ?? []) {
-      const r = row as { CategoryTagId: string; Count: number };
-      map.set(r.CategoryTagId, r.Count);
-    }
-    return map;
   }
 
   async startLearning(cardId: string): Promise<void> {
