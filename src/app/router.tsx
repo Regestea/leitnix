@@ -8,6 +8,7 @@ import AiModels from "../features/aiModels/AiModels.tsx";
 import Prompt from "../features/customPrompt/Prompt.tsx";
 import BoxManagement from "../features/boxManagement/BoxManagement.tsx";
 import AddCard from "../features/addCard/AddCard.tsx";
+import Review from "../features/review/Review.tsx";
 
 export const router = createBrowserRouter([
   {
@@ -42,6 +43,10 @@ export const router = createBrowserRouter([
       {
         path: "box-management",
         element: <BoxManagement />,
+      },
+      {
+        path: "review",
+        element: <Review />,
       },
     ],
   },

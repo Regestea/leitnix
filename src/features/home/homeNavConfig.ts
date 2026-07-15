@@ -34,7 +34,7 @@ export function getHomeNavItems(navigate: NavigateFunction): NavItem[] {
     {
       icon: faClipboardCheck,
       title: "Review",
-      onClick: () => console.log("Review clicked"),
+      onClick: () => navigate("/review"),
     },
     {
       icon: faCog,

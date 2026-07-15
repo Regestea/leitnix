@@ -14,7 +14,6 @@ export type QuestionType =
   | "FillTheBlankQuestions"
   | "MultipleChoiceQuestions";
 
-
 export interface IQuestionRepository {
   createFreeResponseQuestions(questions: FreeResponseQuestion[]): Promise<void>;
   createFillTheBlankQuestions(questions: FillTheBlankQuestion[]): Promise<void>;
@@ -22,5 +21,9 @@ export interface IQuestionRepository {
     questions: MultipleChoiceQuestion[],
   ): Promise<void>;
   getRandomQuestion(cardId: string): Promise<Question>;
-  markQuestionAsReviewed(questionType:QuestionType,questionId: string): Promise<void>;
+  markQuestionAsReviewed(
+    questionType: QuestionType,
+    questionId: string,
+    isCorrect: boolean
+  ): Promise<void>;
 }
