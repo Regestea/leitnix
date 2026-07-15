@@ -1,7 +1,7 @@
 import {
   CapacitorSQLite,
   SQLiteConnection,
-  SQLiteDBConnection,
+  type SQLiteDBConnection,
 } from "@capacitor-community/sqlite";
 import { CREATE_TABLE_STATEMENTS } from "./schema.ts";
 import { SeedDatabase } from "./SeedDatabase.ts";

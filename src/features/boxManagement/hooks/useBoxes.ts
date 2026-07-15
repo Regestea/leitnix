@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import type { Box } from "../../../db/entities";
 import { boxRepository } from "../../../repositories/BoxRepository";
 import type { IBoxRepository } from "../../../iRepositories/IBoxRepository";
@@ -8,18 +8,18 @@ export function useBoxes() {
   const [boxes, setBoxes] = useState<Box[]>([]);
   const [cardCounts, setCardCounts] = useState<Map<string, number>>(new Map());
 
-  const loadBoxes = () => {
+  const loadBoxes = useCallback(() => {
     Promise.all([repository.getChainOrdered(), repository.getCardCounts()]).then(
       ([data, counts]) => {
         setBoxes(data);
         setCardCounts(counts);
       },
     );
-  };
+  }, [repository]);
 
   useEffect(() => {
     loadBoxes();
-  }, [repository]);
+  }, [loadBoxes]);
 
   const deleteBox = async (id: string) => {
     await repository.delete(id);

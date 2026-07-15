@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
 import styles from "./Modal.module.css";
 
@@ -17,6 +17,22 @@ export interface ModalProps {
 const BASE_Z_INDEX = 1000;
 let modalCounter = 0;
 const openModalIds: number[] = [];
+const stackListeners = new Set<() => void>();
+let stackSnapshot: number[] = [];
+
+function subscribeToStack(callback: () => void) {
+  stackListeners.add(callback);
+  return () => stackListeners.delete(callback);
+}
+
+function getStackSnapshot() {
+  return stackSnapshot;
+}
+
+function notifyStackChanged() {
+  stackSnapshot = [...openModalIds];
+  stackListeners.forEach((l) => l());
+}
 
 const Modal: React.FC<ModalProps> = ({
   isOpen,
@@ -27,11 +43,11 @@ const Modal: React.FC<ModalProps> = ({
   showCloseButton = true,
 }) => {
   const overlayRef = useRef<HTMLDivElement>(null);
-  const modalIdRef = useRef<number>(-1);
-  if (modalIdRef.current === -1) modalIdRef.current = ++modalCounter;
-  const modalId = modalIdRef.current;
+  const [modalId] = useState(() => ++modalCounter);
 
-  const [zIndex, setZIndex] = useState(BASE_Z_INDEX);
+  const stack = useSyncExternalStore(subscribeToStack, getStackSnapshot, () => []);
+  const stackIndex = stack.indexOf(modalId);
+  const zIndex = stackIndex >= 0 ? BASE_Z_INDEX + stackIndex + 1 : BASE_Z_INDEX;
 
   // Determine portal target: if there's a fullscreen element, portal into it
   // so the modal sits in the same top-layer stacking context.
@@ -42,16 +58,23 @@ const Modal: React.FC<ModalProps> = ({
   // open, not just this one).
   useEffect(() => {
     if (!isOpen) {
+      const idx = openModalIds.indexOf(modalId);
+      if (idx !== -1) {
+        openModalIds.splice(idx, 1);
+        notifyStackChanged();
+      }
       document.body.style.overflow = openModalIds.length > 0 ? "hidden" : "";
       return;
     }
     openModalIds.push(modalId);
-    setZIndex(BASE_Z_INDEX + openModalIds.length);
+    notifyStackChanged();
     document.body.style.overflow = "hidden";
     return () => {
       const idx = openModalIds.indexOf(modalId);
-      if (idx !== -1) openModalIds.splice(idx, 1);
-      setZIndex(BASE_Z_INDEX);
+      if (idx !== -1) {
+        openModalIds.splice(idx, 1);
+        notifyStackChanged();
+      }
       document.body.style.overflow = openModalIds.length > 0 ? "hidden" : "";
     };
   }, [isOpen, modalId]);
@@ -60,11 +83,11 @@ const Modal: React.FC<ModalProps> = ({
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key !== "Escape" || !isOpen) return;
-      if (openModalIds[openModalIds.length - 1] === modalId) onClose();
+      if (stack[stack.length - 1] === modalId) onClose();
     };
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [isOpen, onClose, modalId]);
+  }, [isOpen, onClose, modalId, stack]);
 
   const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (e.target === overlayRef.current) onClose();
