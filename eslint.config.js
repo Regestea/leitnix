@@ -7,7 +7,16 @@ import { defineConfig } from "eslint/config";
 
 export default defineConfig(
   {
-    ignores: ["dist", "node_modules"],
+    ignores: [
+      "dist",
+      "node_modules",
+      "android",
+      "ios",
+      "build",
+      "find-unused-css.mjs",
+      "**/*.min.js",
+      "**/assets/**",
+    ],
   },
 
   js.configs.recommended,
@@ -15,7 +24,7 @@ export default defineConfig(
   ...tseslint.configs.recommended,
 
   {
-    files: ["**/*.{ts,tsx}"],
+    files: ["src/**/*.{ts,tsx}"],
 
     languageOptions: {
       ecmaVersion: "latest",
@@ -31,9 +40,13 @@ export default defineConfig(
     },
 
     rules: {
+      // React 19 hooks rules
       ...reactHooks.configs.flat.recommended.rules,
+
+      // Vite React Fast Refresh
       ...reactRefresh.configs.vite.rules,
 
+      // Unused variables
       "@typescript-eslint/no-unused-vars": [
         "warn",
         {
@@ -43,6 +56,7 @@ export default defineConfig(
         },
       ],
 
+      // Force type-only imports
       "@typescript-eslint/consistent-type-imports": [
         "warn",
         {
@@ -51,7 +65,11 @@ export default defineConfig(
         },
       ],
 
+      // Project preferences
+      "@typescript-eslint/no-explicit-any": "off",
+
       "no-console": "off",
+
       "no-debugger": "warn",
     },
   }
