@@ -15,36 +15,41 @@ export interface RepeatPeriodOption {
 }
 
 export const REPEAT_PERIOD_OPTIONS: RepeatPeriodOption[] = [
-  { label: "6 hours", value: 360 },
-  { label: "12 hours", value: 720 },
-  { label: "1 day", value: 1440 },
-  { label: "2 days", value: 2880 },
-  { label: "3 days", value: 4320 },
-  { label: "4 days", value: 5760 },
-  { label: "5 days", value: 7200 },
-  { label: "6 days", value: 8640 },
-  { label: "7 days", value: 10080 },
-  { label: "8 days", value: 11520 },
-  { label: "9 days", value: 12960 },
-  { label: "10 days", value: 14400 },
-  { label: "11 days", value: 15840 },
-  { label: "12 days", value: 17280 },
-  { label: "13 days", value: 18720 },
-  { label: "14 days", value: 20160 },
-  { label: "15 days", value: 21600 },
-  { label: "20 days", value: 28800 },
-  { label: "25 days", value: 36000 },
-  { label: "30 days", value: 43200 },
-  { label: "35 days", value: 50400 },
-  { label: "40 days", value: 57600 },
-  { label: "45 days", value: 64800 },
-  { label: "50 days", value: 72000 },
-  { label: "55 days", value: 79200 },
-  { label: "60 days", value: 86400 },
+  { label: "1 minute", value: 60 },
+  { label: "6 hours", value: 21600 },
+  { label: "12 hours", value: 43200 },
+  { label: "1 day", value: 86400 },
+  { label: "2 days", value: 172800 },
+  { label: "3 days", value: 259200 },
+  { label: "4 days", value: 345600 },
+  { label: "5 days", value: 432000 },
+  { label: "6 days", value: 518400 },
+  { label: "7 days", value: 604800 },
+  { label: "8 days", value: 691200 },
+  { label: "9 days", value: 777600 },
+  { label: "10 days", value: 864000 },
+  { label: "11 days", value: 950400 },
+  { label: "12 days", value: 1036800 },
+  { label: "13 days", value: 1123200 },
+  { label: "14 days", value: 1209600 },
+  { label: "15 days", value: 1296000 },
+  { label: "20 days", value: 1728000 },
+  { label: "25 days", value: 2160000 },
+  { label: "30 days", value: 2592000 },
+  { label: "35 days", value: 3024000 },
+  { label: "40 days", value: 3456000 },
+  { label: "45 days", value: 3888000 },
+  { label: "50 days", value: 4320000 },
+  { label: "55 days", value: 4752000 },
+  { label: "60 days", value: 5184000 },
 ];
 
-export function formatRepeatPeriod(minutes: number): string {
-  if (minutes === 0) return "Finish";
+export function formatRepeatPeriod(seconds: number): string {
+  if (seconds === 0) return "Finish";
+  if (seconds < 60) {
+    return `${seconds}s`;
+  }
+  const minutes = seconds / 60;
   if (minutes < 60) {
     return `${minutes}m`;
   }
@@ -64,7 +69,7 @@ export const boxFormSchema = z.object({
   RepeatIntervalSeconds: z
     .number({ error: "Repeat period is required." })
     .int({ error: "Repeat period must be a whole number." })
-    .min(1, { message: "Repeat period must be at least 6 hours." }),
+    .min(21600, { message: "Repeat period must be at least 6 hours." }),
 });
 
 export type BoxFormErrors = Partial<
