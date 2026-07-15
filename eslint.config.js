@@ -1,30 +1,58 @@
 import js from "@eslint/js";
 import globals from "globals";
+import tseslint from "typescript-eslint";
 import reactHooks from "eslint-plugin-react-hooks";
 import reactRefresh from "eslint-plugin-react-refresh";
-import tseslint from "typescript-eslint";
-import cssModules from "eslint-plugin-css-modules";
-import { defineConfig, globalIgnores } from "eslint/config";
+import { defineConfig } from "eslint/config";
 
-export default defineConfig([
-  globalIgnores(["dist"]),
+export default defineConfig(
+  {
+    ignores: ["dist", "node_modules"],
+  },
+
+  js.configs.recommended,
+
+  ...tseslint.configs.recommended,
+
   {
     files: ["**/*.{ts,tsx}"],
-    extends: [
-      js.configs.recommended,
-      tseslint.configs.recommended,
-      reactHooks.configs.flat.recommended,
-      reactRefresh.configs.vite,
-    ],
+
     languageOptions: {
-      globals: globals.browser,
+      ecmaVersion: "latest",
+      sourceType: "module",
+      globals: {
+        ...globals.browser,
+      },
     },
+
     plugins: {
-      "css-modules": cssModules,
+      "react-hooks": reactHooks,
+      "react-refresh": reactRefresh,
     },
+
     rules: {
-      "css-modules/no-unused-class": "warn",
-      "css-modules/no-undef-class": "error",
+      ...reactHooks.configs.flat.recommended.rules,
+      ...reactRefresh.configs.vite.rules,
+
+      "@typescript-eslint/no-unused-vars": [
+        "warn",
+        {
+          argsIgnorePattern: "^_",
+          varsIgnorePattern: "^_",
+          caughtErrorsIgnorePattern: "^_",
+        },
+      ],
+
+      "@typescript-eslint/consistent-type-imports": [
+        "warn",
+        {
+          prefer: "type-imports",
+          fixStyle: "inline-type-imports",
+        },
+      ],
+
+      "no-console": "off",
+      "no-debugger": "warn",
     },
-  },
-]);
+  }
+);
