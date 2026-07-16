@@ -4,11 +4,13 @@ import { useNavStore } from "../../shared/store/navStore";
 import { getHomeNavItems } from "./homeNavConfig";
 import ProgressCircle from "./ProgressCircle";
 import LearningProgress from "./LearningProgress";
+import { useHome } from "./hooks/useHome";
 
 export default function Home() {
   const setIsShowing = useNavStore((s) => s.setIsShowing);
   const setItems = useNavStore((s) => s.setItems);
   const navigate = useNavigate();
+  const { learnedToday, pendingReview } = useHome();
 
   useEffect(() => {
     setItems(getHomeNavItems(navigate));
@@ -26,22 +28,22 @@ export default function Home() {
             <div className="card-column">
               <div className="card glass learn-card">
                 <div className="card-inner">
-                  <ProgressCircle current={28} total={45} />
+                  <ProgressCircle current={learnedToday} />
                 </div>
               </div>
               <div className="card glass card-caption">
-                <p className="card-caption-text">Today Words</p>
+                <p className="card-caption-text">Today Learned</p>
               </div>
             </div>
 
             <div className="card-column">
               <div className="card glass learn-card">
                 <div className="card-inner">
-                  <ProgressCircle current={15} total={45} />
+                  <ProgressCircle current={pendingReview} />
                 </div>
               </div>
               <div className="card glass card-caption">
-                <p className="card-caption-text">Today Review</p>
+                <p className="card-caption-text">Pending Review</p>
               </div>
             </div>
           </div>

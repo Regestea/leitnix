@@ -155,6 +155,16 @@ export class CardRepository implements ICardRepository {
     const rows = result.values ?? [];
     return rows.length > 0 ? (rows[0] as { Count: number }).Count : 0;
   }
+
+  async overallReviewToday(): Promise<number> {
+    const db = await getDb();
+    const result = await db.query(
+      "SELECT COUNT(*) as Count FROM Cards WHERE NextReviewUnixTime <= ? AND NextReviewUnixTime IS NOT NULL AND BoxId IS NOT NULL;",
+      [unixTimeNow()],
+    );
+    const rows = result.values ?? [];
+    return rows.length > 0 ? (rows[0] as { Count: number }).Count : 0;
+  }
 }
 
 export const cardRepository: ICardRepository = new CardRepository();
