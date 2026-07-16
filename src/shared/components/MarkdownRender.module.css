@@ -15,7 +15,7 @@
 
 .heading {
   margin-top: 1rem;
-  background: linear-gradient(356deg, var(--primary), var(--secondary), var(--accent), var(--primary));
+  background: linear-gradient(0deg, var(--primary), var(--secondary), var(--accent), var(--primary));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -24,7 +24,7 @@
 
 .strong {
   margin-top: 1rem;
-  background: linear-gradient(356deg, var(--primary), var(--secondary), var(--accent), var(--primary));
+  background: linear-gradient(0deg, var(--primary), var(--secondary), var(--accent), var(--primary));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
