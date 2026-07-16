@@ -301,7 +301,7 @@ code {
 }
 
 .settings-label {
-  font-size: 0.875rem;
+  font-size: var(--app-font-size);
   font-weight: 600;
   color: #ffffff;
 }
@@ -311,7 +311,7 @@ code {
   width: 100%;
   padding: 0.375rem 2.25rem 0.375rem 0.75rem;
   font-size: var(--app-font-size);
-  font-weight: 400;
+  font-weight: var(--app-font-weight);
   line-height: 1.5;
   color: #ffffff;
   appearance: none;
