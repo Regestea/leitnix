@@ -27,7 +27,12 @@ const SYSTEM_PROMPT = `You are a helpful Leitnix AI. The user is studying the fo
 
 You can answer questions about this card content, help explain concepts further, provide examples, or answer any other questions the user might have. Keep your answers clear and educational.`;
 
-export default function AiChatModal({ isOpen, onClose, cardTopic, cardContent }: AiChatModalProps) {
+export default function AiChatModal({
+  isOpen,
+  onClose,
+  cardTopic,
+  cardContent,
+}: AiChatModalProps) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -37,13 +42,15 @@ export default function AiChatModal({ isOpen, onClose, cardTopic, cardContent }:
 
   useEffect(() => {
     if (isOpen) {
-      import("../../repositories/AiModelRepository").then(({ aiModelRepository }) => {
-        aiModelRepository.getAll().then((models) => {
-          if (models.length > 0) {
-            setModelId(models[0].Id);
-          }
-        });
-      });
+      import("../../repositories/AiModelRepository").then(
+        ({ aiModelRepository }) => {
+          aiModelRepository.getAll().then((models) => {
+            if (models.length > 0) {
+              setModelId(models[0].Id);
+            }
+          });
+        },
+      );
     }
   }, [isOpen]);
 
@@ -72,9 +79,10 @@ export default function AiChatModal({ isOpen, onClose, cardTopic, cardContent }:
     setLoading(true);
 
     try {
-      const systemPrompt = SYSTEM_PROMPT
-        .replace("{cardTopic}", cardTopic)
-        .replace("{cardContent}", cardContent);
+      const systemPrompt = SYSTEM_PROMPT.replace(
+        "{cardTopic}",
+        cardTopic,
+      ).replace("{cardContent}", cardContent);
 
       const apiMessages: ChatMessage[] = [
         { role: "user", content: systemPrompt },
@@ -82,12 +90,18 @@ export default function AiChatModal({ isOpen, onClose, cardTopic, cardContent }:
       ];
 
       const response = await sendChatMessage(modelId, apiMessages);
-      setMessages((prev) => [...prev, { role: "assistant", content: response }]);
+      setMessages((prev) => [
+        ...prev,
+        { role: "assistant", content: response },
+      ]);
     } catch (error) {
       console.error("AI Chat Error:", error);
       setMessages((prev) => [
         ...prev,
-        { role: "assistant", content: "Sorry, I encountered an error. Please try again." },
+        {
+          role: "assistant",
+          content: "Sorry, I encountered an error. Please try again.",
+        },
       ]);
     } finally {
       setLoading(false);
@@ -107,7 +121,8 @@ export default function AiChatModal({ isOpen, onClose, cardTopic, cardContent }:
         <div className={styles.messagesList}>
           {messages.length === 0 && (
             <div className={styles.emptyState}>
-              Ask a question about this card or anything else you'd like help with.
+              Ask a question about this card or anything else you'd like help
+              with.
             </div>
           )}
           {messages.map((msg, i) => (
@@ -124,7 +139,11 @@ export default function AiChatModal({ isOpen, onClose, cardTopic, cardContent }:
           {loading && (
             <div className={`${styles.message} ${styles.assistant}`}>
               <div className={styles.messageBubble}>
-                <ThinkingSphere />
+                <div className={styles.thinkingDots}>
+                  <span className={styles.dot}><ThinkingSphere size={30} /></span>
+                  <span className={styles.dot}><ThinkingSphere size={30} /></span>
+                  <span className={styles.dot}><ThinkingSphere size={30} /></span>
+                </div>
               </div>
             </div>
           )}

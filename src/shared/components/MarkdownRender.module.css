@@ -17,7 +17,6 @@
   margin-top: 1rem;
   background: var(--secondary);
   -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
   background-clip: text;
   font-weight: var(--app-font-weight);
 }
