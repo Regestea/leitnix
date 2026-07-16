@@ -69,7 +69,6 @@ export const boxFormSchema = z.object({
   RepeatIntervalSeconds: z
     .number({ error: "Repeat period is required." })
     .int({ error: "Repeat period must be a whole number." })
-    .min(21600, { message: "Repeat period must be at least 6 hours." }),
 });
 
 export type BoxFormErrors = Partial<

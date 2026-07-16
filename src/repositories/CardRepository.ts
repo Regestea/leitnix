@@ -111,7 +111,7 @@ export class CardRepository implements ICardRepository {
         NextReviewUnixTime = ?
     WHERE Id = ?;
     `,
-      [firstBox.Id, now, now + firstBox.RepeatIntervalSeconds, now, cardId],
+      [firstBox.Id, now, now, now + firstBox.RepeatIntervalSeconds, cardId],
     );
   }
 

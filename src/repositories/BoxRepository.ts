@@ -127,7 +127,7 @@ export class BoxRepository implements IBoxRepository {
       const c = card as { Id: string; LastReviewUnixTime: number };
       await db.run(
         "UPDATE Cards SET NextReviewUnixTime = ? WHERE Id = ?;",
-        [c.LastReviewUnixTime + repeatSeconds * 60, c.Id],
+        [c.LastReviewUnixTime + repeatSeconds, c.Id],
       );
     }
   }
@@ -156,7 +156,7 @@ export class BoxRepository implements IBoxRepository {
         const c = card as { Id: string; LastReviewUnixTime: number };
         await db.run(
           "UPDATE Cards SET BoxId = ?, NextReviewUnixTime = ? WHERE Id = ?;",
-          [destinationBoxId, c.LastReviewUnixTime + repeatSeconds * 60, c.Id],
+          [destinationBoxId, c.LastReviewUnixTime + repeatSeconds, c.Id],
         );
       }
 
