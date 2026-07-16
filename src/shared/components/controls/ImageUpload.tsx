@@ -1,5 +1,7 @@
 import { Camera, CameraResultType } from "@capacitor/camera";
 import styles from "./ImageUpload.module.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCamera } from "@fortawesome/free-solid-svg-icons";
 
 const MAX_DEFAULT = 5;
 
@@ -46,7 +48,7 @@ export default function ImageUpload({
             className={`${styles.imageUploadBtn} ${styles.cameraBtn}`}
             onClick={handleCamera}
           >
-            + Add Image
+            <FontAwesomeIcon icon={faCamera} /> Add Image
           </button>
         )}
       </div>

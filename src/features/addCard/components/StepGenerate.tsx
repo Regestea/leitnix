@@ -125,6 +125,7 @@ export default function StepGenerate({
             </div>
             <button
               type="button"
+              style={{height:'3.1rem'}}
               onClick={() => setIsTagManagerOpen(true)}
               aria-label="Manage category tags"
             >
