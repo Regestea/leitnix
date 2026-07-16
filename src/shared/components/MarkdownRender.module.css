@@ -13,7 +13,7 @@
   
 }
 
-.heading,h1,h2,h3,h4,h5 {
+.heading {
   margin-top: 1rem;
   background: linear-gradient(356deg, var(--primary), var(--secondary), var(--accent), var(--primary));
   -webkit-background-clip: text;
