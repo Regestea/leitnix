@@ -116,16 +116,16 @@ export default function MarkdownRender({ markdown }: { markdown: string }) {
           return <p {...dirProps(children)}>{children}</p>;
         },
         h1({ children }) {
-          return <h1 {...dirProps(children)}>{children}</h1>;
+          return <h1 className={styles.heading} {...dirProps(children)}>{children}</h1>;
         },
         h2({ children }) {
-          return <h2 {...dirProps(children)}>{children}</h2>;
+          return <h2 className={styles.heading} {...dirProps(children)}>{children}</h2>;
         },
         h3({ children }) {
-          return <h3 {...dirProps(children)}>{children}</h3>;
+          return <h3 className={styles.heading} {...dirProps(children)}>{children}</h3>;
         },
         h4({ children }) {
-          return <h4 {...dirProps(children)}>{children}</h4>;
+          return <h4 className={styles.heading} {...dirProps(children)}>{children}</h4>;
         },
         ul({ children }) {
           return <ul {...dirProps(children)}>{children}</ul>;
@@ -134,7 +134,10 @@ export default function MarkdownRender({ markdown }: { markdown: string }) {
           return <ol {...dirProps(children)}>{children}</ol>;
         },
         li({ children }) {
-          return <li {...dirProps(children)}>{children}</li>;
+          return <li className={styles.listItem} {...dirProps(children)}>{children}</li>;
+        },
+        strong({ children }) {
+          return <strong className={styles.strong}>{children}</strong>;
         },
         blockquote({ children }) {
           return <blockquote {...dirProps(children)}>{children}</blockquote>;

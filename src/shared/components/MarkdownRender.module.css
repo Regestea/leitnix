@@ -12,3 +12,28 @@
   border-radius: 0.5rem;
   font-size: 0.9em;
 }
+
+.heading,h1,h2,h3,h4,h5 {
+  margin-top: 1rem;
+  background: linear-gradient(356deg, var(--primary), var(--secondary), var(--accent), var(--primary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: var(--app-font-weight);
+}
+
+.strong {
+  margin-top: 1rem;
+  background: linear-gradient(356deg, var(--primary), var(--secondary), var(--accent), var(--primary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: var(--app-font-weight);
+}
+
+.listItem {
+  margin-top: 1rem;
+  -webkit-background-clip: text;
+  background-clip: text;
+  font-weight: var(--app-font-weight);
+}

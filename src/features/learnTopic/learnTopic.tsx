@@ -68,8 +68,19 @@ export default function LearnTopic() {
     return (
       <MainContainer
         header={
-          <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
-            <button onClick={() => setShowTopic(true)} style={{ background: "none", border: "none", color: "inherit", cursor: "pointer", padding: "0.5rem" }}>
+          <div
+            style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}
+          >
+            <button
+              onClick={() => setShowTopic(true)}
+              style={{
+                background: "none",
+                border: "none",
+                color: "inherit",
+                cursor: "pointer",
+                padding: "0.5rem",
+              }}
+            >
               <FontAwesomeIcon icon={faArrowLeft} />
             </button>
           </div>
@@ -84,7 +95,16 @@ export default function LearnTopic() {
     <MainContainer
       header={
         <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
-          <button onClick={() => setShowTopic(true)} style={{ background: "none", border: "none", color: "inherit", cursor: "pointer", padding: "0.5rem" }}>
+          <button
+            onClick={() => setShowTopic(true)}
+            style={{
+              background: "none",
+              border: "none",
+              color: "inherit",
+              cursor: "pointer",
+              padding: "0.5rem",
+            }}
+          >
             <FontAwesomeIcon icon={faArrowLeft} />
           </button>
           <span className={styles.learnCardProgress}>
@@ -99,7 +119,10 @@ export default function LearnTopic() {
         </div>
       }
     >
-      <MarkdownRender markdown={card.MarkdownTopic ?? ""} />
+      <h2>
+        <MarkdownRender markdown={card.MarkdownTopic ?? ""} />
+      </h2>
+
       <MarkdownRender markdown={card.MarkdownContent ?? ""} />
     </MainContainer>
   );
