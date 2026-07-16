@@ -5,6 +5,8 @@ import MainContainer from "../../shared/components/MainContainer";
 import MarkdownRender from "../../shared/components/MarkdownRender";
 import { Button } from "../../shared/components/controls/Button";
 import TagSelect from "./components/TagSelect";
+import AiChatModal from "../../shared/components/AiChatModal";
+import useModal from "../../shared/hooks/useModal";
 import styles from "./learnTopic.module.css";
 import type { ICategoryTagRepository } from "../../iRepositories/ICategoryTagRepository";
 import { categoryTagRepository } from "../../repositories/CategoryTagRepository";
@@ -21,6 +23,7 @@ export default function LearnTopic() {
   const [tagId, setTagId] = useState<string | null>(null);
   const tagRepo: ICategoryTagRepository = categoryTagRepository;
   const cardRepo: ICardRepository = cardRepository;
+  const aiChatModal = useModal();
 
   useEffect(() => {
     const load = async () => {
@@ -107,6 +110,8 @@ export default function LearnTopic() {
           >
             <FontAwesomeIcon icon={faArrowLeft} />
           </button>
+          <Button onClick={aiChatModal.open}>Ask AI</Button>
+
           <span className={styles.learnCardProgress}>
             {learnedLast24h} learned today
           </span>
@@ -124,6 +129,13 @@ export default function LearnTopic() {
       </h2>
 
       <MarkdownRender markdown={card.MarkdownContent ?? ""} />
+
+      <AiChatModal
+        isOpen={aiChatModal.isOpen}
+        onClose={aiChatModal.close}
+        cardTopic={card.MarkdownTopic ?? ""}
+        cardContent={card.MarkdownContent ?? ""}
+      />
     </MainContainer>
   );
 }

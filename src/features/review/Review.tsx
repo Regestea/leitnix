@@ -1,9 +1,11 @@
 import { useEffect, useState, useCallback } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
+import { faArrowLeft} from "@fortawesome/free-solid-svg-icons";
 import MainContainer from "../../shared/components/MainContainer";
 import MarkdownRender from "../../shared/components/MarkdownRender";
 import { Button } from "../../shared/components/controls/Button";
+import AiChatModal from "../../shared/components/AiChatModal";
+import useModal from "../../shared/hooks/useModal";
 import FreeResponseQuestionCard from "./components/FreeResponseQuestionCard";
 import FillTheBlankQuestionCard from "./components/FillTheBlankQuestionCard";
 import MultipleChoiceQuestionCard from "./components/MultipleChoiceQuestionCard";
@@ -43,6 +45,7 @@ export default function Review() {
     useState<MultipleChoiceOption | null>(null);
   const [questionType, setQuestionType] = useState<QuestionType | null>(null);
   const [questionId, setQuestionId] = useState<string | null>(null);
+  const aiChatModal = useModal();
 
   useEffect(() => {
     const load = async () => {
@@ -204,12 +207,20 @@ export default function Review() {
             <button onClick={() => setPhase("answered")} style={{ background: "none", border: "none", color: "inherit", cursor: "pointer", padding: "0.5rem" }}>
               <FontAwesomeIcon icon={faArrowLeft} />
             </button>
+            <Button onClick={aiChatModal.open}>Ask AI</Button>
           </div>
         }
         footer={footer()}
       >
         <MarkdownRender markdown={card.MarkdownTopic ?? ""} />
         <MarkdownRender markdown={card.MarkdownContent ?? ""} />
+
+        <AiChatModal
+          isOpen={aiChatModal.isOpen}
+          onClose={aiChatModal.close}
+          cardTopic={card.MarkdownTopic ?? ""}
+          cardContent={card.MarkdownContent ?? ""}
+        />
       </MainContainer>
     );
   }
