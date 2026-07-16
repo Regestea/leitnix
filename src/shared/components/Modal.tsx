@@ -9,6 +9,8 @@ export interface ModalProps {
   children: React.ReactNode;
   size?: "sm" | "md" | "lg";
   showCloseButton?: boolean;
+  headerClassName?: string;
+  bodyClassName?: string;
 }
 
 // ── Nested-modal coordination ────────────────────────────────────────
@@ -41,6 +43,8 @@ const Modal: React.FC<ModalProps> = ({
   children,
   size = "md",
   showCloseButton = true,
+  headerClassName,
+  bodyClassName,
 }) => {
   const overlayRef = useRef<HTMLDivElement>(null);
   const [modalId] = useState(() => ++modalCounter);
@@ -107,7 +111,7 @@ const Modal: React.FC<ModalProps> = ({
     >
       <div className={`${styles.modalDialog} ${styles[`modal${size.charAt(0).toUpperCase() + size.slice(1)}`]}`}>
         {(title || showCloseButton) && (
-          <div className={styles.modalHeader}>
+          <div className={`${styles.modalHeader}${headerClassName ? ` ${headerClassName}` : ''}`}>
             {title && (
               <h2 id="modal-title" className={styles.modalTitle}>
                 {title}
@@ -124,7 +128,7 @@ const Modal: React.FC<ModalProps> = ({
             )}
           </div>
         )}
-        <div className={styles.modalBody}>{children}</div>
+        <div className={`${styles.modalBody}${bodyClassName ? ` ${bodyClassName}` : ''}`}>{children}</div>
       </div>
     </div>,
     portalTarget

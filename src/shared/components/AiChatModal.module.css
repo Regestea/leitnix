@@ -37,14 +37,14 @@
 }
 
 .messageBubble {
-  max-width: 95%;
+  max-width: 100%;
   padding: 0.6rem 0.5rem;
   line-height: 1.5;
   font-size: var(--app-font-size);
   font-family: var(--app-font-family);
   font-weight: var(--app-font-weight);
-  word-wrap: break-word;
-  overflow: scroll;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 .message.user .messageBubble {
@@ -54,10 +54,12 @@
 }
 
 .message.assistant .messageBubble {
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.30);
   color: rgba(255, 255, 255, 0.9);
   border-radius: 18px 18px 18px 4px;
-  
+  padding-top: 1rem;
+  padding-bottom: 1rem;
 }
 
 .thinkingDots {
@@ -83,20 +85,29 @@
   50% { transform: translateY(-8px); }
 }
 
+.chatBody {
+  height: 85dvh;
+}
+
 .inputArea {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr auto;
   gap: 0.5rem;
   padding-top: 0.75rem;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
-  align-items: flex-end;
+  align-items: end;
+}
+
+.chatInputWrapper {
+  width: 100%;
 }
 
 .chatInput {
-  flex: 1;
+  width: 100%;
   background: rgba(255, 255, 255, 0.06);
   border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 12px;
-  padding: 0.65rem 0.9rem;
+  border-radius: 50px !important;
+  padding: 0.7rem !important;
   color: #fff;
   font-family: inherit;
   font-size: 0.9375rem;

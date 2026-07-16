@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, startTransition } from "react";
+import { Textarea } from "./controls/Textarea";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPaperPlane } from "@fortawesome/free-solid-svg-icons";
 import Modal from "./Modal";
@@ -116,7 +117,7 @@ export default function AiChatModal({
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="AI Tutor" size="lg">
+    <Modal isOpen={isOpen} onClose={onClose} title="AI Tutor" size="lg" bodyClassName={styles.chatBody}>
       <div className={styles.chatContainer}>
         <div className={styles.messagesList}>
           {messages.length === 0 && (
@@ -150,14 +151,15 @@ export default function AiChatModal({
           <div ref={messagesEndRef} />
         </div>
         <div className={styles.inputArea}>
-          <textarea
+          <Textarea
             ref={inputRef}
             className={styles.chatInput}
+            containerClassName={styles.chatInputWrapper}
             value={input}
-            onChange={(e) => setInput(e.target.value)}
+            onChange={(v) => setInput(v)}
             onKeyDown={handleKeyDown}
             placeholder="Ask a question..."
-            rows={2}
+            rows={1}
             disabled={loading || !modelId}
           />
           <button

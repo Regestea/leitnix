@@ -1,10 +1,12 @@
-import { useState } from "react";
+import { useState, forwardRef } from "react";
 
 interface TextareaProps {
   label?: string;
   placeholder?: string;
   defaultValue?: string;
+  value?: string;
   onChange?: (value: string) => void;
+  onKeyDown?: (e: React.KeyboardEvent<HTMLTextAreaElement>) => void;
   id?: string;
   disabled?: boolean;
   rows?: number;
@@ -17,23 +19,30 @@ interface TextareaProps {
   labelStyle?: React.CSSProperties;
 }
 
-export function Textarea({
-  label,
-  placeholder,
-  defaultValue = "",
-  onChange,
-  id,
-  disabled = false,
-  rows = 4,
-  cols,
-  className,
-  style,
-  containerClassName,
-  containerStyle,
-  labelClassName,
-  labelStyle,
-}: TextareaProps) {
-  const [value, setValue] = useState(defaultValue);
+export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(function Textarea(
+  {
+    label,
+    placeholder,
+    defaultValue = "",
+    value: controlledValue,
+    onChange,
+    onKeyDown,
+    id,
+    disabled = false,
+    rows = 4,
+    cols,
+    className,
+    style,
+    containerClassName,
+    containerStyle,
+    labelClassName,
+    labelStyle,
+  }: TextareaProps,
+  ref,
+) {
+  const [internalValue, setInternalValue] = useState(defaultValue);
+  const isControlled = controlledValue !== undefined;
+  const value = isControlled ? controlledValue : internalValue;
   const textareaId =
     id ??
     (label
@@ -41,14 +50,14 @@ export function Textarea({
       : undefined);
 
   function handleChange(e: React.ChangeEvent<HTMLTextAreaElement>) {
-    setValue(e.target.value);
+    if (!isControlled) setInternalValue(e.target.value);
     onChange?.(e.target.value);
   }
 
   return (
     <div
       className={`settings-field ${containerClassName ?? ""}`}
-      style={containerStyle}
+      style={{ width: '100%', ...containerStyle }}
     >
       {label && (
         <>
@@ -64,16 +73,18 @@ export function Textarea({
         </>
       )}
       <textarea
+        ref={ref}
         id={textareaId}
         value={value}
         placeholder={placeholder}
         onChange={handleChange}
+        onKeyDown={onKeyDown}
         disabled={disabled}
         rows={rows}
         cols={cols}
-        className={`glass-textarea ${className}`}
+        className={`glass-textarea ${className ?? ""}`}
         style={style}
       />
     </div>
   );
-}
+});
