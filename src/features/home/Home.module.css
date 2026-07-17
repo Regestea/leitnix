@@ -39,6 +39,7 @@
 .cardInner {
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 0.625rem;
 }
 
@@ -46,6 +47,7 @@
   padding: 1rem;
   width: 100%;
   text-align: center;
+  border-radius: 20px;
 }
 
 .cardCaptionText {
@@ -79,10 +81,6 @@
 
 .learnCard svg {
   overflow: visible;
-  width: auto;
-  height: auto;
-  max-width: 100%;
-  max-height: 100%;
 }
 
 @media (max-width: 1280px) {
