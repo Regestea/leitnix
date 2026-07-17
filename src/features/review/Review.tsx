@@ -47,6 +47,12 @@ export default function Review() {
   const [questionId, setQuestionId] = useState<string | null>(null);
   const aiChatModal = useModal();
 
+  const goToTagSelect = useCallback(async () => {
+    const reviewTags = await categoryTagRepository.getReviewTags();
+    setTags(reviewTags);
+    setPhase("tag-select");
+  }, []);
+
   useEffect(() => {
     const load = async () => {
       const reviewTags = await categoryTagRepository.getReviewTags();
@@ -59,7 +65,7 @@ export default function Review() {
     const cardResult = await cardRepository.getCardNeedToReview(selectedTagId);
     if (!cardResult) {
       setCard(null);
-      setPhase("tag-select");
+      await goToTagSelect();
       return;
     }
     setCard(cardResult);
@@ -80,7 +86,7 @@ export default function Review() {
     setShowAnswer(false);
     setSelectedOption(null);
     setPhase("question");
-  }, []);
+  }, [goToTagSelect]);
 
   const handleTagSelect = async (selectedTagId: string) => {
     setTagId(selectedTagId);
@@ -236,7 +242,7 @@ export default function Review() {
               gap: "0.75rem",
             }}
           >
-            <button onClick={() => setPhase("tag-select")} style={{ background: "none", border: "none", color: "inherit", cursor: "pointer", padding: "0.5rem" }}>
+            <button onClick={goToTagSelect} style={{ background: "none", border: "none", color: "inherit", cursor: "pointer", padding: "0.5rem" }}>
               <FontAwesomeIcon icon={faArrowLeft} />
             </button>
           </div>
@@ -253,7 +259,7 @@ export default function Review() {
         <div
           style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}
         >
-          <button onClick={() => setPhase("tag-select")} style={{ background: "none", border: "none", color: "inherit", cursor: "pointer", padding: "0.5rem" }}>
+          <button onClick={goToTagSelect} style={{ background: "none", border: "none", color: "inherit", cursor: "pointer", padding: "0.5rem" }}>
             <FontAwesomeIcon icon={faArrowLeft} />
           </button>
           <span>{questionTypeLabel}</span>
