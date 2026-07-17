@@ -24,12 +24,12 @@ export default function TagSelect({ tags, onSelect }: TagSelectProps) {
       <div className={styles.tagSelectList}>
         {tagsWithPending.map((tag) => (
           <button
-            key={tag.Id}
+            key={tag.id}
             className={`card glass ${styles.tagSelectItem}`}
             type="button"
-            onClick={() => onSelect(tag.Id)}
+            onClick={() => onSelect(tag.id)}
           >
-            <span className={styles.tagSelectName}>{tag.Name ?? "Untitled"}</span>
+            <span className={styles.tagSelectName}>{tag.name ?? "Untitled"}</span>
             <span className={styles.tagSelectCount}>{tag.count} remaining</span>
           </button>
         ))}

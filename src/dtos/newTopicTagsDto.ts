@@ -1,5 +1,5 @@
 export interface NewTopicTagsDto{
-    Id: string
-    Name: string
+    id: string
+    name: string
     count: number
 }

@@ -174,13 +174,13 @@ export default function Review() {
           <div className={styles.tagSelectList}>
             {tagsWithPending.map((tag) => (
               <button
-                key={tag.Id}
+                key={tag.id}
                 className={`card glass ${styles.tagSelectItem}`}
                 type="button"
-                onClick={() => handleTagSelect(tag.Id)}
+                onClick={() => handleTagSelect(tag.id)}
               >
                 <span className={styles.tagSelectName}>
-                  {tag.Name ?? "Untitled"}
+                  {tag.name ?? "Untitled"}
                 </span>
                 <span className={styles.tagSelectCount}>
                   {tag.count} remaining

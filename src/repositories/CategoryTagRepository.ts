@@ -32,7 +32,7 @@ export class CategoryTagRepository implements ICategoryTagRepository {
 
     const result = await db.query(
       `
-      SELECT ct.*, COUNT(c.Id) AS count
+      SELECT ct.Id AS id, ct.Name AS name, COUNT(c.Id) AS count
       FROM CategoryTags ct
       JOIN Cards c ON c.CategoryTagId = ct.Id
       WHERE c.BoxId IS NULL
@@ -47,7 +47,7 @@ async getReviewTags(): Promise<ReviewTagsDto[]> {
 
   const result = await db.query(
     `
-    SELECT ct.*, COUNT(c.Id) AS count
+    SELECT ct.Id AS id, ct.Name AS name, COUNT(c.Id) AS count
     FROM CategoryTags ct
     JOIN Cards c ON c.CategoryTagId = ct.Id
     WHERE c.NextReviewUnixTime IS NOT NULL

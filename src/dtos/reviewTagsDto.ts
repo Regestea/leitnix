@@ -1,5 +1,5 @@
 export interface ReviewTagsDto{
-    Id: string
-    Name: string
+    id: string
+    name: string
     count: number
 }
