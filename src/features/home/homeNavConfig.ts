@@ -62,8 +62,8 @@ export function getHomeNavItems(navigate: NavigateFunction): NavItem[] {
         },
         {
           icon: faList,
-          title: "Edit list of words",
-          onClick: () => console.log("Search"),
+          title: "Card Management",
+          onClick: () => navigate("/card-management"),
         },
         {
           icon: faCircleQuestion,

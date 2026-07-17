@@ -9,6 +9,7 @@ import Prompt from "../features/customPrompt/Prompt.tsx";
 import BoxManagement from "../features/boxManagement/BoxManagement.tsx";
 import AddCard from "../features/addCard/AddCard.tsx";
 import Review from "../features/review/Review.tsx";
+import CardManagement from "../features/cardManagement/CardManagement.tsx";
 
 export const router = createBrowserRouter([
   {
@@ -47,6 +48,10 @@ export const router = createBrowserRouter([
       {
         path: "review",
         element: <Review />,
+      },
+      {
+        path: "card-management",
+        element: <CardManagement />,
       },
     ],
   },

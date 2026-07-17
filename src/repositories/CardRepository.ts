@@ -1,5 +1,6 @@
 import { getDb } from "../db/connection";
 import type { Card } from "../db/entities.ts";
+import type { CardPreviewDto } from "../dtos/cardPreviewDto.ts";
 import { hoursToSeconds, unixTimeNow } from "../extensions/timeExtension.ts";
 import type { ICardRepository } from "../iRepositories/ICardRepository.ts";
 
@@ -164,6 +165,80 @@ export class CardRepository implements ICardRepository {
     );
     const rows = result.values ?? [];
     return rows.length > 0 ? (rows[0] as { Count: number }).Count : 0;
+  }
+
+  async getById(id: string): Promise<Card | null> {
+    const db = await getDb();
+    const result = await db.query("SELECT * FROM Cards WHERE Id = ?;", [id]);
+    const rows = result.values ?? [];
+    return rows.length > 0 ? (rows[0] as Card) : null;
+  }
+
+  async update(card: Card): Promise<void> {
+    const db = await getDb();
+    await db.run(
+      `UPDATE Cards
+       SET MarkdownTopic = ?, MarkdownContent = ?
+       WHERE Id = ?;`,
+      [card.MarkdownTopic, card.MarkdownContent, card.Id],
+    );
+  }
+
+  async delete(id: string): Promise<void> {
+    const db = await getDb();
+    await db.run("DELETE FROM Cards WHERE Id = ?;", [id]);
+  }
+
+  async resetBox(cardId: string): Promise<void> {
+    const db = await getDb();
+    await db.run(
+      `UPDATE Cards
+       SET BoxId = NULL,
+           LastReviewUnixTime = NULL,
+           NextReviewUnixTime = NULL,
+           StartedLearningUnixTime = NULL
+       WHERE Id = ?;`,
+      [cardId],
+    );
+  }
+
+  async getAllPreview(
+    currentPage: number,
+    pageSize: number,
+    tagId?: string,
+    boxId?: string,
+  ): Promise<CardPreviewDto[]> {
+    const db = await getDb();
+    const offset = (currentPage - 1) * pageSize;
+    const conditions: string[] = [];
+    const params: (string | number)[] = [];
+
+    if (tagId) {
+      conditions.push("c.CategoryTagId = ?");
+      params.push(tagId);
+    }
+
+    if (boxId) {
+      conditions.push("c.BoxId = ?");
+      params.push(boxId);
+    }
+
+    const whereClause =
+      conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
+
+    params.push(pageSize, offset);
+
+    const result = await db.query(
+      `SELECT c.Id as id, c.MarkdownTopic as markdownTitle, ct.Name as tagName, b.Name as boxName
+       FROM Cards c
+       LEFT JOIN CategoryTags ct ON c.CategoryTagId = ct.Id
+       LEFT JOIN Boxes b ON c.BoxId = b.Id
+       ${whereClause}
+       ORDER BY c.MarkdownTopic ASC
+       LIMIT ? OFFSET ?;`,
+      params,
+    );
+    return (result.values ?? []) as CardPreviewDto[];
   }
 }
 
