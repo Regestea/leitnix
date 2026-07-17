@@ -1,22 +1,10 @@
-import { useEffect } from "react";
-import { useNavigate } from "react-router";
-import { useNavStore } from "../../shared/store/navStore";
-import { getHomeNavItems } from "./homeNavConfig";
 import ProgressCircle from "./ProgressCircle";
 import LearningProgress from "./LearningProgress";
 import { useHome } from "./hooks/useHome";
 import styles from "./Home.module.css";
 
 export default function Home() {
-  const setIsShowing = useNavStore((s) => s.setIsShowing);
-  const setItems = useNavStore((s) => s.setItems);
-  const navigate = useNavigate();
   const { learnedToday, pendingReview } = useHome();
-
-  useEffect(() => {
-    setItems(getHomeNavItems(navigate));
-    setIsShowing(true);
-  }, [setItems, setIsShowing, navigate]);
 
   return (
     <>

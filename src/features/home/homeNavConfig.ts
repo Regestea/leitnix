@@ -14,13 +14,23 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import type { NavItem } from "../../shared/store/navStore";
 
-export function getHomeNavItems(navigate: NavigateFunction): NavItem[] {
+export function getHomeNavItems(navigate: NavigateFunction, pathname: string): NavItem[] {
   return [
-     {
-      icon: faHome,
-      title: "Home",
-      onClick: () => navigate("/"),
-    },
+    ...(pathname === "/"
+      ? [
+          {
+            icon: faCircleQuestion,
+            title: "Help",
+            onClick: () => console.log("Home"),
+          },
+        ]
+      : [
+          {
+            icon: faHome,
+            title: "Home",
+            onClick: () => navigate("/"),
+          },
+        ]),
     {
       icon: faPlus,
       title: "Add New Card",

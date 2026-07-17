@@ -1,12 +1,21 @@
-import { Outlet } from "react-router";
+import { Outlet, useLocation, useNavigate } from "react-router";
 import Nav from "../shared/components/Nav.tsx";
 import { useThemeStore } from "../features/theme/store/themeStore.ts";
 import { useEffect, useState, useRef } from "react";
 import { initializeDatabase } from "../db/connection.ts";
+import { useNavStore } from "../shared/store/navStore.ts";
+import { getHomeNavItems } from "../features/home/homeNavConfig.ts";
 
 function App() {
   const [isReady, setIsReady] = useState(false);
   const hasInitialized = useRef(false);
+  const navigate = useNavigate();
+  const { pathname } = useLocation();
+  const setItems = useNavStore((s) => s.setItems);
+
+  useEffect(() => {
+    setItems(getHomeNavItems(navigate, pathname));
+  }, [setItems, navigate, pathname]);
 
   useEffect(() => {
     if (hasInitialized.current) return;
