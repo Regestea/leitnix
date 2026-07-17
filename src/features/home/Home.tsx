@@ -5,6 +5,7 @@ import { getHomeNavItems } from "./homeNavConfig";
 import ProgressCircle from "./ProgressCircle";
 import LearningProgress from "./LearningProgress";
 import { useHome } from "./hooks/useHome";
+import styles from "./Home.module.css";
 
 export default function Home() {
   const setIsShowing = useNavStore((s) => s.setIsShowing);
@@ -19,31 +20,31 @@ export default function Home() {
 
   return (
     <>
-      <div className="title-section">
-        <h1 className="styled-title">Leitnix</h1>
+      <div className={styles.titleSection}>
+        <h1 className={styles.styledTitle}>Leitnix</h1>
       </div>
-      <div className="content-stack">
-        <div className="cards-layout">
-          <div className="cards-row">
-            <div className="card-column">
-              <div className="card glass learn-card">
-                <div className="card-inner">
+      <div className={styles.contentStack}>
+        <div className={styles.cardsLayout}>
+          <div className={styles.cardsRow}>
+            <div className={styles.cardColumn}>
+              <div className={`card glass ${styles.learnCard}`}>
+                <div className={styles.cardInner}>
                   <ProgressCircle current={learnedToday} />
                 </div>
               </div>
-              <div className="card glass card-caption">
-                <p className="card-caption-text">Today Learned</p>
+              <div className={`card glass ${styles.cardCaption}`}>
+                <p className={styles.cardCaptionText}>Today Learned</p>
               </div>
             </div>
 
-            <div className="card-column">
-              <div className="card glass learn-card">
-                <div className="card-inner">
+            <div className={styles.cardColumn}>
+              <div className={`card glass ${styles.learnCard}`}>
+                <div className={styles.cardInner}>
                   <ProgressCircle current={pendingReview} />
                 </div>
               </div>
-              <div className="card glass card-caption">
-                <p className="card-caption-text">Pending Review</p>
+              <div className={`card glass ${styles.cardCaption}`}>
+                <p className={styles.cardCaptionText}>Pending Review</p>
               </div>
             </div>
           </div>

@@ -268,12 +268,6 @@ code {
   
 }
 
-.card-caption-text {
-  font-size: 1rem;
-  font-weight: var(--fw-semi-bold);
-  color: var(--text);
-}
-
 .custom-font-style {
   font-family: var(--app-font-family);
   font-size: var(--app-font-size);
@@ -374,95 +368,11 @@ button.secondary:hover {
   padding: 2.5rem 2rem 2rem;
 }
 
-.title-section {
-  margin-bottom: 0;
-  margin-top: 10px;
-  text-align: center;
-}
-
-.content-stack {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1.25rem;
-}
-
-.cards-layout {
-  display: flex;
-  flex-direction: column;
-  gap: 1.25rem;
-  width: 100%;
-  max-width: 42rem;
-  margin: 0 auto;
-  padding: 4rem;
-}
-
-.cards-row {
-  display: flex;
-  gap: 1.25rem;
-  width: 100%;
-  justify-content: center;
-  flex-wrap: nowrap;
-}
-
-.card-column {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1rem;
-}
-
-.card-inner {
-  display: flex;
-  flex-direction: column;
-  gap: 0.625rem;
-}
-
-.card-caption {
-  padding: 1rem;
-  width: 100%;
-  text-align: center;
-}
-
-@media (max-width: 1280px) {
-  .cards-layout {
-    padding: 2rem;
-  }
-}
-
-@media (max-width: 1024px) {
-  .cards-layout {
-    padding: 1rem;
-  }
-}
-
 @media (max-width: 768px) {
   .main-wrapper {
     padding-left: 1rem;
     padding-right: 1rem;
   }
-  .cards-layout {
-    gap: 0.625rem;
-  }
-  .cards-row {
-    gap: 0.625rem;
-  }
-}
-
-/* ─── Components ─────────────────────────────────────────────────────────────── */
-.styled-title {
-  font-family: "angelina", "comic", serif;
-  font-weight: bold;
-  font-size: 6.5rem;
-  text-align: center;
-  max-width: 382px;
-  justify-self: center;
-  background: linear-gradient(90deg, var(--primary), var(--secondary), var(--accent), var(--primary));
-  opacity: 0.8;
-  background-size: 300% 300%;
-  background-clip: text;
-  -webkit-background-clip: text;
-  color: transparent;
 }
 
 .card {
@@ -479,86 +389,6 @@ button.secondary:hover {
   font-size: 1rem;
 }
 
-.learn-card {
-  flex-shrink: 0;
-  aspect-ratio: 1 / 1;
-  height: 150px;
-  cursor: pointer;
-  border-radius: 50%;
-}
-
-.learn-card svg {
-  overflow: visible;
-  width: auto;
-  height: auto;
-  max-width: 100%;
-  max-height: 100%;
-}
-
-.progress-card {
-  width: 100%;
-  max-width: 600px;
-  padding: 1.5rem;
-  margin: 0 auto;
-  font-size: 1.2rem;
-}
-
-.progress-card .card-title {
-  margin-bottom: 1rem;
-  font-size: 1.4rem;
-  font-weight: 600;
-  background: white;
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-.progress-inner {
-  display: flex;
-  flex-direction: column;
-  gap: 0.625rem;
-}
-
-.progress-header {
-  margin-bottom: 0.5rem;
-  display: flex;
-  justify-content: space-between;
-  font-size: 0.875rem;
-}
-
-.progress-label {
-  margin-top: 0.3em;
-  color: white;
-}
-
-.progress-number {
-  font-size: 1.25rem;
-  font-weight: 600;
-}
-
-.progress-bar-track {
-  width: 100%;
-  height: 0.5rem;
-  overflow: hidden;
-  border-radius: 0.25rem;
-  background-color: rgba(255, 255, 255, 0.1);
-}
-
-.progress-fill {
-  height: 100%;
-  background: linear-gradient(90deg, var(--primary), var(--secondary));
-  border-radius: 4px;
-  transition: width 0.5s ease;
-  position: relative;
-}
-
-.progress-fill::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-}
-
 @keyframes cardEntry {
   from {
     transform: translateY(50px);
@@ -567,13 +397,5 @@ button.secondary:hover {
   to {
     transform: translateY(0);
     opacity: 1;
-  }
-}
-
-/* ─── Responsive ─────────────────────────────────────────────────────────────── */
-@media (max-width: 768px) {
-
-  .progress-card {
-    padding: 1.5rem !important;
   }
 }

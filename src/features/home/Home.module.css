@@ -1,0 +1,107 @@
+.titleSection {
+  margin-bottom: 0;
+  margin-top: 10px;
+  text-align: center;
+}
+
+.contentStack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.cardsLayout {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  width: 100%;
+  max-width: 42rem;
+  margin: 0 auto;
+  padding: 4rem;
+}
+
+.cardsRow {
+  display: flex;
+  gap: 1.25rem;
+  width: 100%;
+  justify-content: center;
+  flex-wrap: nowrap;
+}
+
+.cardColumn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.cardInner {
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+}
+
+.cardCaption {
+  padding: 1rem;
+  width: 100%;
+  text-align: center;
+}
+
+.cardCaptionText {
+  font-size: var(--app-font-size);
+  font-weight: var(--fw-semi-bold);
+  color: var(--text);
+}
+
+.styledTitle {
+  font-family: "angelina", "comic", serif;
+  font-weight: bold;
+  font-size: 6.5rem;
+  text-align: center;
+  max-width: 382px;
+  justify-self: center;
+  background: linear-gradient(90deg, var(--primary), var(--secondary), var(--accent), var(--primary));
+  opacity: 0.8;
+  background-size: 300% 300%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+.learnCard {
+  flex-shrink: 0;
+  aspect-ratio: 1 / 1;
+  height: 150px;
+  cursor: pointer;
+  border-radius: 50%;
+}
+
+.learnCard svg {
+  overflow: visible;
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: 100%;
+}
+
+@media (max-width: 1280px) {
+  .cardsLayout {
+    padding: 2rem;
+  }
+}
+
+@media (max-width: 1024px) {
+  .cardsLayout {
+    padding: 1rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .cardsLayout {
+    gap: 0.625rem;
+  }
+  .cardsRow {
+    gap: 0.625rem;
+  }
+}

@@ -1,0 +1,69 @@
+.progressCard {
+  width: 100%;
+  max-width: 600px;
+  padding: 1.5rem;
+  margin: 0 auto;
+  font-size: var(--app-font-size);
+}
+
+.progressCard .cardTitle {
+  margin-bottom: 1rem;
+  font-size: var(--app-font-size);
+  font-weight: 600;
+  background: white;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.progressInner {
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+}
+
+.progressHeader {
+  margin-bottom: 0.5rem;
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--app-font-size);
+}
+
+.progressLabel {
+  margin-top: 0.3em;
+  color: white;
+}
+
+.progressNumber {
+  font-size: var(--app-font-size);
+  font-weight: 600;
+}
+
+.progressBarTrack {
+  width: 100%;
+  height: 0.5rem;
+  overflow: hidden;
+  border-radius: 0.25rem;
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.progressFill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary), var(--secondary));
+  border-radius: 4px;
+  transition: width 0.5s ease;
+  position: relative;
+}
+
+.progressFill::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+}
+
+@media (max-width: 768px) {
+  .progressCard {
+    padding: 1.5rem !important;
+  }
+}

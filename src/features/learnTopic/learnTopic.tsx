@@ -10,7 +10,7 @@ import useModal from "../../shared/hooks/useModal";
 import styles from "./learnTopic.module.css";
 import type { ICategoryTagRepository } from "../../iRepositories/ICategoryTagRepository";
 import { categoryTagRepository } from "../../repositories/CategoryTagRepository";
-import type { NewTopicTagsDto } from "../../dtos/newTopicTagsDto";
+import type { NewTopicTagsDto } from "../../dtos/newTopicTagsDto.ts";
 import type { Card } from "../../db/entities";
 import type { ICardRepository } from "../../iRepositories/ICardRepository";
 import { cardRepository } from "../../repositories/CardRepository";
