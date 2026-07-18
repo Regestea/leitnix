@@ -206,7 +206,7 @@ export default function MarkdownRender({ markdown, isShowTranslationControl: pro
             disabled={translating}
           >
             <FontAwesomeIcon icon={faLanguage} />
-            {translating ? " Translating..." : translated ? " Show Original" : ` Translate to ${langLabel}`}
+            {translating ? " Translating..." : translated ? " Show Original" : " Translate"}
           </button>
           <select
             className={styles.langSelect}
