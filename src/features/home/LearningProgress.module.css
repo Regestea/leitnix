@@ -1,12 +1,13 @@
 .progressCard {
   width: 100%;
-  max-width: 600px;
+  max-width: calc(300px + 1.25rem);
   padding: 1.5rem;
   margin: 0 auto;
   font-size: var(--app-font-size);
-  height: 30dvh;
+  height: 20dvh;
   display: flex;
   flex-direction: column;
+  border-radius: 10%;
 }
 
 .progressInner {
