@@ -15,6 +15,7 @@ export class SettingRepository implements ISettingRepository {
     await db.run(
       `UPDATE Setting
        SET WrongAnswerPunishment     = ?,
+           ReadAloudBadge           = ?,
            Notification              = ?,
            NotificationHour          = ?,
            NotificationMinute        = ?,
@@ -22,6 +23,7 @@ export class SettingRepository implements ISettingRepository {
            DefaultTranslationTarget  = ?;`,
       [
         setting.WrongAnswerPunishment,
+        setting.ReadAloudBadge ? 1 : 0,
         setting.Notification ? 1 : 0,
         setting.NotificationHour,
         setting.NotificationMinute,
@@ -36,12 +38,14 @@ export class SettingRepository implements ISettingRepository {
     if (existing) {
       return {
         ...existing,
+        ReadAloudBadge: !!existing.ReadAloudBadge,
         Notification: !!existing.Notification,
       };
     }
 
     return {
       WrongAnswerPunishment: "None",
+      ReadAloudBadge: false,
       Notification: false,
       NotificationHour: 18,
       NotificationMinute: null,

@@ -9,6 +9,7 @@ export const CREATE_TABLE_STATEMENTS = [
           'JumpToFirstBox'
         )
       ),
+      ReadAloudBadge BOOLEAN DEFAULT FALSE,
       Notification BOOLEAN DEFAULT FALSE,
       NotificationHour INTEGER DEFAULT NULL
         CHECK (

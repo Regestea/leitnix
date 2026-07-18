@@ -32,6 +32,8 @@ export default function Settings() {
   const {
     wrongAnswerPunishment,
     setWrongAnswerPunishment,
+    readAloudBadge,
+    setReadAloudBadge,
     notification,
     setNotification,
     notificationHour,
@@ -97,6 +99,12 @@ export default function Settings() {
             label="Show translation controls"
             defaultChecked={isShowTranslationControl}
             onChange={setIsShowTranslationControl}
+          />
+
+          <Checkbox
+            label="Show read-aloud badges"
+            defaultChecked={readAloudBadge}
+            onChange={setReadAloudBadge}
           />
 
           <Select

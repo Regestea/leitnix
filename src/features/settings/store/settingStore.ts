@@ -11,6 +11,7 @@ export type { WrongAnswerPunishment };
 
 interface SettingState {
   wrongAnswerPunishment: WrongAnswerPunishment;
+  readAloudBadge: boolean;
   notification: boolean;
   notificationHour: number | null;
   notificationMinute: number | null;
@@ -18,6 +19,7 @@ interface SettingState {
   defaultTranslationTarget: string;
 
   setWrongAnswerPunishment: (value: WrongAnswerPunishment) => void;
+  setReadAloudBadge: (value: boolean) => void;
   setNotification: (value: boolean) => void;
   setNotificationHour: (value: number | null) => void;
   setNotificationMinute: (value: number | null) => void;
@@ -31,6 +33,7 @@ const sqliteStorage: StateStorage = {
 
     const state = {
       wrongAnswerPunishment: row.WrongAnswerPunishment as WrongAnswerPunishment,
+      readAloudBadge: !!row.ReadAloudBadge,
       notification: row.Notification,
       notificationHour: row.NotificationHour,
       notificationMinute: row.NotificationMinute,
@@ -48,6 +51,7 @@ const sqliteStorage: StateStorage = {
 
     await settingRepository.update({
       WrongAnswerPunishment: state.wrongAnswerPunishment,
+      ReadAloudBadge: state.readAloudBadge,
       Notification: state.notification,
       NotificationHour: state.notificationHour,
       NotificationMinute: state.notificationMinute,
@@ -63,6 +67,7 @@ export const useSettingStore = create<SettingState>()(
   persist(
     (set) => ({
       wrongAnswerPunishment: "None",
+      readAloudBadge: false,
       notification: false,
       notificationHour: 18,
       notificationMinute: null,
@@ -71,6 +76,8 @@ export const useSettingStore = create<SettingState>()(
 
       setWrongAnswerPunishment: (wrongAnswerPunishment) =>
         set({ wrongAnswerPunishment }),
+
+      setReadAloudBadge: (readAloudBadge) => set({ readAloudBadge }),
 
       setNotification: (notification) => set({ notification }),
 

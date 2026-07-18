@@ -206,9 +206,10 @@ function SectionTtsBadge({ mdContent, langHint }: { mdContent: string; langHint?
   );
 }
 
-export default function MarkdownRender({ markdown, isShowTranslationControl: propShowTranslation }: { markdown: string; isShowTranslationControl?: boolean }) {
-  const { isShowTranslationControl: storeShowTranslation, defaultTranslationTarget } = useSettingStore();
+export default function MarkdownRender({ markdown, isShowTranslationControl: propShowTranslation, isShowReadBadge: propShowReadBadge }: { markdown: string; isShowTranslationControl?: boolean; isShowReadBadge?: boolean }) {
+  const { isShowTranslationControl: storeShowTranslation, defaultTranslationTarget, readAloudBadge } = useSettingStore();
   const showControl = propShowTranslation ?? storeShowTranslation;
+  const showReadBadge = propShowReadBadge ?? readAloudBadge;
   const [translated, setTranslated] = useState<string | null>(null);
   const [translating, setTranslating] = useState(false);
   const [targetLang, setTargetLang] = useState(defaultTranslationTarget);
@@ -247,7 +248,7 @@ export default function MarkdownRender({ markdown, isShowTranslationControl: pro
     return (
       <>
         {children}
-        {mdContent && <SectionTtsBadge mdContent={mdContent} langHint={translated ? targetLang : undefined} />}
+        {mdContent && showReadBadge && <SectionTtsBadge mdContent={mdContent} langHint={translated ? targetLang : undefined} />}
       </>
     );
   }

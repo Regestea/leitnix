@@ -5,6 +5,7 @@ export type WrongAnswerPunishment =
 
 export interface Setting {
   WrongAnswerPunishment: WrongAnswerPunishment;
+  ReadAloudBadge: boolean;
   Notification: boolean;
   NotificationHour: number | null;
   NotificationMinute: number | null;
