@@ -79,6 +79,6 @@ describe("CategoryTagRepository", () => {
 
     const result = await repo.getReviewTags();
     expect(result).toHaveLength(1);
-    expect(result[0].Id).toBe("tag-due");
+    expect(result[0].id).toBe("tag-due");
   });
 });

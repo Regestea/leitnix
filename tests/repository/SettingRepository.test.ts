@@ -26,15 +26,15 @@ describe("SettingRepository", () => {
 
   it("returns the setting when one exists", async () => {
     await db.run(
-      "INSERT INTO Setting (Id, WrongAnswerPunishment) VALUES (?, ?);",
-      ["test-setting", "JumpOneBoxBack"],
+      "INSERT INTO Setting (WrongAnswerPunishment, Notification) VALUES (?, ?);",
+      ["JumpOneBoxBack", 1],
     );
 
     const repo = new SettingRepository();
     const result = await repo.get();
 
     expect(result).not.toBeNull();
-    expect(result!.Id).toBe("test-setting");
     expect(result!.WrongAnswerPunishment).toBe("JumpOneBoxBack");
+    expect(result!.Notification).toBe(1);
   });
 });
