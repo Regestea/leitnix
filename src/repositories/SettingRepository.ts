@@ -14,15 +14,19 @@ export class SettingRepository implements ISettingRepository {
     const db = await getDb();
     await db.run(
       `UPDATE Setting
-       SET WrongAnswerPunishment = ?,
-           Notification          = ?,
-           NotificationHour      = ?,
-           NotificationMinute    = ?;`,
+       SET WrongAnswerPunishment     = ?,
+           Notification              = ?,
+           NotificationHour          = ?,
+           NotificationMinute        = ?,
+           IsShowTranslationControl  = ?,
+           DefaultTranslationTarget  = ?;`,
       [
         setting.WrongAnswerPunishment,
         setting.Notification ? 1 : 0,
         setting.NotificationHour,
         setting.NotificationMinute,
+        setting.IsShowTranslationControl ? 1 : 0,
+        setting.DefaultTranslationTarget,
       ],
     );
   }
@@ -41,6 +45,8 @@ export class SettingRepository implements ISettingRepository {
       Notification: false,
       NotificationHour: 18,
       NotificationMinute: null,
+      IsShowTranslationControl: false,
+      DefaultTranslationTarget: "fa",
     };
   }
 }

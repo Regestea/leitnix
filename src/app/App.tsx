@@ -1,6 +1,7 @@
 import { Outlet, useLocation, useNavigate } from "react-router";
 import Nav from "../shared/components/Nav.tsx";
 import { useThemeStore } from "../features/theme/store/themeStore.ts";
+import { useSettingStore } from "../features/settings/store/settingStore.ts";
 import { useEffect, useState, useRef } from "react";
 import { initializeDatabase } from "../db/connection.ts";
 import { useNavStore } from "../shared/store/navStore.ts";
@@ -26,6 +27,7 @@ function App() {
       try {
         await initializeDatabase();
         await useThemeStore.persist.rehydrate();
+        await useSettingStore.persist.rehydrate();
         await rescheduleDailyNotification();
       } catch (error) {
         console.error("App initialization failed:", error);

@@ -17,7 +17,9 @@ export const CREATE_TABLE_STATEMENTS = [
       NotificationMinute INTEGER DEFAULT NULL
         CHECK (
           NotificationMinute IS NULL OR (NotificationMinute >= 0 AND NotificationMinute <= 59)
-        )
+        ),
+      IsShowTranslationControl BOOLEAN DEFAULT FALSE,
+      DefaultTranslationTarget TEXT DEFAULT 'fa'
     );
   `,
   `

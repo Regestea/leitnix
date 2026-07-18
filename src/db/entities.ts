@@ -8,6 +8,8 @@ export interface Setting {
   Notification: boolean;
   NotificationHour: number | null;
   NotificationMinute: number | null;
+  IsShowTranslationControl: boolean;
+  DefaultTranslationTarget: string;
 }
 
 export interface Theme {

@@ -14,11 +14,15 @@ interface SettingState {
   notification: boolean;
   notificationHour: number | null;
   notificationMinute: number | null;
+  isShowTranslationControl: boolean;
+  defaultTranslationTarget: string;
 
   setWrongAnswerPunishment: (value: WrongAnswerPunishment) => void;
   setNotification: (value: boolean) => void;
   setNotificationHour: (value: number | null) => void;
   setNotificationMinute: (value: number | null) => void;
+  setIsShowTranslationControl: (value: boolean) => void;
+  setDefaultTranslationTarget: (value: string) => void;
 }
 
 const sqliteStorage: StateStorage = {
@@ -30,6 +34,8 @@ const sqliteStorage: StateStorage = {
       notification: row.Notification,
       notificationHour: row.NotificationHour,
       notificationMinute: row.NotificationMinute,
+      isShowTranslationControl: !!row.IsShowTranslationControl,
+      defaultTranslationTarget: row.DefaultTranslationTarget,
     };
 
     return JSON.stringify({ state, version: 0 });
@@ -45,6 +51,8 @@ const sqliteStorage: StateStorage = {
       Notification: state.notification,
       NotificationHour: state.notificationHour,
       NotificationMinute: state.notificationMinute,
+      IsShowTranslationControl: state.isShowTranslationControl,
+      DefaultTranslationTarget: state.defaultTranslationTarget,
     });
   },
 
@@ -58,6 +66,8 @@ export const useSettingStore = create<SettingState>()(
       notification: false,
       notificationHour: 18,
       notificationMinute: null,
+      isShowTranslationControl: false,
+      defaultTranslationTarget: "fa",
 
       setWrongAnswerPunishment: (wrongAnswerPunishment) =>
         set({ wrongAnswerPunishment }),
@@ -68,6 +78,12 @@ export const useSettingStore = create<SettingState>()(
 
       setNotificationMinute: (notificationMinute) =>
         set({ notificationMinute }),
+
+      setIsShowTranslationControl: (isShowTranslationControl) =>
+        set({ isShowTranslationControl }),
+
+      setDefaultTranslationTarget: (defaultTranslationTarget) =>
+        set({ defaultTranslationTarget }),
     }),
     {
       name: "leitnix-settings",

@@ -8,6 +8,7 @@ import {
   scheduleNotification,
   cancelDailyNotification,
 } from "../../services/notificationService.ts";
+import { LANGUAGES } from "../../shared/constants/languages";
 
 const PUNISHMENT_OPTIONS = [
   { value: "None" as WrongAnswerPunishment, label: "None" },
@@ -25,6 +26,8 @@ const MINUTE_OPTIONS = Array.from({ length: 60 }, (_, i) => ({
   label: i.toString().padStart(2, "0"),
 }));
 
+const LANGUAGE_OPTIONS = LANGUAGES.map(([value, label]) => ({ value, label }));
+
 export default function Settings() {
   const {
     wrongAnswerPunishment,
@@ -35,6 +38,10 @@ export default function Settings() {
     setNotificationHour,
     notificationMinute,
     setNotificationMinute,
+    isShowTranslationControl,
+    setIsShowTranslationControl,
+    defaultTranslationTarget,
+    setDefaultTranslationTarget,
   } = useSettingStore();
 
   useEffect(() => {
@@ -85,6 +92,19 @@ export default function Settings() {
               />
             </>
           )}
+
+          <Checkbox
+            label="Show translation controls"
+            defaultChecked={isShowTranslationControl}
+            onChange={setIsShowTranslationControl}
+          />
+
+          <Select
+            label="Default translation language"
+            value={defaultTranslationTarget}
+            items={LANGUAGE_OPTIONS}
+            onChange={setDefaultTranslationTarget}
+          />
         </div>
       </div>
     </MainContainer>
