@@ -11,6 +11,7 @@ import {
   faGraduationCap,
   faClipboardCheck,
   faHome,
+  faSliders,
 } from "@fortawesome/free-solid-svg-icons";
 import type { NavItem } from "../../shared/store/navStore";
 
@@ -21,7 +22,7 @@ export function getHomeNavItems(navigate: NavigateFunction, pathname: string): N
           {
             icon: faCircleQuestion,
             title: "Help",
-            onClick: () => console.log("Home"),
+            onClick: () => console.log("Help"),
           },
         ]
       : [
@@ -76,9 +77,9 @@ export function getHomeNavItems(navigate: NavigateFunction, pathname: string): N
           onClick: () => navigate("/card-management"),
         },
         {
-          icon: faCircleQuestion,
-          title: "Help",
-          onClick: () => console.log("Home"),
+          icon: faSliders,
+          title: "Settings",
+          onClick: () => navigate("/settings"),
         },
       ],
     },

@@ -10,6 +10,7 @@ import BoxManagement from "../features/boxManagement/BoxManagement.tsx";
 import AddCard from "../features/addCard/AddCard.tsx";
 import Review from "../features/review/Review.tsx";
 import CardManagement from "../features/cardManagement/CardManagement.tsx";
+import Settings from "../features/settings/Settings.tsx";
 
 export const router = createBrowserRouter([
   {
@@ -52,6 +53,10 @@ export const router = createBrowserRouter([
       {
         path: "card-management",
         element: <CardManagement />,
+      },
+      {
+        path: "settings",
+        element: <Settings />,
       },
     ],
   },

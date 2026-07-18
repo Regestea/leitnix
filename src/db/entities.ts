@@ -4,8 +4,10 @@ export type WrongAnswerPunishment =
   | "JumpToFirstBox";
 
 export interface Setting {
-  Id: string;
   WrongAnswerPunishment: WrongAnswerPunishment;
+  Notification: boolean;
+  NotificationHour: number | null;
+  NotificationMinute: number | null;
 }
 
 export interface Theme {

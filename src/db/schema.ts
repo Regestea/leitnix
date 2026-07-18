@@ -1,16 +1,23 @@
 export const CREATE_TABLE_STATEMENTS = [
   `
     CREATE TABLE IF NOT EXISTS Setting (
-      Id TEXT PRIMARY KEY,
-      WrongAnswerPunishment TEXT NOT NULL
-      DEFAULT 'None'
+      WrongAnswerPunishment TEXT NOT NULL DEFAULT 'None'
       CHECK (
         WrongAnswerPunishment IN (
           'None',
           'JumpOneBoxBack',
           'JumpToFirstBox'
         )
-      )
+      ),
+      Notification BOOLEAN DEFAULT FALSE,
+      NotificationHour INTEGER DEFAULT NULL
+        CHECK (
+          NotificationHour IS NULL OR (NotificationHour >= 0 AND NotificationHour <= 23)
+        ),
+      NotificationMinute INTEGER DEFAULT NULL
+        CHECK (
+          NotificationMinute IS NULL OR (NotificationMinute >= 0 AND NotificationMinute <= 59)
+        )
     );
   `,
   `

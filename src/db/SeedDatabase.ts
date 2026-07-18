@@ -27,7 +27,7 @@ export class SeedDatabase {
 
   private async seedSetting(): Promise<void> {
     await this.db.execute(
-      `INSERT OR IGNORE INTO Setting (Id, WrongAnswerPunishment) VALUES ('default-setting', 'None');`,
+      `INSERT OR IGNORE INTO Setting (WrongAnswerPunishment, Notification, NotificationHour, NotificationMinute) VALUES ('None', FALSE, 18, NULL);`,
     );
   }
 

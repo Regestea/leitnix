@@ -5,6 +5,7 @@ import { useEffect, useState, useRef } from "react";
 import { initializeDatabase } from "../db/connection.ts";
 import { useNavStore } from "../shared/store/navStore.ts";
 import { getHomeNavItems } from "../features/home/homeNavConfig.ts";
+import { rescheduleDailyNotification } from "../services/notificationService.ts";
 
 function App() {
   const [isReady, setIsReady] = useState(false);
@@ -25,6 +26,7 @@ function App() {
       try {
         await initializeDatabase();
         await useThemeStore.persist.rehydrate();
+        await rescheduleDailyNotification();
       } catch (error) {
         console.error("App initialization failed:", error);
         return;
