@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from "react";
+import React, { useState } from "react";
 import ReactMarkdown from "react-markdown";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
@@ -141,43 +141,6 @@ function stripMarkdown(text: string): string {
   return restoreCode(stripped, snippets);
 }
 
-interface Section {
-  level: number;
-  text: string;
-}
-
-function extractSections(md: string): Section[] {
-  const sections: Section[] = [];
-  const regex = /^(#{1,6})\s+(.+)$/gm;
-  let match;
-  while ((match = regex.exec(md)) !== null) {
-    sections.push({ level: match[1].length, text: match[2] });
-  }
-  return sections;
-}
-
-function getSectionContent(md: string, index: number): string {
-  const lines = md.split("\n");
-  let headingCount = -1;
-  let start = 0;
-  let end = lines.length;
-
-  for (let i = 0; i < lines.length; i++) {
-    const headingMatch = lines[i].match(/^(#{1,6})\s+.+$/);
-    if (headingMatch) {
-      headingCount++;
-      if (headingCount === index) {
-        start = i;
-      } else if (headingCount === index + 1) {
-        end = i;
-        break;
-      }
-    }
-  }
-
-  return lines.slice(start, end).join("\n");
-}
-
 function SectionTtsBadge({ mdContent, langHint }: { mdContent: string; langHint?: string }) {
   const [isPlaying, setIsPlaying] = useState(false);
 
@@ -231,27 +194,7 @@ export default function MarkdownRender({ markdown, isShowTranslationControl: pro
   }
 
   const content = translated ?? markdown;
-  const sections = useMemo(() => extractSections(content), [content]);
-  const sectionContents = useMemo(
-    () => sections.map((_, i) => getSectionContent(content, i)),
-    [content, sections],
-  );
-  const sectionIndexRef = useRef(0);
-
   const langLabel = LANGUAGES.find(([c]) => c === targetLang)?.[1] ?? targetLang;
-  sectionIndexRef.current = 0;
-
-  function headingWithBadge(children: React.ReactNode) {
-    const idx = sectionIndexRef.current;
-    sectionIndexRef.current += 1;
-    const mdContent = sectionContents[idx];
-    return (
-      <>
-        {children}
-        {mdContent && showReadBadge && <SectionTtsBadge mdContent={mdContent} langHint={translated ? targetLang : undefined} />}
-      </>
-    );
-  }
 
   return (
     <>
@@ -294,19 +237,25 @@ export default function MarkdownRender({ markdown, isShowTranslationControl: pro
           return <input {...rest} />;
         },
         p({ children }) {
-          return <p {...dirProps(children)}>{children}</p>;
+          const text = extractText(children);
+          return (
+            <p {...dirProps(children)}>
+              {children}
+              {text && showReadBadge && <SectionTtsBadge mdContent={text} langHint={translated ? targetLang : undefined} />}
+            </p>
+          );
         },
         h1({ children }) {
-          return <h1 className={styles.heading} {...dirProps(children)}>{headingWithBadge(children)}</h1>;
+          return <h1 className={styles.heading} {...dirProps(children)}>{children}</h1>;
         },
         h2({ children }) {
-          return <h2 className={styles.heading} {...dirProps(children)}>{headingWithBadge(children)}</h2>;
+          return <h2 className={styles.heading} {...dirProps(children)}>{children}</h2>;
         },
         h3({ children }) {
-          return <h3 className={styles.heading} {...dirProps(children)}>{headingWithBadge(children)}</h3>;
+          return <h3 className={styles.heading} {...dirProps(children)}>{children}</h3>;
         },
         h4({ children }) {
-          return <h4 className={styles.heading} {...dirProps(children)}>{headingWithBadge(children)}</h4>;
+          return <h4 className={styles.heading} {...dirProps(children)}>{children}</h4>;
         },
         ul({ children }) {
           return <ul {...dirProps(children)}>{children}</ul>;
@@ -315,7 +264,13 @@ export default function MarkdownRender({ markdown, isShowTranslationControl: pro
           return <ol {...dirProps(children)}>{children}</ol>;
         },
         li({ children }) {
-          return <li className={styles.listItem} {...dirProps(children)}>{children}</li>;
+          const text = extractText(children);
+          return (
+            <li className={styles.listItem} {...dirProps(children)}>
+              {children}
+              {text && showReadBadge && <SectionTtsBadge mdContent={text} langHint={translated ? targetLang : undefined} />}
+            </li>
+          );
         },
         strong({ children }) {
           return <strong className={styles.strong}>{children}</strong>;
