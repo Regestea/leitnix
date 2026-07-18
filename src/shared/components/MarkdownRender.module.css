@@ -35,3 +35,49 @@
   background-clip: text;
   font-weight: var(--app-font-weight);
 }
+
+.translateBar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.translateButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.8rem;
+  border: 1px solid var(--secondary);
+  border-radius: 0.5rem;
+  background: transparent;
+  color: var(--secondary);
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.translateButton:hover {
+  background: var(--secondary);
+  color: #fff;
+}
+
+.translateButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.langSelect {
+  padding: 0.4rem 0.8rem;
+  border: 1px solid var(--secondary);
+  border-radius: 0.5rem;
+  background: transparent;
+  color: var(--secondary);
+  font-size: 0.85rem;
+  cursor: pointer;
+  width: 120px;
+}
+
+.langSelect:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

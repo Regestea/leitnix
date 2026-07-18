@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import ReactMarkdown from "react-markdown";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
@@ -6,8 +6,11 @@ import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
 import rehypeRaw from "rehype-raw";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faLanguage } from "@fortawesome/free-solid-svg-icons";
 import MarkdownTable from "./MarkdownTable";
 import MermaidDiagram from "./MermaidDiagram";
+import { translationService } from "../../services/translationService";
 import styles from "./MarkdownRender.module.css";
 
 // RTL helper
@@ -94,9 +97,108 @@ function dirProps(children: React.ReactNode): {
   };
 }
 
-export default function MarkdownRender({ markdown }: { markdown: string }) {
+function preserveCode(input: string): { text: string; snippets: string[] } {
+  const snippets: string[] = [];
+  let idx = 0;
+  const text = input.replace(
+    /(```[\s\S]*?```|`[^`\n]+`)/g,
+    (match) => {
+      const placeholder = `@@CODE_${idx}@@`;
+      snippets.push(match);
+      idx++;
+      return placeholder;
+    },
+  );
+  return { text, snippets };
+}
+
+function restoreCode(translated: string, snippets: string[]): string {
+  let idx = 0;
+  return translated.replace(/@@CODE_\d+@@/g, () => snippets[idx++] ?? "");
+}
+
+const LANGUAGES: [string, string][] = [
+  ["af", "Afrikaans"], ["sq", "Albanian"], ["am", "Amharic"], ["ar", "Arabic"],
+  ["hy", "Armenian"], ["az", "Azerbaijani"], ["eu", "Basque"], ["be", "Belarusian"],
+  ["bn", "Bengali"], ["bs", "Bosnian"], ["bg", "Bulgarian"], ["ca", "Catalan"],
+  ["ceb", "Cebuano"], ["ny", "Chichewa"], ["zh-CN", "Chinese (Simplified)"],
+  ["zh-TW", "Chinese (Traditional)"], ["co", "Corsican"], ["hr", "Croatian"],
+  ["cs", "Czech"], ["da", "Danish"], ["nl", "Dutch"], ["en", "English"],
+  ["eo", "Esperanto"], ["et", "Estonian"], ["tl", "Filipino"], ["fi", "Finnish"],
+  ["fr", "French"], ["fy", "Frisian"], ["gl", "Galician"], ["ka", "Georgian"],
+  ["de", "German"], ["el", "Greek"], ["gu", "Gujarati"], ["ht", "Haitian Creole"],
+  ["ha", "Hausa"], ["haw", "Hawaiian"], ["iw", "Hebrew"], ["hi", "Hindi"],
+  ["hmn", "Hmong"], ["hu", "Hungarian"], ["is", "Icelandic"], ["ig", "Igbo"],
+  ["id", "Indonesian"], ["ga", "Irish"], ["it", "Italian"], ["ja", "Japanese"],
+  ["jw", "Javanese"], ["kn", "Kannada"], ["kk", "Kazakh"], ["km", "Khmer"],
+  ["rw", "Kinyarwanda"], ["ko", "Korean"], ["ku", "Kurdish (Kurmanji)"],
+  ["ky", "Kyrgyz"], ["lo", "Lao"], ["la", "Latin"], ["lv", "Latvian"],
+  ["lt", "Lithuanian"], ["lb", "Luxembourgish"], ["mk", "Macedonian"],
+  ["mg", "Malagasy"], ["ms", "Malay"], ["ml", "Malayalam"], ["mt", "Maltese"],
+  ["mi", "Maori"], ["mr", "Marathi"], ["mn", "Mongolian"], ["my", "Myanmar (Burmese)"],
+  ["ne", "Nepali"], ["no", "Norwegian"], ["or", "Odia (Oriya)"], ["ps", "Pashto"],
+  ["fa", "Persian"], ["pl", "Polish"], ["pt", "Portuguese"], ["pa", "Punjabi"],
+  ["ro", "Romanian"], ["ru", "Russian"], ["sm", "Samoan"], ["gd", "Scots Gaelic"],
+  ["sr", "Serbian"], ["st", "Sesotho"], ["sn", "Shona"], ["sd", "Sindhi"],
+  ["si", "Sinhala"], ["sk", "Slovak"], ["sl", "Slovenian"], ["so", "Somali"],
+  ["es", "Spanish"], ["su", "Sundanese"], ["sw", "Swahili"], ["sv", "Swedish"],
+  ["tg", "Tajik"], ["ta", "Tamil"], ["tt", "Tatar"], ["te", "Telugu"],
+  ["th", "Thai"], ["tr", "Turkish"], ["tk", "Turkmen"], ["uk", "Ukrainian"],
+  ["ur", "Urdu"], ["ug", "Uyghur"], ["uz", "Uzbek"], ["vi", "Vietnamese"],
+  ["cy", "Welsh"], ["xh", "Xhosa"], ["yi", "Yiddish"], ["yo", "Yoruba"],
+  ["zu", "Zulu"],
+];
+
+export default function MarkdownRender({ markdown, isShowTranslationControl = false }: { markdown: string; isShowTranslationControl?: boolean }) {
+  const [translated, setTranslated] = useState<string | null>(null);
+  const [translating, setTranslating] = useState(false);
+  const [targetLang, setTargetLang] = useState("fa");
+
+  async function handleTranslate() {
+    if (translated) {
+      setTranslated(null);
+      return;
+    }
+    setTranslating(true);
+    try {
+      const { text, snippets } = preserveCode(markdown);
+      const result = await translationService.translateAsync(text, targetLang);
+      setTranslated(restoreCode(result.translatedText, snippets));
+    } catch {
+      console.error("Translation failed");
+    } finally {
+      setTranslating(false);
+    }
+  }
+
+  const langLabel = LANGUAGES.find(([c]) => c === targetLang)?.[1] ?? targetLang;
+  const content = translated ?? markdown;
+
   return (
-    <ReactMarkdown
+    <>
+      {isShowTranslationControl && (
+        <div className={styles.translateBar}>
+          <button
+            className={styles.translateButton}
+            onClick={handleTranslate}
+            disabled={translating}
+          >
+            <FontAwesomeIcon icon={faLanguage} />
+            {translating ? " Translating..." : translated ? " Show Original" : ` Translate to ${langLabel}`}
+          </button>
+          <select
+            className={styles.langSelect}
+            value={targetLang}
+            onChange={(e) => setTargetLang(e.target.value)}
+            disabled={translating}
+          >
+            {LANGUAGES.map(([code, name]) => (
+              <option key={code} value={code}>{name}</option>
+            ))}
+          </select>
+        </div>
+      )}
+      <ReactMarkdown
       remarkPlugins={[remarkGfm, remarkMath]}
       rehypePlugins={[rehypeRaw, rehypeKatex]}
       components={{
@@ -170,7 +272,8 @@ export default function MarkdownRender({ markdown }: { markdown: string }) {
         },
       }}
     >
-      {markdown}
+      {content}
     </ReactMarkdown>
+    </>
   );
 }
