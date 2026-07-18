@@ -1,6 +1,7 @@
 import { getDb } from "../db/connection";
 import type { Box } from "../db/entities.ts";
 import type { IBoxRepository } from "../iRepositories/IBoxRepository.ts";
+import { calculateNextReviewTime } from "../extensions/timeExtension.ts";
 
 export class BoxRepository implements IBoxRepository {
   async getById(id: string): Promise<Box | null> {
@@ -127,7 +128,7 @@ export class BoxRepository implements IBoxRepository {
       const c = card as { Id: string; LastReviewUnixTime: number };
       await db.run(
         "UPDATE Cards SET NextReviewUnixTime = ? WHERE Id = ?;",
-        [c.LastReviewUnixTime + repeatSeconds, c.Id],
+        [calculateNextReviewTime(repeatSeconds, c.LastReviewUnixTime), c.Id],
       );
     }
   }
@@ -156,7 +157,7 @@ export class BoxRepository implements IBoxRepository {
         const c = card as { Id: string; LastReviewUnixTime: number };
         await db.run(
           "UPDATE Cards SET BoxId = ?, NextReviewUnixTime = ? WHERE Id = ?;",
-          [destinationBoxId, c.LastReviewUnixTime + repeatSeconds, c.Id],
+          [destinationBoxId, calculateNextReviewTime(repeatSeconds, c.LastReviewUnixTime), c.Id],
         );
       }
 

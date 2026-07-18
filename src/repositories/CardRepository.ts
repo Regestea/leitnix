@@ -1,7 +1,11 @@
 import { getDb } from "../db/connection";
 import type { Card } from "../db/entities.ts";
 import type { CardPreviewDto } from "../dtos/cardPreviewDto.ts";
-import { hoursToSeconds, unixTimeNow } from "../extensions/timeExtension.ts";
+import {
+  calculateNextReviewTime,
+  hoursToSeconds,
+  unixTimeNow,
+} from "../extensions/timeExtension.ts";
 import type { ICardRepository } from "../iRepositories/ICardRepository.ts";
 
 export class CardRepository implements ICardRepository {
@@ -112,7 +116,7 @@ export class CardRepository implements ICardRepository {
         NextReviewUnixTime = ?
     WHERE Id = ?;
     `,
-      [firstBox.Id, now, now, now + firstBox.RepeatIntervalSeconds, cardId],
+      [firstBox.Id, now, now, calculateNextReviewTime(firstBox.RepeatIntervalSeconds), cardId],
     );
   }
 

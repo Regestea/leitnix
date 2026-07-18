@@ -1,6 +1,6 @@
 import { getDb } from "../db/connection";
 import type { IQuestionRepository, Question, QuestionType } from "../iRepositories/IQuestionRepository.ts";
-import { unixTimeNow } from "../extensions/timeExtension.ts";
+import { calculateNextReviewTime, unixTimeNow } from "../extensions/timeExtension.ts";
 import type {
   FillTheBlankQuestion,
   FreeResponseQuestion,
@@ -60,7 +60,7 @@ export class QuestionRepository implements IQuestionRepository {
            LastReviewUnixTime = ?,
            NextReviewUnixTime = ?
        WHERE Id = ?;`,
-      [newBoxId, now, now + newBox.RepeatIntervalSeconds, cardId],
+      [newBoxId, now, calculateNextReviewTime(newBox.RepeatIntervalSeconds), cardId],
     );
   }
 
