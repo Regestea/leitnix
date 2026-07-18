@@ -6,6 +6,7 @@ import type {
   FreeResponseQuestion,
   MultipleChoiceQuestion,
 } from "../db/entities.ts";
+import { settingRepository } from "./SettingRepository.ts";
 
 export class QuestionRepository implements IQuestionRepository {
   async markQuestionAsReviewed(
@@ -35,15 +36,32 @@ export class QuestionRepository implements IQuestionRepository {
     if (!boxId) return;
 
     const boxResult = await db.query(
-      "SELECT NextBoxId, RepeatIntervalSeconds FROM Boxes WHERE Id = ?;",
+      "SELECT NextBoxId, PreviousBoxId, RepeatIntervalSeconds FROM Boxes WHERE Id = ?;",
       [boxId],
     );
     const box = boxResult.values![0] as {
       NextBoxId: string | null;
+      PreviousBoxId: string | null;
       RepeatIntervalSeconds: number;
     };
 
-    const newBoxId = isCorrect && box.NextBoxId ? box.NextBoxId : boxId;
+    let newBoxId: string;
+    if (isCorrect) {
+      newBoxId = box.NextBoxId ? box.NextBoxId : boxId;
+    } else {
+      const setting = await settingRepository.getOrCreateDefaults();
+      if (setting.WrongAnswerPunishment === "JumpOneBoxBack") {
+        newBoxId = box.PreviousBoxId ?? boxId;
+      } else if (setting.WrongAnswerPunishment === "JumpToFirstBox") {
+        const firstBoxResult = await db.query(
+          "SELECT Id FROM Boxes WHERE PreviousBoxId IS NULL LIMIT 1;",
+        );
+        const firstBox = firstBoxResult.values![0] as { Id: string } | undefined;
+        newBoxId = firstBox?.Id ?? boxId;
+      } else {
+        newBoxId = boxId;
+      }
+    }
     const now = unixTimeNow();
 
     const newBoxResult = await db.query(
