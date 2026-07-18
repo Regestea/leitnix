@@ -10,4 +10,5 @@ export interface ITranslationService {
     targetLanguage: string,
     cancellationToken?: AbortSignal,
   ): Promise<TranslationResult>;
+  detectLanguageAsync(text: string, cancellationToken?: AbortSignal): Promise<string>;
 }

@@ -92,6 +92,29 @@ export class TranslationService implements ITranslationService {
       throw new Error("Failed to communicate with translation service.");
     }
   }
+
+  async detectLanguageAsync(
+    text: string,
+    cancellationToken?: AbortSignal,
+  ): Promise<string> {
+    const snippet = text.slice(0, 200).trim();
+    if (!snippet) return "en";
+
+    try {
+      const url = buildUrl(snippet, "en");
+      const response = await fetch(url, { signal: cancellationToken });
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+
+      const responseContent = await response.text();
+      const result = parseTranslationResponse(responseContent, text);
+      return result.detectedLanguage || "en";
+    } catch {
+      return "en";
+    }
+  }
 }
 
 export const translationService: ITranslationService = new TranslationService();

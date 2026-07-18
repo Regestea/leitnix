@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
@@ -7,10 +7,11 @@ import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
 import rehypeRaw from "rehype-raw";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faLanguage } from "@fortawesome/free-solid-svg-icons";
+import { faLanguage, faVolumeHigh, faStop } from "@fortawesome/free-solid-svg-icons";
 import MarkdownTable from "./MarkdownTable";
 import MermaidDiagram from "./MermaidDiagram";
 import { translationService } from "../../services/translationService";
+import { textToSpeechService } from "../../services/textToSpeechService";
 import { LANGUAGES } from "../../shared/constants/languages";
 import { useSettingStore } from "../../features/settings/store/settingStore";
 import styles from "./MarkdownRender.module.css";
@@ -119,13 +120,98 @@ function restoreCode(translated: string, snippets: string[]): string {
   return translated.replace(/@@CODE_\d+@@/g, () => snippets[idx++] ?? "");
 }
 
+function stripMarkdown(text: string): string {
+  const { text: clean, snippets } = preserveCode(text);
+  const stripped = clean
+    .replace(/^#{1,6}\s+/gm, "")
+    .replace(/\*\*(.+?)\*\*/g, "$1")
+    .replace(/__(.+?)__/g, "$1")
+    .replace(/\*(.+?)\*/g, "$1")
+    .replace(/_(.+?)_/g, "$1")
+    .replace(/~~(.+?)~~/g, "$1")
+    .replace(/`[^`\n]+`/g, "")
+    .replace(/\[([^\]]*)\]\([^)]*\)/g, "$1")
+    .replace(/!\[([^\]]*)\]\([^)]*\)/g, "$1")
+    .replace(/^>\s+/gm, "")
+    .replace(/^[-*+]\s+/gm, "")
+    .replace(/^\d+\.\s+/gm, "")
+    .replace(/^[-*_]{3,}\s*$/gm, "")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+  return restoreCode(stripped, snippets);
+}
+
+interface Section {
+  level: number;
+  text: string;
+}
+
+function extractSections(md: string): Section[] {
+  const sections: Section[] = [];
+  const regex = /^(#{1,6})\s+(.+)$/gm;
+  let match;
+  while ((match = regex.exec(md)) !== null) {
+    sections.push({ level: match[1].length, text: match[2] });
+  }
+  return sections;
+}
+
+function getSectionContent(md: string, index: number): string {
+  const lines = md.split("\n");
+  let headingCount = -1;
+  let start = 0;
+  let end = lines.length;
+
+  for (let i = 0; i < lines.length; i++) {
+    const headingMatch = lines[i].match(/^(#{1,6})\s+.+$/);
+    if (headingMatch) {
+      headingCount++;
+      if (headingCount === index) {
+        start = i;
+      } else if (headingCount === index + 1) {
+        end = i;
+        break;
+      }
+    }
+  }
+
+  return lines.slice(start, end).join("\n");
+}
+
+function SectionTtsBadge({ mdContent, langHint }: { mdContent: string; langHint?: string }) {
+  const [isPlaying, setIsPlaying] = useState(false);
+
+  async function handleClick(e: React.MouseEvent) {
+    e.preventDefault();
+    if (isPlaying) {
+      await textToSpeechService.stop();
+      setIsPlaying(false);
+      return;
+    }
+    const plain = stripMarkdown(mdContent);
+    const lang = langHint ?? await translationService.detectLanguageAsync(plain);
+    setIsPlaying(true);
+    await textToSpeechService.speak({ text: plain, lang });
+    setIsPlaying(false);
+  }
+
+  return (
+    <button
+      type="button"
+      className={`${styles.sectionTtsBadge}${isPlaying ? ` ${styles.ttsButtonActive}` : ""}`}
+      onClick={handleClick}
+    >
+      <FontAwesomeIcon icon={isPlaying ? faStop : faVolumeHigh} />
+    </button>
+  );
+}
+
 export default function MarkdownRender({ markdown, isShowTranslationControl: propShowTranslation }: { markdown: string; isShowTranslationControl?: boolean }) {
   const { isShowTranslationControl: storeShowTranslation, defaultTranslationTarget } = useSettingStore();
   const showControl = propShowTranslation ?? storeShowTranslation;
   const [translated, setTranslated] = useState<string | null>(null);
   const [translating, setTranslating] = useState(false);
   const [targetLang, setTargetLang] = useState(defaultTranslationTarget);
-
   async function handleTranslate() {
     if (translated) {
       setTranslated(null);
@@ -143,8 +229,28 @@ export default function MarkdownRender({ markdown, isShowTranslationControl: pro
     }
   }
 
-  const langLabel = LANGUAGES.find(([c]) => c === targetLang)?.[1] ?? targetLang;
   const content = translated ?? markdown;
+  const sections = useMemo(() => extractSections(content), [content]);
+  const sectionContents = useMemo(
+    () => sections.map((_, i) => getSectionContent(content, i)),
+    [content, sections],
+  );
+  const sectionIndexRef = useRef(0);
+
+  const langLabel = LANGUAGES.find(([c]) => c === targetLang)?.[1] ?? targetLang;
+  sectionIndexRef.current = 0;
+
+  function headingWithBadge(children: React.ReactNode) {
+    const idx = sectionIndexRef.current;
+    sectionIndexRef.current += 1;
+    const mdContent = sectionContents[idx];
+    return (
+      <>
+        {children}
+        {mdContent && <SectionTtsBadge mdContent={mdContent} langHint={translated ? targetLang : undefined} />}
+      </>
+    );
+  }
 
   return (
     <>
@@ -190,16 +296,16 @@ export default function MarkdownRender({ markdown, isShowTranslationControl: pro
           return <p {...dirProps(children)}>{children}</p>;
         },
         h1({ children }) {
-          return <h1 className={styles.heading} {...dirProps(children)}>{children}</h1>;
+          return <h1 className={styles.heading} {...dirProps(children)}>{headingWithBadge(children)}</h1>;
         },
         h2({ children }) {
-          return <h2 className={styles.heading} {...dirProps(children)}>{children}</h2>;
+          return <h2 className={styles.heading} {...dirProps(children)}>{headingWithBadge(children)}</h2>;
         },
         h3({ children }) {
-          return <h3 className={styles.heading} {...dirProps(children)}>{children}</h3>;
+          return <h3 className={styles.heading} {...dirProps(children)}>{headingWithBadge(children)}</h3>;
         },
         h4({ children }) {
-          return <h4 className={styles.heading} {...dirProps(children)}>{children}</h4>;
+          return <h4 className={styles.heading} {...dirProps(children)}>{headingWithBadge(children)}</h4>;
         },
         ul({ children }) {
           return <ul {...dirProps(children)}>{children}</ul>;
