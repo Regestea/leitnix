@@ -164,7 +164,7 @@ export class CardRepository implements ICardRepository {
   async overallReviewToday(): Promise<number> {
     const db = await getDb();
     const result = await db.query(
-      "SELECT COUNT(*) as Count FROM Cards WHERE NextReviewUnixTime <= ? AND NextReviewUnixTime IS NOT NULL AND BoxId IS NOT NULL;",
+      "SELECT COUNT(*) as Count FROM Cards WHERE NextReviewUnixTime <= ? AND NextReviewUnixTime IS NOT NULL AND BoxId IS NOT NULL AND CategoryTagId IS NOT NULL;",
       [unixTimeNow()],
     );
     const rows = result.values ?? [];

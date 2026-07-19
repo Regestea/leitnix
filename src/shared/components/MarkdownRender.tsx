@@ -169,7 +169,7 @@ function SectionTtsBadge({ mdContent, langHint }: { mdContent: string; langHint?
   );
 }
 
-export default function MarkdownRender({ markdown, isShowTranslationControl: propShowTranslation, isShowReadBadge: propShowReadBadge }: { markdown: string; isShowTranslationControl?: boolean; isShowReadBadge?: boolean }) {
+export default function MarkdownRender({ markdown, isShowTranslationControl: propShowTranslation, isShowReadBadge: propShowReadBadge, isDisableGlobalTranslate }: { markdown: string; isShowTranslationControl?: boolean; isShowReadBadge?: boolean; isDisableGlobalTranslate?: boolean }) {
   const { isShowTranslationControl: storeShowTranslation, defaultTranslationTarget, readAloudBadge } = useSettingStore();
   const showControl = propShowTranslation ?? storeShowTranslation;
   const showReadBadge = propShowReadBadge ?? readAloudBadge;
@@ -197,7 +197,7 @@ export default function MarkdownRender({ markdown, isShowTranslationControl: pro
 
   return (
     <>
-      {showControl && (
+      {showControl && !isDisableGlobalTranslate && (
         <div className={styles.translateBar}>
           <button
             className={styles.translateButton}
@@ -237,24 +237,173 @@ export default function MarkdownRender({ markdown, isShowTranslationControl: pro
         },
         p({ children }) {
           const text = extractText(children);
+          const [secTranslated, setSecTranslated] = useState<string | null>(null);
+          const [secTranslating, setSecTranslating] = useState(false);
+
+          async function handleSecTranslate(e: React.MouseEvent) {
+            e.preventDefault();
+            if (secTranslated) { setSecTranslated(null); return; }
+            setSecTranslating(true);
+            try {
+              const { text: clean, snippets } = preserveCode(text);
+              const result = await translationService.translateAsync(clean, targetLang);
+              setSecTranslated(restoreCode(result.translatedText, snippets));
+            } catch { console.error("Section translation failed"); }
+            finally { setSecTranslating(false); }
+          }
+
           return (
-            <p {...dirProps(children)}>
-              {children}
-              {text && showReadBadge && <SectionTtsBadge mdContent={text} langHint={translated ? targetLang : undefined} />}
+            <p {...dirProps(secTranslated ?? children)}>
+              {secTranslated ?? children}
+              {text && showReadBadge && <SectionTtsBadge mdContent={text} langHint={secTranslated ? targetLang : undefined} />}
+              {!translated && showControl && text && (
+                <button
+                  type="button"
+                  className={`${styles.sectionTranslateBadge}${secTranslating ? ` ${styles.ttsButtonActive}` : ""}`}
+                  onClick={handleSecTranslate}
+                  disabled={secTranslating}
+                >
+                  <FontAwesomeIcon icon={faLanguage} />
+                </button>
+              )}
             </p>
           );
         },
         h1({ children }) {
-          return <h1 className={styles.heading} {...dirProps(children)}>{children}</h1>;
+          const text = extractText(children);
+          const [secTranslated, setSecTranslated] = useState<string | null>(null);
+          const [secTranslating, setSecTranslating] = useState(false);
+
+          async function handleSecTranslate(e: React.MouseEvent) {
+            e.preventDefault();
+            if (secTranslated) { setSecTranslated(null); return; }
+            setSecTranslating(true);
+            try {
+              const { text: clean, snippets } = preserveCode(text);
+              const result = await translationService.translateAsync(clean, targetLang);
+              setSecTranslated(restoreCode(result.translatedText, snippets));
+            } catch { console.error("Section translation failed"); }
+            finally { setSecTranslating(false); }
+          }
+
+          return (
+            <h1 className={styles.heading} {...dirProps(secTranslated ?? children)}>
+              {secTranslated ?? children}
+              {text && showReadBadge && <SectionTtsBadge mdContent={text} langHint={secTranslated ? targetLang : undefined} />}
+              {!translated && showControl && text && (
+                <button
+                  type="button"
+                  className={`${styles.sectionTranslateBadge}${secTranslating ? ` ${styles.ttsButtonActive}` : ""}`}
+                  onClick={handleSecTranslate}
+                  disabled={secTranslating}
+                >
+                  <FontAwesomeIcon icon={faLanguage} />
+                </button>
+              )}
+            </h1>
+          );
         },
         h2({ children }) {
-          return <h2 className={styles.heading} {...dirProps(children)}>{children}</h2>;
+          const text = extractText(children);
+          const [secTranslated, setSecTranslated] = useState<string | null>(null);
+          const [secTranslating, setSecTranslating] = useState(false);
+
+          async function handleSecTranslate(e: React.MouseEvent) {
+            e.preventDefault();
+            if (secTranslated) { setSecTranslated(null); return; }
+            setSecTranslating(true);
+            try {
+              const { text: clean, snippets } = preserveCode(text);
+              const result = await translationService.translateAsync(clean, targetLang);
+              setSecTranslated(restoreCode(result.translatedText, snippets));
+            } catch { console.error("Section translation failed"); }
+            finally { setSecTranslating(false); }
+          }
+
+          return (
+            <h2 className={styles.heading} {...dirProps(secTranslated ?? children)}>
+              {secTranslated ?? children}
+              {text && showReadBadge && <SectionTtsBadge mdContent={text} langHint={secTranslated ? targetLang : undefined} />}
+              {!translated && showControl && text && (
+                <button
+                  type="button"
+                  className={`${styles.sectionTranslateBadge}${secTranslating ? ` ${styles.ttsButtonActive}` : ""}`}
+                  onClick={handleSecTranslate}
+                  disabled={secTranslating}
+                >
+                  <FontAwesomeIcon icon={faLanguage} />
+                </button>
+              )}
+            </h2>
+          );
         },
         h3({ children }) {
-          return <h3 className={styles.heading} {...dirProps(children)}>{children}</h3>;
+          const text = extractText(children);
+          const [secTranslated, setSecTranslated] = useState<string | null>(null);
+          const [secTranslating, setSecTranslating] = useState(false);
+
+          async function handleSecTranslate(e: React.MouseEvent) {
+            e.preventDefault();
+            if (secTranslated) { setSecTranslated(null); return; }
+            setSecTranslating(true);
+            try {
+              const { text: clean, snippets } = preserveCode(text);
+              const result = await translationService.translateAsync(clean, targetLang);
+              setSecTranslated(restoreCode(result.translatedText, snippets));
+            } catch { console.error("Section translation failed"); }
+            finally { setSecTranslating(false); }
+          }
+
+          return (
+            <h3 className={styles.heading} {...dirProps(secTranslated ?? children)}>
+              {secTranslated ?? children}
+              {text && showReadBadge && <SectionTtsBadge mdContent={text} langHint={secTranslated ? targetLang : undefined} />}
+              {!translated && showControl && text && (
+                <button
+                  type="button"
+                  className={`${styles.sectionTranslateBadge}${secTranslating ? ` ${styles.ttsButtonActive}` : ""}`}
+                  onClick={handleSecTranslate}
+                  disabled={secTranslating}
+                >
+                  <FontAwesomeIcon icon={faLanguage} />
+                </button>
+              )}
+            </h3>
+          );
         },
         h4({ children }) {
-          return <h4 className={styles.heading} {...dirProps(children)}>{children}</h4>;
+          const text = extractText(children);
+          const [secTranslated, setSecTranslated] = useState<string | null>(null);
+          const [secTranslating, setSecTranslating] = useState(false);
+
+          async function handleSecTranslate(e: React.MouseEvent) {
+            e.preventDefault();
+            if (secTranslated) { setSecTranslated(null); return; }
+            setSecTranslating(true);
+            try {
+              const { text: clean, snippets } = preserveCode(text);
+              const result = await translationService.translateAsync(clean, targetLang);
+              setSecTranslated(restoreCode(result.translatedText, snippets));
+            } catch { console.error("Section translation failed"); }
+            finally { setSecTranslating(false); }
+          }
+
+          return (
+            <h4 className={styles.heading} {...dirProps(secTranslated ?? children)}>
+              {secTranslated ?? children}
+              {text && showReadBadge && <SectionTtsBadge mdContent={text} langHint={secTranslated ? targetLang : undefined} />}
+              {!translated && showControl && text && (
+                <button
+                  type="button"
+                  className={`${styles.sectionTranslateBadge}${secTranslating ? ` ${styles.ttsButtonActive}` : ""}`}
+                  onClick={handleSecTranslate}
+                  disabled={secTranslating}
+                >
+                  <FontAwesomeIcon icon={faLanguage} />
+                </button>
+              )}
+            </h4>
+          );
         },
         ul({ children }) {
           return <ul {...dirProps(children)}>{children}</ul>;
@@ -264,10 +413,35 @@ export default function MarkdownRender({ markdown, isShowTranslationControl: pro
         },
         li({ children }) {
           const text = extractText(children);
+          const [secTranslated, setSecTranslated] = useState<string | null>(null);
+          const [secTranslating, setSecTranslating] = useState(false);
+
+          async function handleSecTranslate(e: React.MouseEvent) {
+            e.preventDefault();
+            if (secTranslated) { setSecTranslated(null); return; }
+            setSecTranslating(true);
+            try {
+              const { text: clean, snippets } = preserveCode(text);
+              const result = await translationService.translateAsync(clean, targetLang);
+              setSecTranslated(restoreCode(result.translatedText, snippets));
+            } catch { console.error("Section translation failed"); }
+            finally { setSecTranslating(false); }
+          }
+
           return (
-            <li className={styles.listItem} {...dirProps(children)}>
-              {children}
-              {text && showReadBadge && <SectionTtsBadge mdContent={text} langHint={translated ? targetLang : undefined} />}
+            <li className={styles.listItem} {...dirProps(secTranslated ?? children)}>
+              {secTranslated ?? children}
+              {text && showReadBadge && <SectionTtsBadge mdContent={text} langHint={secTranslated ? targetLang : undefined} />}
+              {!translated && showControl && text && (
+                <button
+                  type="button"
+                  className={`${styles.sectionTranslateBadge}${secTranslating ? ` ${styles.ttsButtonActive}` : ""}`}
+                  onClick={handleSecTranslate}
+                  disabled={secTranslating}
+                >
+                  <FontAwesomeIcon icon={faLanguage} />
+                </button>
+              )}
             </li>
           );
         },
@@ -279,10 +453,72 @@ export default function MarkdownRender({ markdown, isShowTranslationControl: pro
         },
         table: MarkdownTable,
         td({ children }) {
-          return <td {...dirProps(children)}>{children}</td>;
+          const text = extractText(children);
+          const [secTranslated, setSecTranslated] = useState<string | null>(null);
+          const [secTranslating, setSecTranslating] = useState(false);
+
+          async function handleSecTranslate(e: React.MouseEvent) {
+            e.preventDefault();
+            if (secTranslated) { setSecTranslated(null); return; }
+            setSecTranslating(true);
+            try {
+              const { text: clean, snippets } = preserveCode(text);
+              const result = await translationService.translateAsync(clean, targetLang);
+              setSecTranslated(restoreCode(result.translatedText, snippets));
+            } catch { console.error("Section translation failed"); }
+            finally { setSecTranslating(false); }
+          }
+
+          return (
+            <td {...dirProps(secTranslated ?? children)}>
+              {secTranslated ?? children}
+              {text && showReadBadge && <SectionTtsBadge mdContent={text} langHint={secTranslated ? targetLang : undefined} />}
+              {!translated && showControl && text && (
+                <button
+                  type="button"
+                  className={`${styles.sectionTranslateBadge}${secTranslating ? ` ${styles.ttsButtonActive}` : ""}`}
+                  onClick={handleSecTranslate}
+                  disabled={secTranslating}
+                >
+                  <FontAwesomeIcon icon={faLanguage} />
+                </button>
+              )}
+            </td>
+          );
         },
         th({ children }) {
-          return <th {...dirProps(children)}>{children}</th>;
+          const text = extractText(children);
+          const [secTranslated, setSecTranslated] = useState<string | null>(null);
+          const [secTranslating, setSecTranslating] = useState(false);
+
+          async function handleSecTranslate(e: React.MouseEvent) {
+            e.preventDefault();
+            if (secTranslated) { setSecTranslated(null); return; }
+            setSecTranslating(true);
+            try {
+              const { text: clean, snippets } = preserveCode(text);
+              const result = await translationService.translateAsync(clean, targetLang);
+              setSecTranslated(restoreCode(result.translatedText, snippets));
+            } catch { console.error("Section translation failed"); }
+            finally { setSecTranslating(false); }
+          }
+
+          return (
+            <th {...dirProps(secTranslated ?? children)}>
+              {secTranslated ?? children}
+              {text && showReadBadge && <SectionTtsBadge mdContent={text} langHint={secTranslated ? targetLang : undefined} />}
+              {!translated && showControl && text && (
+                <button
+                  type="button"
+                  className={`${styles.sectionTranslateBadge}${secTranslating ? ` ${styles.ttsButtonActive}` : ""}`}
+                  onClick={handleSecTranslate}
+                  disabled={secTranslating}
+                >
+                  <FontAwesomeIcon icon={faLanguage} />
+                </button>
+              )}
+            </th>
+          );
         },
         code({ className, children }) {
           const match = /language-(\w+)/.exec(className || "");

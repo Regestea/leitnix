@@ -50,6 +50,7 @@ export default function AiModels() {
   return (
     <>
       <MainContainer>
+        <h3 className={styles.pageHeading}>AI Models</h3>
         <ModelList
           models={models}
           onEdit={(model) => {

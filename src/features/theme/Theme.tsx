@@ -88,7 +88,7 @@ export default function Theme() {
 
   return (
     <MainContainer>
-      <div style={{ marginBottom: "1rem" }}>
+      <div style={{ marginTop: "2rem", marginBottom: "1rem" }}>
         <div
           style={{
             overflow: "auto",

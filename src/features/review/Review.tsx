@@ -218,7 +218,9 @@ export default function Review() {
         }
         footer={footer()}
       >
-        <MarkdownRender markdown={card.MarkdownTopic ?? ""} />
+        <div className={styles.topicSpacing}>
+          <MarkdownRender markdown={card.MarkdownTopic ?? ""} isDisableGlobalTranslate />
+        </div>
         <MarkdownRender markdown={card.MarkdownContent ?? ""} />
 
         <AiChatModal

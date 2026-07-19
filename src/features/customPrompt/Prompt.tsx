@@ -50,6 +50,7 @@ export default function Prompt() {
   return (
     <>
       <MainContainer>
+        <h3 className={styles.pageHeading}>Custom Prompts</h3>
         <PromptList
           prompts={prompts}
           onEdit={(prompt) => {

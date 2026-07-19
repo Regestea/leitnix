@@ -52,6 +52,7 @@ async getReviewTags(): Promise<ReviewTagsDto[]> {
     JOIN Cards c ON c.CategoryTagId = ct.Id
     WHERE c.NextReviewUnixTime IS NOT NULL
       AND c.NextReviewUnixTime <= ?
+      AND c.BoxId IS NOT NULL
     GROUP BY ct.Id, ct.Name;
     `,
     [unixTimeNow()]

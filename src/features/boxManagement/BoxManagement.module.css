@@ -1,3 +1,10 @@
+.pageHeading {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #ffffff;
+  margin-bottom: 0.5rem;
+}
+
 .boxList {
   padding: 1rem;
   overflow-y: auto;

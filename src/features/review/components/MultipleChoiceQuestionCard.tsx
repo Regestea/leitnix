@@ -42,7 +42,7 @@ export default function MultipleChoiceQuestionCard({
   return (
     <div className={styles.container}>
       <div className={styles.question}>
-        <MarkdownRender markdown={markdownQuestion} />
+        <MarkdownRender markdown={markdownQuestion} isShowTranslationControl={false} />
       </div>
 
       <div className={styles.options}>
@@ -70,7 +70,7 @@ export default function MultipleChoiceQuestionCard({
             >
               <span className={styles.optionLabel}>{label}</span>
               <span className={styles.optionContent}>
-                <MarkdownRender markdown={optionMap[key]} />
+                <MarkdownRender markdown={optionMap[key]} isShowTranslationControl={false} />
               </span>
             </button>
           );

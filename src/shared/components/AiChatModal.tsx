@@ -117,7 +117,7 @@ export default function AiChatModal({
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="AI Tutor" size="lg" bodyClassName={styles.chatBody}>
+    <Modal isOpen={isOpen} onClose={onClose} title="Leitnix AI" size="lg" bodyClassName={styles.chatBody}>
       <div className={styles.chatContainer}>
         <div className={styles.messagesList}>
           {messages.length === 0 && (

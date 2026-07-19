@@ -87,7 +87,7 @@ export default function Settings() {
   return (
     <MainContainer>
       <div className={styles.container}>
-        <h1>settings</h1>
+        <h3 className={styles.pageHeading}>Settings</h3>
         <div className={styles.fields}>
           <Select
             label="Wrong answer punishment"

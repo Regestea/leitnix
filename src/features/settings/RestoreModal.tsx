@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import Modal from "../../shared/components/Modal";
-import { importBackupZip } from "../../services/backupService";
+import { importBackupZip, resolveDependencies } from "../../services/backupService";
 import type { BackupTable, BackupDataPerTable } from "../../types/backup";
 import styles from "./BackupModal.module.css";
 
@@ -15,6 +15,17 @@ const TABLE_LABELS: Record<string, string> = {
   MultipleChoiceQuestions: "Multiple Choice Questions",
 };
 
+const DEPENDENTS: Record<BackupTable, BackupTable[]> = {
+  AiModels: [],
+  CustomPrompts: [],
+  CategoryTags: [],
+  Boxes: [],
+  Cards: ["FreeResponseQuestions", "FillTheBlankQuestions", "MultipleChoiceQuestions"],
+  FreeResponseQuestions: [],
+  FillTheBlankQuestions: [],
+  MultipleChoiceQuestions: [],
+};
+
 function tableLabel(key: string): string {
   return TABLE_LABELS[key] ?? key;
 }
@@ -27,9 +38,14 @@ interface RestoreModalProps {
 
 export default function RestoreModal({ isOpen, onClose, backupData }: RestoreModalProps) {
   const availableTables = Object.keys(backupData) as BackupTable[];
-  const [selectedTables, setSelectedTables] = useState<Set<BackupTable>>(new Set(availableTables));
+  const [manualTables, setManualTables] = useState<Set<BackupTable>>(new Set(availableTables));
   const [selectedTagId, setSelectedTagId] = useState<string | "all">("all");
   const [status, setStatus] = useState<{ type: "success" | "error"; message: string } | null>(null);
+
+  const effectiveTables = useMemo(() => {
+    const resolved = resolveDependencies([...manualTables]);
+    return new Set(resolved.filter((t) => availableTables.includes(t)));
+  }, [manualTables, availableTables]);
 
   const backupTags = useMemo(() => {
     const tags = backupData.CategoryTags;
@@ -37,35 +53,41 @@ export default function RestoreModal({ isOpen, onClose, backupData }: RestoreMod
     return tags.map((t) => t as { Id: string; Name: string });
   }, [backupData]);
 
-  const showTagFilter = selectedTables.has("CategoryTags") && selectedTables.has("Cards") && backupTags.length > 0;
-  const restoreDisabled = selectedTables.size === 0;
+  const showTagFilter = effectiveTables.has("CategoryTags") && effectiveTables.has("Cards") && backupTags.length > 0;
+  const restoreDisabled = effectiveTables.size === 0;
 
   function handleTableToggle(table: BackupTable, checked: boolean) {
-    setSelectedTables((prev) => {
+    setManualTables((prev) => {
       const next = new Set(prev);
-      if (checked) next.add(table);
-      else next.delete(table);
+      if (checked) {
+        next.add(table);
+      } else {
+        next.delete(table);
+        for (const dep of DEPENDENTS[table]) {
+          next.delete(dep);
+        }
+      }
       return next;
     });
   }
 
-  function filterBackupData(): BackupDataPerTable {
+  function getTableFilteredData(): BackupDataPerTable {
     const filtered: BackupDataPerTable = {};
 
     for (const table of availableTables) {
-      if (selectedTables.has(table)) {
+      if (effectiveTables.has(table)) {
         filtered[table] = backupData[table];
       }
     }
 
     if (selectedTagId !== "all" && backupTags.length > 0) {
-      if (selectedTables.has("CategoryTags")) {
+      if (effectiveTables.has("CategoryTags")) {
         filtered.CategoryTags = (backupData.CategoryTags ?? []).filter(
           (t) => (t as { Id: string }).Id === selectedTagId,
         );
       }
 
-      if (selectedTables.has("Cards")) {
+      if (effectiveTables.has("Cards")) {
         filtered.Cards = (backupData.Cards ?? []).filter(
           (c) => (c as { CategoryTagId: string | null }).CategoryTagId === selectedTagId,
         );
@@ -73,19 +95,19 @@ export default function RestoreModal({ isOpen, onClose, backupData }: RestoreMod
 
       const filteredCardIds = new Set((filtered.Cards ?? []).map((c) => (c as { Id: string }).Id));
 
-      if (selectedTables.has("FreeResponseQuestions")) {
+      if (effectiveTables.has("FreeResponseQuestions")) {
         filtered.FreeResponseQuestions = (backupData.FreeResponseQuestions ?? []).filter(
           (q) => filteredCardIds.has((q as { CardId: string }).CardId),
         );
       }
 
-      if (selectedTables.has("FillTheBlankQuestions")) {
+      if (effectiveTables.has("FillTheBlankQuestions")) {
         filtered.FillTheBlankQuestions = (backupData.FillTheBlankQuestions ?? []).filter(
           (q) => filteredCardIds.has((q as { CardId: string }).CardId),
         );
       }
 
-      if (selectedTables.has("MultipleChoiceQuestions")) {
+      if (effectiveTables.has("MultipleChoiceQuestions")) {
         filtered.MultipleChoiceQuestions = (backupData.MultipleChoiceQuestions ?? []).filter(
           (q) => filteredCardIds.has((q as { CardId: string }).CardId),
         );
@@ -98,7 +120,7 @@ export default function RestoreModal({ isOpen, onClose, backupData }: RestoreMod
   async function handleRestore() {
     setStatus(null);
     try {
-      const filtered = filterBackupData();
+      const filtered = getTableFilteredData();
       const tableList = Object.keys(filtered).join(", ");
       if (!window.confirm(`Restore backup? This will replace data in: ${tableList}`)) return;
       await importBackupZip(filtered);
@@ -109,7 +131,7 @@ export default function RestoreModal({ isOpen, onClose, backupData }: RestoreMod
   }
 
   function handleClose() {
-    setSelectedTables(new Set(availableTables));
+    setManualTables(new Set(availableTables));
     setSelectedTagId("all");
     setStatus(null);
     onClose();
@@ -121,16 +143,19 @@ export default function RestoreModal({ isOpen, onClose, backupData }: RestoreMod
 
       <div className={styles.tableGrid}>
         {availableTables.map((table) => {
-          const checked = selectedTables.has(table);
+          const checked = effectiveTables.has(table);
+          const forced = checked && !manualTables.has(table);
           const rowCount = (backupData[table] ?? []).length;
           return (
-            <label key={table} className={styles.tableCheckbox}>
+            <label key={table} className={styles.tableCheckbox} style={{ opacity: forced ? 0.6 : 1 }}>
               <input
                 type="checkbox"
                 checked={checked}
+                disabled={forced}
                 onChange={(e) => handleTableToggle(table, e.target.checked)}
               />
               {tableLabel(table)}
+              {forced && <span className={styles.requiredBadge}>(required)</span>}
               <span className={styles.rowCount}>({rowCount})</span>
             </label>
           );

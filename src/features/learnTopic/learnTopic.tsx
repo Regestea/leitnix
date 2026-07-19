@@ -125,7 +125,9 @@ export default function LearnTopic() {
       }
     >
       <h2>
-        <MarkdownRender markdown={card.MarkdownTopic ?? ""} />
+        <div className={styles.topicSpacing}>
+          <MarkdownRender markdown={card.MarkdownTopic ?? ""} isDisableGlobalTranslate />
+        </div>
       </h2>
 
       <MarkdownRender markdown={card.MarkdownContent ?? ""} />

@@ -15,12 +15,12 @@ export default function FillTheBlankQuestionCard({
   return (
     <div className={styles.container}>
       <div className={styles.question}>
-        <MarkdownRender markdown={markdownQuestion} />
+        <MarkdownRender markdown={markdownQuestion} isShowTranslationControl={false} />
       </div>
 
       {showAnswer && (
         <div className={styles.answer}>
-          <MarkdownRender markdown={markdownAnswer} />
+          <MarkdownRender markdown={markdownAnswer} isShowTranslationControl={false} />
         </div>
       )}
     </div>

@@ -25,7 +25,6 @@ describe("resolveDependencies", () => {
   it("includes dependencies for Cards", () => {
     const result = resolveDependencies(["Cards"]);
     expect(result).toContain("Cards");
-    expect(result).toContain("Boxes");
     expect(result).toContain("CategoryTags");
     expect(result).toContain("FreeResponseQuestions");
     expect(result).toContain("FillTheBlankQuestions");
@@ -34,11 +33,8 @@ describe("resolveDependencies", () => {
 
   it("preserves FK-safe order", () => {
     const result = resolveDependencies(["Cards"]);
-    const order = result;
-    const cardIdx = order.indexOf("Cards");
-    const boxesIdx = order.indexOf("Boxes");
-    const tagsIdx = order.indexOf("CategoryTags");
-    expect(boxesIdx).toBeLessThan(cardIdx);
+    const cardIdx = result.indexOf("Cards");
+    const tagsIdx = result.indexOf("CategoryTags");
     expect(tagsIdx).toBeLessThan(cardIdx);
   });
 });
@@ -86,7 +82,6 @@ describe("backup round-trip", () => {
     expect(data.Cards![0].Id).toBe("c1");
     expect(data.CategoryTags).toHaveLength(1);
     expect(data.CategoryTags![0].Id).toBe("tag-1");
-    expect(data.Boxes).toHaveLength(2);
     expect(data.FreeResponseQuestions).toHaveLength(1);
     expect(data.FillTheBlankQuestions).toHaveLength(1);
     expect(data.MultipleChoiceQuestions).toEqual([]);

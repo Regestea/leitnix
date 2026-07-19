@@ -193,6 +193,7 @@ export default function CardManagement() {
 
   return (
     <MainContainer>
+      <h3 className={styles.pageHeading}>Manage Cards</h3>
       <div className={styles.filterRow}>
         <input
           type="search"

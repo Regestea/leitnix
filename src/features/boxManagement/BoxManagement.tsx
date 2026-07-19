@@ -53,6 +53,7 @@ export default function BoxManagement() {
   return (
     <>
       <MainContainer>
+        <h3 className={styles.pageHeading}>Manage Boxes</h3>
         <BoxList
           boxes={boxes}
           cardCounts={cardCounts}

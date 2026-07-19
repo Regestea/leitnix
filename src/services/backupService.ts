@@ -10,7 +10,6 @@ const DEPENDENCIES: Record<BackupTable, BackupTable[]> = {
   CategoryTags: [],
   Boxes: [],
   Cards: [
-    "Boxes",
     "CategoryTags",
     "FreeResponseQuestions",
     "FillTheBlankQuestions",
