@@ -194,7 +194,6 @@ export default function MarkdownRender({ markdown, isShowTranslationControl: pro
   }
 
   const content = translated ?? markdown;
-  const langLabel = LANGUAGES.find(([c]) => c === targetLang)?.[1] ?? targetLang;
 
   return (
     <>
