@@ -46,6 +46,7 @@
     "zustand": "^5.0.14"
   },
   "devDependencies": {
+    "@capacitor/assets": "^3.0.5",
     "@eslint/js": "^10.0.1",
     "@types/better-sqlite3": "^7.6.13",
     "@types/node": "^24.12.3",
@@ -65,5 +66,8 @@
     "vite": "^8.0.12",
     "vite-plugin-purgecss": "^0.2.13",
     "vitest": "^4.1.10"
+  },
+  "allowScripts": {
+    "sharp@0.32.6": true
   }
 }
