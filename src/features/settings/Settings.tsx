@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Checkbox } from "../../shared/components/controls/CheckBox";
 import { Select } from "../../shared/components/controls/Select";
 import MainContainer from "../../shared/components/MainContainer";
@@ -10,10 +10,12 @@ import {
 } from "../../services/notificationService.ts";
 import { LANGUAGES } from "../../shared/constants/languages";
 import { categoryTagRepository } from "../../repositories/CategoryTagRepository.ts";
-import { exportTables, importBackupZip, resolveDependencies, createBackupZip, saveBackupBlob, parseBackupZip } from "../../services/backupService.ts";
-import type { BackupTable } from "../../types/backup.ts";
+import { parseBackupZip } from "../../services/backupService.ts";
+import type { BackupDataPerTable } from "../../types/backup.ts";
 import type { CategoryTag } from "../../db/entities.ts";
 import styles from "./Settings.module.css";
+import BackupModal from "./BackupModal.tsx";
+import RestoreModal from "./RestoreModal.tsx";
 
 const PUNISHMENT_OPTIONS = [
   { value: "None" as WrongAnswerPunishment, label: "None" },
@@ -32,17 +34,6 @@ const MINUTE_OPTIONS = Array.from({ length: 60 }, (_, i) => ({
 }));
 
 const LANGUAGE_OPTIONS = LANGUAGES.map(([value, label]) => ({ value, label }));
-
-const TABLE_INFOS: { key: BackupTable; label: string }[] = [
-  { key: "AiModels", label: "AiModels" },
-  { key: "CustomPrompts", label: "CustomPrompts" },
-  { key: "CategoryTags", label: "CategoryTags" },
-  { key: "Boxes", label: "Boxes" },
-  { key: "Cards", label: "Cards" },
-  { key: "FreeResponseQuestions", label: "FreeResponseQuestions" },
-  { key: "FillTheBlankQuestions", label: "FillTheBlankQuestions" },
-  { key: "MultipleChoiceQuestions", label: "MultipleChoiceQuestions" },
-];
 
 export default function Settings() {
   const {
@@ -70,67 +61,27 @@ export default function Settings() {
     }
   }, [notification, notificationHour, notificationMinute]);
 
-  const [manualTables, setManualTables] = useState<Set<BackupTable>>(new Set());
-  const [selectedTagId, setSelectedTagId] = useState<string | "all">("all");
   const [availableTags, setAvailableTags] = useState<CategoryTag[]>([]);
-  const [status, setStatus] = useState<{ type: "success" | "error"; message: string } | null>(null);
+  const [backupModalOpen, setBackupModalOpen] = useState(false);
+  const [restoreData, setRestoreData] = useState<BackupDataPerTable | null>(null);
+  const [restoreModalOpen, setRestoreModalOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const effectiveTables = useMemo(() => new Set(resolveDependencies([...manualTables])), [manualTables]);
-  const showTagFilter = effectiveTables.has("CategoryTags") || effectiveTables.has("Cards");
 
   useEffect(() => {
     categoryTagRepository.getAll().then(setAvailableTags);
   }, []);
 
-  function handleTableToggle(table: BackupTable, checked: boolean) {
-    setManualTables((prev) => {
-      const next = new Set(prev);
-      if (checked) next.add(table);
-      else next.delete(table);
-      return next;
-    });
-  }
-
-  function handleTagChange(tagId: string | "all") {
-    setSelectedTagId(tagId);
-  }
-
-  const backupDisabled = effectiveTables.size === 0;
-
-  async function handleBackup() {
-    setStatus(null);
-    try {
-      const tagFilter = selectedTagId === "all" ? "all" : [selectedTagId];
-      const tables = await exportTables({ tables: [...effectiveTables], categoryTagFilter: tagFilter });
-      const zipBlob = await createBackupZip(tables);
-      const fileName = `leitnix-backup-${new Date().toISOString().slice(0, 10)}.leitnix`;
-      await saveBackupBlob(zipBlob, fileName);
-      showStatus("success", "Backup saved successfully.");
-    } catch (err) {
-      showStatus("error", `Backup failed: ${err instanceof Error ? err.message : "Unknown error"}`);
-    }
-  }
-
   async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
-    setStatus(null);
+    e.target.value = "";
     try {
       const tables = await parseBackupZip(file);
-      const tableList = Object.keys(tables).join(", ");
-      if (!window.confirm(`Restore backup? This will replace data in: ${tableList}`)) return;
-      await importBackupZip(tables);
-      showStatus("success", "Backup restored successfully.");
+      setRestoreData(tables);
+      setRestoreModalOpen(true);
     } catch (err) {
-      showStatus("error", `Restore failed: ${err instanceof Error ? err.message : "Unknown error"}`);
+      alert(`Restore failed: ${err instanceof Error ? err.message : "Unknown error"}`);
     }
-    e.target.value = "";
-  }
-
-  function showStatus(type: "success" | "error", message: string) {
-    setStatus({ type, message });
-    setTimeout(() => setStatus(null), 5000);
   }
 
   return (
@@ -224,49 +175,8 @@ export default function Settings() {
         <div className={styles.backupSection}>
           <div className={styles.sectionTitle}>Data Management</div>
 
-          <div className={styles.tableGrid}>
-            {TABLE_INFOS.map(({ key, label }) => {
-              const checked = effectiveTables.has(key);
-              const forced = checked && !manualTables.has(key);
-              return (
-                <label key={key} className={styles.tableCheckbox} style={{ opacity: forced ? 0.6 : 1 }}>
-                  <input
-                    type="checkbox"
-                    checked={checked}
-                    disabled={forced}
-                    onChange={(e) => handleTableToggle(key, e.target.checked)}
-                  />
-                  {label}
-                  {forced && <span className={styles.requiredBadge}>(required)</span>}
-                </label>
-              );
-            })}
-          </div>
-
-          {showTagFilter && availableTags.length > 0 && (
-            <div className={styles.tagFilterSection}>
-              <div className={styles.tagFilterLabel}>Category tag filter</div>
-              <select
-                className={styles.tagSelect}
-                value={selectedTagId}
-                onChange={(e) => handleTagChange(e.target.value as string | "all")}
-              >
-                <option value="all">All tags</option>
-                {availableTags.map((tag) => (
-                  <option key={tag.Id} value={tag.Id}>
-                    {tag.Name}
-                  </option>
-                ))}
-              </select>
-            </div>
-          )}
-
           <div className={styles.actionRow}>
-            <button
-              className={styles.backupButton}
-              disabled={backupDisabled}
-              onClick={handleBackup}
-            >
+            <button className={styles.backupButton} onClick={() => setBackupModalOpen(true)}>
               Backup
             </button>
             <button className={styles.restoreButton} onClick={() => fileInputRef.current?.click()}>
@@ -281,14 +191,22 @@ export default function Settings() {
             style={{ display: "none" }}
             onChange={handleFileChange}
           />
-
-          {status && (
-            <div className={`${styles.statusMessage} ${status.type === "success" ? styles.statusSuccess : styles.statusError}`}>
-              {status.message}
-            </div>
-          )}
         </div>
       </div>
+
+      <BackupModal
+        isOpen={backupModalOpen}
+        onClose={() => setBackupModalOpen(false)}
+        availableTags={availableTags}
+      />
+
+      {restoreData && (
+        <RestoreModal
+          isOpen={restoreModalOpen}
+          onClose={() => { setRestoreModalOpen(false); setRestoreData(null); }}
+          backupData={restoreData}
+        />
+      )}
     </MainContainer>
   );
 }
