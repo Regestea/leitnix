@@ -1,13 +1,36 @@
 import { useState, useEffect, useRef, type CSSProperties } from "react";
+import { useNavigate, useLocation } from "react-router";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faXmark } from "@fortawesome/free-solid-svg-icons";
-import styles from "./Nav.module.css";
 import {
-  useNavStore,
-  type NavState,
-  type NavItem,
-  type NavChild,
-} from "../store/navStore.ts";
+  faCog,
+  faRobot,
+  faBox,
+  faPaintBrush,
+  faCode,
+  faList,
+  faCircleQuestion,
+  faPlus,
+  faGraduationCap,
+  faClipboardCheck,
+  faHome,
+  faSliders,
+  faXmark,
+} from "@fortawesome/free-solid-svg-icons";
+import type { IconDefinition } from "@fortawesome/fontawesome-svg-core";
+import styles from "./Nav.module.css";
+
+interface NavChild {
+  icon: IconDefinition;
+  title: string;
+  onClick?: () => void;
+}
+
+interface NavItem {
+  icon: IconDefinition;
+  title: string;
+  onClick?: () => void;
+  children?: NavChild[];
+}
 
 function calcAngles(count: number): string[] {
   const MAX_SPREAD = 180;
@@ -22,12 +45,83 @@ function calcAngles(count: number): string[] {
   return Array.from({ length: count }, (_, i) => `${start + i * stepDeg}deg`);
 }
 
+function getNavItems(navigate: ReturnType<typeof useNavigate>, pathname: string): NavItem[] {
+  return [
+    ...(pathname === "/"
+      ? [
+          {
+            icon: faCircleQuestion,
+            title: "Help",
+            onClick: () => console.log("Help"),
+          },
+        ]
+      : [
+          {
+            icon: faHome,
+            title: "Home",
+            onClick: () => navigate("/"),
+          },
+        ]),
+    {
+      icon: faPlus,
+      title: "Add New Card",
+      onClick: () => navigate("/add-card"),
+    },
+    {
+      icon: faGraduationCap,
+      title: "Learn",
+      onClick: () => navigate("/learn-topic"),
+    },
+    {
+      icon: faClipboardCheck,
+      title: "Review",
+      onClick: () => navigate("/review"),
+    },
+    {
+      icon: faCog,
+      title: "Settings",
+      children: [
+        {
+          icon: faPaintBrush,
+          title: "Theme",
+          onClick: () => navigate("/theme"),
+        },
+        {
+          icon: faCode,
+          title: "User Prompt",
+          onClick: () => navigate("/custom-prompt"),
+        },
+        {
+          icon: faBox,
+          title: "Box Management",
+          onClick: () => navigate("/box-management"),
+        },
+        {
+          icon: faRobot,
+          title: "AI Models",
+          onClick: () => navigate("/ai-models"),
+        },
+        {
+          icon: faList,
+          title: "Card Management",
+          onClick: () => navigate("/card-management"),
+        },
+        {
+          icon: faSliders,
+          title: "Settings",
+          onClick: () => navigate("/settings"),
+        },
+      ],
+    },
+  ];
+}
+
 export default function Nav() {
-  const items = useNavStore((s: NavState) => s.items);
-  const isShowing = useNavStore((s: NavState) => s.isShowing);
+  const navigate = useNavigate();
+  const { pathname } = useLocation();
+  const items = getNavItems(navigate, pathname);
 
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
-
   const navRef = useRef<HTMLDivElement>(null);
   const expandedIndexRef = useRef<number | null>(null);
 
@@ -50,8 +144,6 @@ export default function Nav() {
     document.addEventListener("click", handleOutsideClick);
     return () => document.removeEventListener("click", handleOutsideClick);
   }, []);
-
-  if (!isShowing) return null;
 
   function handleParentClick(e: React.MouseEvent, index: number) {
     e.stopPropagation();
