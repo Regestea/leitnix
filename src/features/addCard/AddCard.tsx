@@ -8,12 +8,12 @@ import StepReview from "./components/StepReview";
 import StepComplete from "./components/StepComplete";
 import { cardService } from "../../services/CardService";
 import type { ICardService } from "../../services/ICardService";
-import { AddCardWizardStep } from "./types";
-import { EMPTY_FORM_STATE, validateAddCardForm } from "./types";
+import { AddCardWizardStep, EMPTY_FORM_STATE, validateAddCardForm, QUESTION_TYPES } from "./types";
 import type {
   AddCardFormState,
   AddCardFormErrors,
   GeneratedCardData,
+  QuestionType,
 } from "./types";
 import styles from "./AddCard.module.css";
 
@@ -35,6 +35,7 @@ export default function AddCard() {
   const [card, setCard] = useState<GeneratedCardData | null>(null);
   const [isGeneratingQuestions, setIsGeneratingQuestions] = useState(false);
   const [questionError, setQuestionError] = useState<string | null>(null);
+  const [questionTypes, setQuestionTypes] = useState<readonly QuestionType[]>([...QUESTION_TYPES]);
 
   // Snapshot of the form at generation time — the saved card/questions
   // must use the category tag + AI model that were active when "Generate"
@@ -117,6 +118,7 @@ export default function AddCard() {
       const questions = await service.generateQuestions(
         formStateSaved.aiModelId,
         card,
+        questionTypes,
       );
 
       await service.saveCard({
@@ -134,7 +136,7 @@ export default function AddCard() {
     } finally {
       setIsGeneratingQuestions(false);
     }
-  }, [card, formStateSaved]);
+  }, [card, formStateSaved, questionTypes]);
 
   // ── Lifecycle handlers ────────────────────────────────────────────
   const handleGenerateNewCard = useCallback(() => {
@@ -147,6 +149,7 @@ export default function AddCard() {
     setQuestionError(null);
     setIsGeneratingQuestions(false);
     setFormStateSaved(null);
+    setQuestionTypes([...QUESTION_TYPES]);
     setCurrentStep(AddCardWizardStep.Generate);
   }, []);
 
@@ -200,8 +203,10 @@ export default function AddCard() {
               images={images}
               isGenerating={isGeneratingCard}
               error={cardError}
+              questionTypes={questionTypes}
               onFieldChange={handleFieldChange}
               onImagesChange={handleImagesChange}
+              onQuestionTypesChange={setQuestionTypes}
             />
           )}
 

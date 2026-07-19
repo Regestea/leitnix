@@ -1,6 +1,5 @@
 import { fetchStructuredAIByModelId } from "./aiModelClient";
 import {
-  QUESTION_GENERATION_SYSTEM_PROMPT,
   NONE_PROMPT_VALUE,
 } from "../statics/prompts";
 import {
@@ -17,6 +16,7 @@ import type {
   GeneratedCardData,
   GenerateCardRequest,
   SaveCardRequest,
+  QuestionType,
 } from "../features/addCard/types";
 import { cardRepository } from "../repositories/CardRepository";
 import type { ICardRepository } from "../iRepositories/ICardRepository.ts";
@@ -27,6 +27,34 @@ import type { ICustomPromptRepository } from "../iRepositories/ICustomPromptRepo
 
 function buildCardPrompt(card: GeneratedCardData): string {
   return `Topic:\n${card.topicMarkdown}\n\nContent:\n${card.markdownContent}`;
+}
+
+function buildQuestionPrompt(questionTypes: readonly QuestionType[]): string {
+  const typeDescriptions: Record<QuestionType, string> = {
+    freeResponse: "free-response (question and answer pairs)",
+    fillTheBlank: "fill-in-the-blank (question and answer pairs)",
+    multipleChoice: "multiple-choice (with 4 options A-D and the correct answer)",
+  };
+
+  const count = questionTypes.length;
+  let instructions: string;
+
+  if (count === 3) {
+    instructions = questionTypes
+      .map((t) => `- 6 ${typeDescriptions[t]}`)
+      .join("\n");
+  } else if (count === 2) {
+    instructions = `- 5 ${typeDescriptions[questionTypes[0]]}\n- 4 ${typeDescriptions[questionTypes[1]]}`;
+  } else {
+    instructions = `- 18 ${typeDescriptions[questionTypes[0]]}`;
+  }
+
+  return `You are an expert question generator. Given a flashcard topic and its study content, generate assessment questions.
+
+Requirements:
+${instructions}
+
+Return ALL three arrays in the response. For any question type not listed above, include an empty array.`;
 }
 
 function getErrorMessage(err: unknown, fallback: string): string {
@@ -108,13 +136,14 @@ export class CardService implements ICardService {
   async generateQuestions(
     aiModelId: string,
     card: GeneratedCardData,
+    questionTypes: readonly QuestionType[],
   ): Promise<QuestionsResponse> {
     try {
       return await fetchStructuredAIByModelId<QuestionsResponse>({
         modelId: aiModelId,
         schema: questionsResponseSchema,
         prompt: buildCardPrompt(card),
-        systemPrompt: QUESTION_GENERATION_SYSTEM_PROMPT,
+        systemPrompt: buildQuestionPrompt(questionTypes),
       });
     } catch (err) {
       throw new Error(getErrorMessage(err, "Failed to generate questions"), {
@@ -183,10 +212,11 @@ export class CardService implements ICardService {
   }
 
   /** Convenience: generate questions for a card and persist everything in one flow. */
-  async generateQuestionsAndSave(request: SaveCardRequest): Promise<string> {
+  async generateQuestionsAndSave(request: SaveCardRequest, questionTypes: readonly QuestionType[]): Promise<string> {
     const questions = await this.generateQuestions(
       request.aiModelId,
       request.card,
+      questionTypes,
     );
     return this.saveCard({ ...request, questions });
   }

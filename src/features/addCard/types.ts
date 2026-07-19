@@ -122,6 +122,21 @@ export const EMPTY_FORM_STATE: AddCardFormState = {
   topicText: "",
 };
 
+// ─── Question Type Selection ───────────────────────────────────────
+
+export const QUESTION_TYPES = [
+  "freeResponse",
+  "fillTheBlank",
+  "multipleChoice",
+] as const;
+export type QuestionType = (typeof QUESTION_TYPES)[number];
+
+export const QUESTION_TYPE_LABELS: Record<QuestionType, string> = {
+  freeResponse: "Free Response",
+  fillTheBlank: "Fill in the Blank",
+  multipleChoice: "Multiple Choice",
+};
+
 // ─── Select Option Helper ───────────────────────────────────────────
 
 export interface SelectOption {

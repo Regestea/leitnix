@@ -11,10 +11,13 @@ import { CategoryTagRepository } from "../../../repositories/CategoryTagReposito
 import CategoryTagManagerModal from "../categoryTagManager/components/CategoryTagManagerModal";
 import { NONE_PROMPT_VALUE } from "../../../statics/prompts";
 import { TOPIC_OPTIONS } from "../../../statics/topicPrompts";
+import { Checkbox } from "../../../shared/components/controls/CheckBox";
+import { QUESTION_TYPES, QUESTION_TYPE_LABELS } from "../types";
 import type {
   AddCardFormState,
   AddCardFormErrors,
   SelectOption,
+  QuestionType,
 } from "../types";
 import styles from "../AddCard.module.css";
 
@@ -24,8 +27,10 @@ interface StepGenerateProps {
   images: string[];
   isGenerating: boolean;
   error: string | null;
+  questionTypes: readonly QuestionType[];
   onFieldChange: (field: keyof AddCardFormState, value: string) => void;
   onImagesChange: (images: string[]) => void;
+  onQuestionTypesChange: (types: readonly QuestionType[]) => void;
 }
 
 const PLACEHOLDER_TAG: SelectOption = {
@@ -52,14 +57,29 @@ function toOptions(items: Optionable[]): SelectOption[] {
   }));
 }
 
+function handleCheckboxChange(
+  current: readonly QuestionType[],
+  onChange: (types: readonly QuestionType[]) => void,
+  type: QuestionType,
+  checked: boolean,
+) {
+  if (checked) {
+    onChange([...current, type]);
+  } else {
+    onChange(current.filter((t) => t !== type));
+  }
+}
+
 export default function StepGenerate({
   formState,
   formErrors,
   images,
   isGenerating,
   error,
+  questionTypes,
   onFieldChange,
   onImagesChange,
+  onQuestionTypesChange,
 }: StepGenerateProps) {
   const [categoryTags, setCategoryTags] = useState<SelectOption[]>([
     PLACEHOLDER_TAG,
@@ -173,6 +193,27 @@ export default function StepGenerate({
         </div>
 
         <ImageUpload images={images} onChange={onImagesChange} />
+
+        <div>
+          <h3 className={styles.questionTypesLabel}>Question Types</h3>
+          <div className={styles.questionTypesRow}>
+            {QUESTION_TYPES.map((type) => (
+              <Checkbox
+                key={type}
+                label={QUESTION_TYPE_LABELS[type]}
+                defaultChecked={questionTypes.includes(type)}
+                onChange={(checked) =>
+                  handleCheckboxChange(
+                    questionTypes,
+                    onQuestionTypesChange,
+                    type,
+                    checked,
+                  )
+                }
+              />
+            ))}
+          </div>
+        </div>
 
         {error && <p className="field-error">{error}</p>}
       </div>
