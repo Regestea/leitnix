@@ -135,8 +135,12 @@ export default function LearnTopic() {
       <AiChatModal
         isOpen={aiChatModal.isOpen}
         onClose={aiChatModal.close}
+        cardId={card.Id}
         cardTopic={card.MarkdownTopic ?? ""}
         cardContent={card.MarkdownContent ?? ""}
+        onContentChange={(topic, content) =>
+          setCard((prev) => prev ? { ...prev, MarkdownTopic: topic, MarkdownContent: content } : prev)
+        }
       />
     </MainContainer>
   );

@@ -5,18 +5,23 @@ import { faPaperPlane } from "@fortawesome/free-solid-svg-icons";
 import Modal from "./Modal";
 import MarkdownRender from "./MarkdownRender";
 import ThinkingSphere from "./thinkingSphere/ThinkingSphere";
-import { sendChatMessage } from "../../services/aiChatService";
-import type { ChatMessage } from "../../services/aiChatService";
+import { sendChatMessageWithTools } from "../../services/aiChatService";
+import type { ChatMessage, ToolCallConfig } from "../../services/aiChatService";
+import { cardRepository } from "../../repositories/CardRepository";
+import type { Card } from "../../db/entities";
+import type OpenAI from 'openai';
 import styles from "./AiChatModal.module.css";
 
 interface AiChatModalProps {
   isOpen: boolean;
   onClose: () => void;
+  cardId: string;
   cardTopic: string;
   cardContent: string;
+  onContentChange?: (topic: string, content: string) => void;
 }
 
-const SYSTEM_PROMPT = `You are a helpful Leitnix AI. The user is studying the following flashcard content:
+const SYSTEM_PROMPT = `You are a helpful Leitnix AI. The user is studying the following flashcard:
 
 <card_topic>
 {cardTopic}
@@ -26,13 +31,50 @@ const SYSTEM_PROMPT = `You are a helpful Leitnix AI. The user is studying the fo
 {cardContent}
 </card_content>
 
-You can answer questions about this card content, help explain concepts further, provide examples, or answer any other questions the user might have. Keep your answers clear and educational.`;
+You can read the full card content with \`get_card_content\` and update it with \`update_card_content\`. Use these tools whenever the user asks you to view or modify the card.`;
+
+const tools: OpenAI.ChatCompletionTool[] = [
+  {
+    type: "function",
+    function: {
+      name: "get_card_content",
+      description: "Get the current flashcard's full markdown content and topic.",
+      parameters: {
+        type: "object",
+        properties: {},
+        required: [],
+      },
+    },
+  },
+  {
+    type: "function",
+    function: {
+      name: "update_card_content",
+      description: "Update the markdown content and/or topic of the current flashcard. Both parameters are optional — only provided fields will be changed.",
+      parameters: {
+        type: "object",
+        properties: {
+          markdownTopic: {
+            type: "string",
+            description: "New topic/title in markdown",
+          },
+          markdownContent: {
+            type: "string",
+            description: "New card content in markdown",
+          },
+        },
+      },
+    },
+  },
+];
 
 export default function AiChatModal({
   isOpen,
   onClose,
+  cardId,
   cardTopic,
   cardContent,
+  onContentChange,
 }: AiChatModalProps) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
@@ -40,6 +82,11 @@ export default function AiChatModal({
   const [modelId, setModelId] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const cardDataRef = useRef({ topic: cardTopic, content: cardContent });
+
+  useEffect(() => {
+    cardDataRef.current = { topic: cardTopic, content: cardContent };
+  }, [cardTopic, cardContent]);
 
   useEffect(() => {
     if (isOpen) {
@@ -69,6 +116,35 @@ export default function AiChatModal({
     }
   }, [isOpen]);
 
+  const executeTool: ToolCallConfig["executeTool"] = async (name, args) => {
+    switch (name) {
+      case "get_card_content":
+        return JSON.stringify({
+          markdownTopic: cardDataRef.current.topic,
+          markdownContent: cardDataRef.current.content,
+        });
+
+      case "update_card_content": {
+        const newTopic = (args.markdownTopic as string | undefined) ?? cardDataRef.current.topic;
+        const newContent = (args.markdownContent as string | undefined) ?? cardDataRef.current.content;
+
+        await cardRepository.update({
+          Id: cardId,
+          MarkdownTopic: newTopic,
+          MarkdownContent: newContent,
+        } as Card);
+
+        cardDataRef.current = { topic: newTopic, content: newContent };
+        onContentChange?.(newTopic, newContent);
+
+        return JSON.stringify({ success: true });
+      }
+
+      default:
+        return JSON.stringify({ error: `Unknown tool: ${name}` });
+    }
+  };
+
   const handleSend = async () => {
     const trimmed = input.trim();
     if (!trimmed || loading || !modelId) return;
@@ -82,15 +158,18 @@ export default function AiChatModal({
     try {
       const systemPrompt = SYSTEM_PROMPT.replace(
         "{cardTopic}",
-        cardTopic,
-      ).replace("{cardContent}", cardContent);
+        cardDataRef.current.topic,
+      ).replace("{cardContent}", cardDataRef.current.content);
 
       const apiMessages: ChatMessage[] = [
         { role: "user", content: systemPrompt },
         ...updatedMessages,
       ];
 
-      const response = await sendChatMessage(modelId, apiMessages);
+      const response = await sendChatMessageWithTools(modelId, apiMessages, {
+        tools,
+        executeTool,
+      });
       setMessages((prev) => [
         ...prev,
         { role: "assistant", content: response },
