@@ -307,6 +307,25 @@ export default function MarkdownRender({ markdown, isShowTranslationControl: pro
         table: MarkdownTable,
         td: (props) => <SectionContent {...props} tag="td" targetLang={targetLang} translated={translated} showControl={showControl} showReadBadge={showReadBadge} />,
         th: (props) => <SectionContent {...props} tag="th" targetLang={targetLang} translated={translated} showControl={showControl} showReadBadge={showReadBadge} />,
+        iframe({ ...props }) {
+          return (
+            <div style={{ position: "relative", width: "100%", paddingBottom: "56.25%", margin: "1rem 0" }}>
+              <iframe
+                {...props}
+                style={{
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  width: "100%",
+                  height: "100%",
+                  border: "none",
+                  borderRadius: "0.75rem",
+                }}
+                allowFullScreen
+              />
+            </div>
+          );
+        },
         code({ className, children }) {
           const match = /language-(\w+)/.exec(className || "");
           if (match?.[1] === "mermaid") {

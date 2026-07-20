@@ -15,23 +15,33 @@ import styles from "./AiChatModal.module.css";
 interface AiChatModalProps {
   isOpen: boolean;
   onClose: () => void;
-  cardId: string;
+  cardId?: string;
   cardTopic: string;
   cardContent: string;
   onContentChange?: (topic: string, content: string) => void;
 }
 
-const SYSTEM_PROMPT = `You are a helpful Leitnix AI. The user is studying the following flashcard:
+const SYSTEM_PROMPT = `You are a helpful Leitnix AI assistant helping the user study a flashcard.
 
-<card_topic>
+CURRENT CARD TOPIC:
 {cardTopic}
-</card_topic>
 
-<card_content>
+CURRENT CARD CONTENT:
 {cardContent}
-</card_content>
 
-You can read the full card content with \`get_card_content\` and update it with \`update_card_content\`. Use these tools whenever the user asks you to view or modify the card.`;
+You have two tools:
+1. \`get_card_content\` — reads the current card topic and content
+2. \`update_card_content\` — updates the card topic and/or content
+
+IMPORTANT: Whenever the user asks you to modify, improve, rewrite, rephrase, fix, or change the card in any way, you MUST use the \`update_card_content\` tool. Do NOT just respond with the edited text — the card will NOT change unless you call the tool.
+
+Steps when asked to edit:
+1. Read the current content (or use what's shown above)
+2. Make the changes the user requested
+3. Call \`update_card_content\` with the new markdownTopic and/or markdownContent
+4. Then confirm what you changed
+
+Raw HTML (YouTube iframes, etc.) is allowed in card content.`;
 
 const tools: OpenAI.ChatCompletionTool[] = [
   {
@@ -50,7 +60,7 @@ const tools: OpenAI.ChatCompletionTool[] = [
     type: "function",
     function: {
       name: "update_card_content",
-      description: "Update the markdown content and/or topic of the current flashcard. Both parameters are optional — only provided fields will be changed.",
+      description: "Update the markdown content and/or topic of the current flashcard. Both parameters are optional — only provided fields will be changed. Raw HTML (YouTube iframe embeds, etc.) is allowed in the markdown.",
       parameters: {
         type: "object",
         properties: {
@@ -128,11 +138,13 @@ export default function AiChatModal({
         const newTopic = (args.markdownTopic as string | undefined) ?? cardDataRef.current.topic;
         const newContent = (args.markdownContent as string | undefined) ?? cardDataRef.current.content;
 
-        await cardRepository.update({
-          Id: cardId,
-          MarkdownTopic: newTopic,
-          MarkdownContent: newContent,
-        } as Card);
+        if (cardId) {
+          await cardRepository.update({
+            Id: cardId,
+            MarkdownTopic: newTopic,
+            MarkdownContent: newContent,
+          } as Card);
+        }
 
         cardDataRef.current = { topic: newTopic, content: newContent };
         onContentChange?.(newTopic, newContent);
@@ -209,7 +221,7 @@ export default function AiChatModal({
             <div key={i} className={`${styles.message} ${styles[msg.role]}`}>
               <div className={styles.messageBubble}>
                 {msg.role === "assistant" ? (
-                  <MarkdownRender markdown={msg.content} />
+                  <MarkdownRender markdown={msg.content} isDisableGlobalTranslate isShowTranslationControl={false} isShowReadBadge={false} />
                 ) : (
                   msg.content
                 )}
@@ -229,6 +241,7 @@ export default function AiChatModal({
           )}
           <div ref={messagesEndRef} />
         </div>
+
         <div className={styles.inputArea}>
           <Textarea
             ref={inputRef}

@@ -2,6 +2,8 @@ import { useState, useCallback } from "react";
 import { useNavigate } from "react-router";
 import MainContainer from "../../shared/components/MainContainer";
 import { Button } from "../../shared/components/controls/Button";
+import AiChatModal from "../../shared/components/AiChatModal";
+import useModal from "../../shared/hooks/useModal";
 import { WizardTabs } from "./components/WizardTabs";
 import StepGenerate from "./components/StepGenerate";
 import StepReview from "./components/StepReview";
@@ -19,6 +21,7 @@ import styles from "./AddCard.module.css";
 
 export default function AddCard() {
   const navigate = useNavigate();
+  const aiChatModal = useModal();
   const [currentStep, setCurrentStep] = useState<AddCardWizardStep>(
     AddCardWizardStep.Generate,
   );
@@ -173,11 +176,15 @@ export default function AddCard() {
     } else if (currentStep === AddCardWizardStep.Review && card) {
       footer = (
         <div className={styles.addCardFooter}>
-          <Button
-            style={{ width: "100%" }}
-            label="Generate Questions"
-            onClick={handleGenerateQuestions}
-          />
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem", width: "100%" }}>
+            
+              <Button onClick={aiChatModal.open}>Edit By AI</Button>
+           
+            <Button
+              label="Generate Questions"
+              onClick={handleGenerateQuestions}
+            />
+          </div>
         </div>
       );
     } else if (currentStep === AddCardWizardStep.Complete) {
@@ -222,6 +229,19 @@ export default function AddCard() {
           {currentStep === AddCardWizardStep.Complete && <StepComplete />}
         </div>
       </div>
+
+      {card && (
+        <AiChatModal
+          isOpen={aiChatModal.isOpen}
+          onClose={aiChatModal.close}
+          cardTopic={card.topicMarkdown}
+          cardContent={card.markdownContent}
+          onContentChange={(topic, content) => {
+            handleCardChange("topicMarkdown", topic);
+            handleCardChange("markdownContent", content);
+          }}
+        />
+      )}
     </MainContainer>
   );
 }
