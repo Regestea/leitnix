@@ -10,7 +10,12 @@ import StepReview from "./components/StepReview";
 import StepComplete from "./components/StepComplete";
 import { cardService } from "../../services/CardService";
 import type { ICardService } from "../../services/ICardService";
-import { AddCardWizardStep, EMPTY_FORM_STATE, validateAddCardForm, QUESTION_TYPES } from "./types";
+import {
+  AddCardWizardStep,
+  EMPTY_FORM_STATE,
+  validateAddCardForm,
+  QUESTION_TYPES,
+} from "./types";
 import type {
   AddCardFormState,
   AddCardFormErrors,
@@ -38,7 +43,9 @@ export default function AddCard() {
   const [card, setCard] = useState<GeneratedCardData | null>(null);
   const [isGeneratingQuestions, setIsGeneratingQuestions] = useState(false);
   const [questionError, setQuestionError] = useState<string | null>(null);
-  const [questionTypes, setQuestionTypes] = useState<readonly QuestionType[]>([...QUESTION_TYPES]);
+  const [questionTypes, setQuestionTypes] = useState<readonly QuestionType[]>([
+    ...QUESTION_TYPES,
+  ]);
 
   // Snapshot of the form at generation time — the saved card/questions
   // must use the category tag + AI model that were active when "Generate"
@@ -176,10 +183,15 @@ export default function AddCard() {
     } else if (currentStep === AddCardWizardStep.Review && card) {
       footer = (
         <div className={styles.addCardFooter}>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem", width: "100%" }}>
-            
-              <Button onClick={aiChatModal.open}>Edit By AI</Button>
-           
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "1fr 1fr",
+              gap: "0.5rem",
+              width: "100%",
+            }}
+          >
+            <Button onClick={aiChatModal.open}>Edit By AI</Button>
             <Button
               label="Generate Questions"
               onClick={handleGenerateQuestions}
