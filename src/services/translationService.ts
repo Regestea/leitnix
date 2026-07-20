@@ -51,7 +51,7 @@ function parseTranslationResponse(
     };
   } catch (ex) {
     console.error("Failed to parse translation response", ex);
-    throw new Error("Failed to parse translation response.");
+    throw new Error("Failed to parse translation response.", { cause: ex });
   }
 }
 
@@ -89,7 +89,7 @@ export class TranslationService implements ITranslationService {
         throw ex;
       }
       console.error("Error occurred during translation", ex);
-      throw new Error("Failed to communicate with translation service.");
+      throw new Error("Failed to communicate with translation service.", { cause: ex });
     }
   }
 

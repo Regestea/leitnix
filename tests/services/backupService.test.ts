@@ -15,7 +15,7 @@ import {
   importBackupZip,
   resolveDependencies,
 } from "../../src/services/backupService";
-import type { BackupDataPerTable, BackupTable } from "../../src/types/backup";
+
 
 describe("resolveDependencies", () => {
   it("returns empty for no tables", () => {
