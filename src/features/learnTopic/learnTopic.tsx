@@ -14,6 +14,7 @@ import type { NewTopicTagsDto } from "../../dtos/newTopicTagsDto.ts";
 import type { Card } from "../../db/entities";
 import type { ICardRepository } from "../../iRepositories/ICardRepository";
 import { cardRepository } from "../../repositories/CardRepository";
+import MarkdownRender from "../../shared/components/MarkdownRender.tsx";
 
 export default function LearnTopic() {
   const [showTopic, setShowTopic] = useState(true);
