@@ -23,9 +23,9 @@ describe("CardRepository", () => {
     await db.run("INSERT INTO CategoryTags (Id, Name) VALUES (?, ?);", ["tag-1", "Tag 1"]);
     await db.run("INSERT INTO CategoryTags (Id, Name) VALUES (?, ?);", ["tag-2", "Tag 2"]);
 
-    await repo.create({ Id: "c1", BoxId: null, CategoryTagId: "tag-1", MarkdownTopic: "T1", MarkdownContent: "C1", LastReviewUnixTime: null, NextReviewUnixTime: null, StartedLearningUnixTime: null });
-    await repo.create({ Id: "c2", BoxId: null, CategoryTagId: "tag-1", MarkdownTopic: "T2", MarkdownContent: "C2", LastReviewUnixTime: null, NextReviewUnixTime: null, StartedLearningUnixTime: null });
-    await repo.create({ Id: "c3", BoxId: null, CategoryTagId: "tag-2", MarkdownTopic: "T3", MarkdownContent: "C3", LastReviewUnixTime: null, NextReviewUnixTime: null, StartedLearningUnixTime: null });
+    await repo.create({ Id: "c1", BoxId: null, CategoryTagId: "tag-1", Topic: "T1", MarkdownContent: "C1", LastReviewUnixTime: null, NextReviewUnixTime: null, StartedLearningUnixTime: null });
+    await repo.create({ Id: "c2", BoxId: null, CategoryTagId: "tag-1", Topic: "T2", MarkdownContent: "C2", LastReviewUnixTime: null, NextReviewUnixTime: null, StartedLearningUnixTime: null });
+    await repo.create({ Id: "c3", BoxId: null, CategoryTagId: "tag-2", Topic: "T3", MarkdownContent: "C3", LastReviewUnixTime: null, NextReviewUnixTime: null, StartedLearningUnixTime: null });
 
     const result = await repo.getByCategoryTagId("tag-1");
     expect(result).toHaveLength(2);
@@ -37,8 +37,8 @@ describe("CardRepository", () => {
     await db.run("INSERT INTO CategoryTags (Id, Name) VALUES (?, ?);", ["tag-1", "Tag 1"]);
     await db.run("INSERT INTO CategoryTags (Id, Name) VALUES (?, ?);", ["new-tag", "New Tag"]);
 
-    await repo.create({ Id: "c1", BoxId: null, CategoryTagId: "tag-1", MarkdownTopic: "T1", MarkdownContent: "C1", LastReviewUnixTime: null, NextReviewUnixTime: null, StartedLearningUnixTime: null });
-    await repo.create({ Id: "c2", BoxId: null, CategoryTagId: "tag-1", MarkdownTopic: "T2", MarkdownContent: "C2", LastReviewUnixTime: null, NextReviewUnixTime: null, StartedLearningUnixTime: null });
+    await repo.create({ Id: "c1", BoxId: null, CategoryTagId: "tag-1", Topic: "T1", MarkdownContent: "C1", LastReviewUnixTime: null, NextReviewUnixTime: null, StartedLearningUnixTime: null });
+    await repo.create({ Id: "c2", BoxId: null, CategoryTagId: "tag-1", Topic: "T2", MarkdownContent: "C2", LastReviewUnixTime: null, NextReviewUnixTime: null, StartedLearningUnixTime: null });
 
     await repo.updateCategoryTagId(["c1", "c2"], "new-tag");
 
@@ -57,7 +57,7 @@ describe("CardRepository", () => {
       [boxId, "box1", 60, null, null],
     );
 
-    await repo.create({ Id: "card-1", BoxId: null, CategoryTagId: null, MarkdownTopic: "T", MarkdownContent: "C", LastReviewUnixTime: null, NextReviewUnixTime: null, StartedLearningUnixTime: null });
+    await repo.create({ Id: "card-1", BoxId: null, CategoryTagId: null, Topic: "T", MarkdownContent: "C", LastReviewUnixTime: null, NextReviewUnixTime: null, StartedLearningUnixTime: null });
 
     await repo.startLearning("card-1");
 
@@ -85,7 +85,7 @@ describe("CardRepository", () => {
     );
     await db.run("UPDATE Boxes SET PreviousBoxId = ? WHERE Id = ?;", [boxId, finishId]);
 
-    await repo.create({ Id: "card-1", BoxId: boxId, CategoryTagId: null, MarkdownTopic: "T", MarkdownContent: "C", LastReviewUnixTime: 1000, NextReviewUnixTime: 2000, StartedLearningUnixTime: null });
+    await repo.create({ Id: "card-1", BoxId: boxId, CategoryTagId: null, Topic: "T", MarkdownContent: "C", LastReviewUnixTime: 1000, NextReviewUnixTime: 2000, StartedLearningUnixTime: null });
 
     await repo.markAsKnown("card-1");
 
@@ -107,8 +107,8 @@ describe("CardRepository", () => {
     await db.run("INSERT INTO CategoryTags (Id, Name) VALUES (?, ?);", ["tag-1", "Tag 1"]);
 
     const now = Math.floor(Date.now() / 1000);
-    await repo.create({ Id: "c1", BoxId: boxId, CategoryTagId: "tag-1", MarkdownTopic: "T1", MarkdownContent: "C1", LastReviewUnixTime: now - 200, NextReviewUnixTime: now - 100, StartedLearningUnixTime: null });
-    await repo.create({ Id: "c2", BoxId: boxId, CategoryTagId: "tag-1", MarkdownTopic: "T2", MarkdownContent: "C2", LastReviewUnixTime: now - 200, NextReviewUnixTime: now + 99999, StartedLearningUnixTime: null });
+    await repo.create({ Id: "c1", BoxId: boxId, CategoryTagId: "tag-1", Topic: "T1", MarkdownContent: "C1", LastReviewUnixTime: now - 200, NextReviewUnixTime: now - 100, StartedLearningUnixTime: null });
+    await repo.create({ Id: "c2", BoxId: boxId, CategoryTagId: "tag-1", Topic: "T2", MarkdownContent: "C2", LastReviewUnixTime: now - 200, NextReviewUnixTime: now + 99999, StartedLearningUnixTime: null });
 
     const card = await repo.getCardNeedToReview("tag-1");
     expect(card).not.toBeNull();
@@ -119,8 +119,8 @@ describe("CardRepository", () => {
     const repo = new CardRepository();
 
     const now = Math.floor(Date.now() / 1000);
-    await repo.create({ Id: "c1", BoxId: null, CategoryTagId: null, MarkdownTopic: "T1", MarkdownContent: "C1", LastReviewUnixTime: null, NextReviewUnixTime: null, StartedLearningUnixTime: now - 100 });
-    await repo.create({ Id: "c2", BoxId: null, CategoryTagId: null, MarkdownTopic: "T2", MarkdownContent: "C2", LastReviewUnixTime: null, NextReviewUnixTime: null, StartedLearningUnixTime: now - 100000 });
+    await repo.create({ Id: "c1", BoxId: null, CategoryTagId: null, Topic: "T1", MarkdownContent: "C1", LastReviewUnixTime: null, NextReviewUnixTime: null, StartedLearningUnixTime: now - 100 });
+    await repo.create({ Id: "c2", BoxId: null, CategoryTagId: null, Topic: "T2", MarkdownContent: "C2", LastReviewUnixTime: null, NextReviewUnixTime: null, StartedLearningUnixTime: now - 100000 });
 
     const count = await repo.countStartedLearningLast24h();
     expect(count).toBe(1);

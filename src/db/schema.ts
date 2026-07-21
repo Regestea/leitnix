@@ -81,7 +81,7 @@ export const CREATE_TABLE_STATEMENTS = [
       Id TEXT PRIMARY KEY,
       BoxId TEXT,
       CategoryTagId TEXT,
-      MarkdownTopic TEXT NOT NULL,
+      Topic TEXT NOT NULL,
       MarkdownContent TEXT NOT NULL,
       LastReviewUnixTime INTEGER
         CHECK (LastReviewUnixTime IS NULL OR LastReviewUnixTime >= 0),

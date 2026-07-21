@@ -111,7 +111,7 @@ export default function CardManagement() {
     const card = await cardRepository.getById(cardId);
     if (!card) return;
     setEditCard(card);
-    setEditTitle(card.MarkdownTopic);
+    setEditTitle(card.Topic);
     setEditContent(card.MarkdownContent);
     setEditCardId(cardId);
   };
@@ -127,7 +127,7 @@ export default function CardManagement() {
     if (!editCard) return;
     await cardRepository.update({
       ...editCard,
-      MarkdownTopic: editTitle,
+      Topic: editTitle,
       MarkdownContent: editContent,
     });
     closeEdit();
@@ -188,7 +188,7 @@ export default function CardManagement() {
   };
 
   const filteredCards = cards.filter((card) =>
-    card.markdownTitle.toLowerCase().includes(searchQuery.toLowerCase()),
+    card.topic.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   return (
@@ -237,7 +237,7 @@ export default function CardManagement() {
           filteredCards.map((card) => (
             <div key={card.id} className={styles.cardItem}>
               <div className={styles.cardInfo}>
-                <h4 className={styles.cardTitle}>{card.markdownTitle}</h4>
+                <h4 className={styles.cardTitle}>{card.topic}</h4>
                 <div className={styles.cardMeta}>
                   <span className={styles.tagBadge}>{card.tagName || "null"}</span>
                   <span className={styles.boxBadge}>{card.boxName || "null"}</span>

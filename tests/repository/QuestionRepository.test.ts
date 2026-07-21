@@ -20,7 +20,7 @@ describe("QuestionRepository", () => {
 
   async function createCard(id: string = "card-1") {
     await db.run(
-      `INSERT INTO Cards (Id, BoxId, CategoryTagId, MarkdownTopic, MarkdownContent)
+      `INSERT INTO Cards (Id, BoxId, CategoryTagId, Topic, MarkdownContent)
        VALUES (?, ?, ?, ?, ?);`,
       [id, null, null, "Topic", "Content"],
     );

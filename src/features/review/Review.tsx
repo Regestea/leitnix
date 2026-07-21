@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft} from "@fortawesome/free-solid-svg-icons";
 import MainContainer from "../../shared/components/MainContainer";
+import Topic from "../../shared/components/Topic";
 import MarkdownRender from "../../shared/components/MarkdownRender";
 import { Button } from "../../shared/components/controls/Button";
 import AiChatModal from "../../shared/components/AiChatModal";
@@ -218,19 +219,17 @@ export default function Review() {
         }
         footer={footer()}
       >
-        <div className={styles.topicSpacing}>
-          <MarkdownRender markdown={card.MarkdownTopic ?? ""} isDisableGlobalTranslate />
-        </div>
+        <Topic text={card.Topic ?? ""} />
         <MarkdownRender markdown={card.MarkdownContent ?? ""} />
 
         <AiChatModal
           isOpen={aiChatModal.isOpen}
           onClose={aiChatModal.close}
           cardId={card.Id}
-          cardTopic={card.MarkdownTopic ?? ""}
+          cardTopic={card.Topic ?? ""}
           cardContent={card.MarkdownContent ?? ""}
           onContentChange={(topic, content) =>
-            setCard((prev) => prev ? { ...prev, MarkdownTopic: topic, MarkdownContent: content } : prev)
+            setCard((prev) => prev ? { ...prev, Topic: topic, MarkdownContent: content } : prev)
           }
         />
       </MainContainer>

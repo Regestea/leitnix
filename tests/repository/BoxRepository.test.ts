@@ -111,11 +111,11 @@ describe("BoxRepository", () => {
     const boxId = crypto.randomUUID();
     await repo.create({ Id: boxId, Name: "box1", RepeatIntervalSeconds: 60, NextBoxId: null, PreviousBoxId: null });
     await db.run(
-      "INSERT INTO Cards (Id, BoxId, CategoryTagId, MarkdownTopic, MarkdownContent) VALUES (?, ?, ?, ?, ?);",
+      "INSERT INTO Cards (Id, BoxId, CategoryTagId, Topic, MarkdownContent) VALUES (?, ?, ?, ?, ?);",
       ["card-1", boxId, null, "Topic 1", "Content 1"],
     );
     await db.run(
-      "INSERT INTO Cards (Id, BoxId, CategoryTagId, MarkdownTopic, MarkdownContent) VALUES (?, ?, ?, ?, ?);",
+      "INSERT INTO Cards (Id, BoxId, CategoryTagId, Topic, MarkdownContent) VALUES (?, ?, ?, ?, ?);",
       ["card-2", boxId, null, "Topic 2", "Content 2"],
     );
 
@@ -153,7 +153,7 @@ describe("BoxRepository", () => {
     await repo.create({ Id: b2, Name: "box2", RepeatIntervalSeconds: 120, NextBoxId: null, PreviousBoxId: null });
 
     await db.run(
-      "INSERT INTO Cards (Id, BoxId, MarkdownTopic, MarkdownContent) VALUES (?, ?, ?, ?);",
+      "INSERT INTO Cards (Id, BoxId, Topic, MarkdownContent) VALUES (?, ?, ?, ?);",
       ["card-1", b2, "Topic", "Content"],
     );
 

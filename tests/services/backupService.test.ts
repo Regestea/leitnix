@@ -55,8 +55,8 @@ describe("backup round-trip", () => {
     await db.run("INSERT INTO Boxes (Id, Name, RepeatIntervalSeconds, NextBoxId, PreviousBoxId) VALUES (?, ?, ?, ?, ?);", ["b1", "Box 1", 60, null, null]);
     await db.run("INSERT INTO Boxes (Id, Name, RepeatIntervalSeconds, NextBoxId, PreviousBoxId) VALUES (?, ?, ?, ?, ?);", ["b2", "Box 2", 300, null, "b1"]);
     await db.run("UPDATE Boxes SET NextBoxId = ? WHERE Id = ?;", ["b2", "b1"]);
-    await db.run("INSERT INTO Cards (Id, BoxId, CategoryTagId, MarkdownTopic, MarkdownContent, LastReviewUnixTime, NextReviewUnixTime, StartedLearningUnixTime) VALUES (?, ?, ?, ?, ?, ?, ?, ?);", ["c1", "b1", "tag-1", "Algebra", "x + y = z", 1000, 2000, 500]);
-    await db.run("INSERT INTO Cards (Id, BoxId, CategoryTagId, MarkdownTopic, MarkdownContent, LastReviewUnixTime, NextReviewUnixTime, StartedLearningUnixTime) VALUES (?, ?, ?, ?, ?, ?, ?, ?);", ["c2", "b2", "tag-2", "Physics", "F = ma", 1500, 2500, 600]);
+    await db.run("INSERT INTO Cards (Id, BoxId, CategoryTagId, Topic, MarkdownContent, LastReviewUnixTime, NextReviewUnixTime, StartedLearningUnixTime) VALUES (?, ?, ?, ?, ?, ?, ?, ?);", ["c1", "b1", "tag-1", "Algebra", "x + y = z", 1000, 2000, 500]);
+    await db.run("INSERT INTO Cards (Id, BoxId, CategoryTagId, Topic, MarkdownContent, LastReviewUnixTime, NextReviewUnixTime, StartedLearningUnixTime) VALUES (?, ?, ?, ?, ?, ?, ?, ?);", ["c2", "b2", "tag-2", "Physics", "F = ma", 1500, 2500, 600]);
     await db.run("INSERT INTO FreeResponseQuestions (Id, CardId, MarkdownQuestion, MarkdownAnswer, AskedTimes) VALUES (?, ?, ?, ?, ?);", ["q1", "c1", "What is x?", "x is a variable", 0]);
     await db.run("INSERT INTO FillTheBlankQuestions (Id, CardId, MarkdownQuestion, MarkdownAnswer, AskedTimes) VALUES (?, ?, ?, ?, ?);", ["fb1", "c1", "x _ y", "x + y", 0]);
     await db.run("INSERT INTO MultipleChoiceQuestions (Id, CardId, MarkdownQuestion, MarkdownOptionA, MarkdownOptionB, MarkdownOptionC, MarkdownOptionD, CorrectOption, AskedTimes) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);", ["mc1", "c2", "What is 2+2?", "3", "4", "5", "6", "B", 2]);
@@ -151,15 +151,15 @@ describe("backup round-trip", () => {
     const data = await exportTables({ tables: ["CategoryTags", "Boxes", "Cards"] });
 
     await db.run("UPDATE CategoryTags SET Name = ? WHERE Id = ?;", ["Renamed", "tag-1"]);
-    await db.run("UPDATE Cards SET MarkdownTopic = ? WHERE Id = ?;", ["Changed", "c1"]);
+    await db.run("UPDATE Cards SET Topic = ? WHERE Id = ?;", ["Changed", "c1"]);
 
     await importBackupZip(data);
 
     const t1 = (await db.query("SELECT Name FROM CategoryTags WHERE Id = ?;", ["tag-1"])).values?.[0] as Record<string, unknown>;
     expect(t1.Name).toBe("Math");
 
-    const c1 = (await db.query("SELECT MarkdownTopic FROM Cards WHERE Id = ?;", ["c1"])).values?.[0] as Record<string, unknown>;
-    expect(c1.MarkdownTopic).toBe("Algebra");
+    const c1 = (await db.query("SELECT Topic FROM Cards WHERE Id = ?;", ["c1"])).values?.[0] as Record<string, unknown>;
+    expect(c1.Topic).toBe("Algebra");
   });
 
   it("full round-trip preserves all data", async () => {

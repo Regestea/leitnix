@@ -66,13 +66,13 @@ describe("CategoryTagRepository", () => {
 
     const now = Math.floor(Date.now() / 1000);
     await db.run(
-      `INSERT INTO Cards (Id, BoxId, CategoryTagId, MarkdownTopic, MarkdownContent, NextReviewUnixTime)
+      `INSERT INTO Cards (Id, BoxId, CategoryTagId, Topic, MarkdownContent, NextReviewUnixTime)
        VALUES (?, ?, ?, ?, ?, ?);`,
       ["card-1", "box-1", "tag-due", "Topic", "Content", now - 10],
     );
 
     await db.run(
-      `INSERT INTO Cards (Id, BoxId, CategoryTagId, MarkdownTopic, MarkdownContent, NextReviewUnixTime)
+      `INSERT INTO Cards (Id, BoxId, CategoryTagId, Topic, MarkdownContent, NextReviewUnixTime)
        VALUES (?, ?, ?, ?, ?, ?);`,
       ["card-2", "box-1", "tag-not-due", "Topic 2", "Content 2", now + 99999],
     );

@@ -52,13 +52,13 @@ export class CardRepository implements ICardRepository {
   async create(card: Card): Promise<void> {
     const db = await getDb();
     await db.run(
-      `INSERT INTO Cards (Id, BoxId, CategoryTagId, MarkdownTopic, MarkdownContent, LastReviewUnixTime, NextReviewUnixTime, StartedLearningUnixTime)
+      `INSERT INTO Cards (Id, BoxId, CategoryTagId, Topic, MarkdownContent, LastReviewUnixTime, NextReviewUnixTime, StartedLearningUnixTime)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?);`,
       [
         card.Id,
         card.BoxId,
         card.CategoryTagId,
-        card.MarkdownTopic,
+        card.Topic,
         card.MarkdownContent,
         card.LastReviewUnixTime,
         card.NextReviewUnixTime,
@@ -182,9 +182,9 @@ export class CardRepository implements ICardRepository {
     const db = await getDb();
     await db.run(
       `UPDATE Cards
-       SET MarkdownTopic = ?, MarkdownContent = ?
-       WHERE Id = ?;`,
-      [card.MarkdownTopic, card.MarkdownContent, card.Id],
+        SET Topic = ?, MarkdownContent = ?
+        WHERE Id = ?;`,
+      [card.Topic, card.MarkdownContent, card.Id],
     );
   }
 
@@ -233,12 +233,12 @@ export class CardRepository implements ICardRepository {
     params.push(pageSize, offset);
 
     const result = await db.query(
-      `SELECT c.Id as id, c.MarkdownTopic as markdownTitle, ct.Name as tagName, b.Name as boxName
+      `SELECT c.Id as id, c.Topic as topic, ct.Name as tagName, b.Name as boxName
        FROM Cards c
        LEFT JOIN CategoryTags ct ON c.CategoryTagId = ct.Id
        LEFT JOIN Boxes b ON c.BoxId = b.Id
        ${whereClause}
-       ORDER BY c.MarkdownTopic ASC
+       ORDER BY c.Topic ASC
        LIMIT ? OFFSET ?;`,
       params,
     );

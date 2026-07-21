@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import MainContainer from "../../shared/components/MainContainer";
-import MarkdownRender from "../../shared/components/MarkdownRender";
+import Topic from "../../shared/components/Topic";
 import { Button } from "../../shared/components/controls/Button";
 import TagSelect from "./components/TagSelect";
 import AiChatModal from "../../shared/components/AiChatModal";
@@ -124,11 +124,7 @@ export default function LearnTopic() {
         </div>
       }
     >
-      <h2>
-        <div className={styles.topicSpacing}>
-          <MarkdownRender markdown={card.MarkdownTopic ?? ""} isDisableGlobalTranslate />
-        </div>
-      </h2>
+      <Topic text={card.Topic ?? ""} />
 
       <MarkdownRender markdown={card.MarkdownContent ?? ""} />
 
@@ -136,10 +132,10 @@ export default function LearnTopic() {
         isOpen={aiChatModal.isOpen}
         onClose={aiChatModal.close}
         cardId={card.Id}
-        cardTopic={card.MarkdownTopic ?? ""}
+        cardTopic={card.Topic ?? ""}
         cardContent={card.MarkdownContent ?? ""}
         onContentChange={(topic, content) =>
-          setCard((prev) => prev ? { ...prev, MarkdownTopic: topic, MarkdownContent: content } : prev)
+          setCard((prev) => prev ? { ...prev, Topic: topic, MarkdownContent: content } : prev)
         }
       />
     </MainContainer>

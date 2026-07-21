@@ -40,7 +40,7 @@ const TABLE_COLUMNS: Record<BackupTable, string[]> = {
     "Id",
     "BoxId",
     "CategoryTagId",
-    "MarkdownTopic",
+    "Topic",
     "MarkdownContent",
     "LastReviewUnixTime",
     "NextReviewUnixTime",

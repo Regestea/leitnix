@@ -112,7 +112,7 @@ export default function AddCard() {
 
   // ── Review handlers ───────────────────────────────────────────────
   const handleCardChange = useCallback(
-    (part: "topicMarkdown" | "markdownContent", value: string) => {
+    (part: "topic" | "markdownContent", value: string) => {
       setCard((prev) => (prev ? { ...prev, [part]: value } : prev));
     },
     [],
@@ -246,10 +246,10 @@ export default function AddCard() {
         <AiChatModal
           isOpen={aiChatModal.isOpen}
           onClose={aiChatModal.close}
-          cardTopic={card.topicMarkdown}
+          cardTopic={card.topic}
           cardContent={card.markdownContent}
           onContentChange={(topic, content) => {
-            handleCardChange("topicMarkdown", topic);
+            handleCardChange("topic", topic);
             handleCardChange("markdownContent", content);
           }}
         />

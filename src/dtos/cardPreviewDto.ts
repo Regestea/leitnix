@@ -1,6 +1,6 @@
 export interface CardPreviewDto {
   id: string;
-  markdownTitle: string;
+  topic: string;
   tagName: string;
   boxName: string;
 }

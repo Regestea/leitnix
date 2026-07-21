@@ -17,7 +17,7 @@ export type AddCardWizardStep = (typeof AddCardWizardStep)[keyof typeof AddCardW
 // ─── AI Response Models ─────────────────────────────────────────────
 
 export const cardNotesResponseSchema = z.object({
-  topicMarkdown: z.string(),
+  topic: z.string(),
   markdownContent: z.string(),
 });
 
@@ -70,7 +70,7 @@ export interface SaveCardRequest {
 // ─── Domain Models ──────────────────────────────────────────────────
 
 export interface GeneratedCardData {
-  topicMarkdown: string;
+  topic: string;
   markdownContent: string;
 }
 

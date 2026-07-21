@@ -11,7 +11,7 @@ interface StepReviewProps {
   isGenerating: boolean;
   error: string | null;
   onCardChange: (
-    part: "topicMarkdown" | "markdownContent",
+    part: "topic" | "markdownContent",
     value: string
   ) => void;
 }
@@ -43,8 +43,8 @@ export default function StepReview({
         <div className={styles.reviewSection}>
           <h3>Card Topic</h3>
           <Input
-            defaultValue={card.topicMarkdown}
-            onChange={(value) => onCardChange("topicMarkdown", value)}
+            defaultValue={card.topic}
+            onChange={(value) => onCardChange("topic", value)}
             placeholder="Enter card topic..."
           />
         </div>

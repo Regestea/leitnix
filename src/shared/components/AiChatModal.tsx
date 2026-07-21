@@ -38,7 +38,7 @@ IMPORTANT: Whenever the user asks you to modify, improve, rewrite, rephrase, fix
 Steps when asked to edit:
 1. Read the current content (or use what's shown above)
 2. Make the changes the user requested
-3. Call \`update_card_content\` with the new markdownTopic and/or markdownContent
+ 3. Call \`update_card_content\` with the new topic and/or markdownContent
 4. Then confirm what you changed
 
 Raw HTML (YouTube iframes, etc.) is allowed in card content.`;
@@ -64,9 +64,9 @@ const tools: OpenAI.ChatCompletionTool[] = [
       parameters: {
         type: "object",
         properties: {
-          markdownTopic: {
+          topic: {
             type: "string",
-            description: "New topic/title in markdown",
+            description: "New topic/title",
           },
           markdownContent: {
             type: "string",
@@ -130,18 +130,18 @@ export default function AiChatModal({
     switch (name) {
       case "get_card_content":
         return JSON.stringify({
-          markdownTopic: cardDataRef.current.topic,
+          topic: cardDataRef.current.topic,
           markdownContent: cardDataRef.current.content,
         });
 
       case "update_card_content": {
-        const newTopic = (args.markdownTopic as string | undefined) ?? cardDataRef.current.topic;
+        const newTopic = (args.topic as string | undefined) ?? cardDataRef.current.topic;
         const newContent = (args.markdownContent as string | undefined) ?? cardDataRef.current.content;
 
         if (cardId) {
           await cardRepository.update({
             Id: cardId,
-            MarkdownTopic: newTopic,
+            Topic: newTopic,
             MarkdownContent: newContent,
           } as Card);
         }

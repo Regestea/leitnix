@@ -61,7 +61,7 @@ export interface Card {
   Id: string;
   BoxId: string | null;
   CategoryTagId: string | null;
-  MarkdownTopic: string;
+  Topic: string;
   MarkdownContent: string;
   LastReviewUnixTime: number | null;
   NextReviewUnixTime: number | null;

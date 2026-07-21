@@ -26,7 +26,7 @@ import { customPromptRepository } from "../repositories/CustomPromptRepository";
 import type { ICustomPromptRepository } from "../iRepositories/ICustomPromptRepository.ts";
 
 function buildCardPrompt(card: GeneratedCardData): string {
-  return `Topic:\n${card.topicMarkdown}\n\nContent:\n${card.markdownContent}`;
+  return `Topic:\n${card.topic}\n\nContent:\n${card.markdownContent}`;
 }
 
 function buildQuestionPrompt(questionTypes: readonly QuestionType[]): string {
@@ -122,7 +122,7 @@ export class CardService implements ICardService {
       });
 
       return {
-        topicMarkdown: response.topicMarkdown,
+        topic: response.topic,
         markdownContent: response.markdownContent,
       };
     } catch (err) {
@@ -162,7 +162,7 @@ export class CardService implements ICardService {
         Id: cardId,
         BoxId: null,
         CategoryTagId: categoryTagId,
-        MarkdownTopic: card.topicMarkdown,
+        Topic: card.topic,
         MarkdownContent: card.markdownContent,
         LastReviewUnixTime: null,
         NextReviewUnixTime: null,
