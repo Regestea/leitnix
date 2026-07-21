@@ -15,6 +15,9 @@ import MarkdownRender from "../../shared/components/MarkdownRender";
 import MarkdownEditor from "../../shared/components/MarkdownEditor";
 import { Input } from "../../shared/components/controls/Input";
 import { Button } from "../../shared/components/controls/Button";
+import { NixButton } from "../../shared/components/controls/NixButton";
+import AiChatModal from "../../shared/components/AiChatModal";
+import useModal from "../../shared/hooks/useModal";
 import { cardRepository } from "../../repositories/CardRepository";
 import { categoryTagRepository } from "../../repositories/CategoryTagRepository";
 import { boxRepository } from "../../repositories/BoxRepository";
@@ -36,6 +39,8 @@ export default function CardManagement() {
   const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
   const sentinelRef = useRef<HTMLDivElement>(null);
   const pageRef = useRef(1);
+
+  const aiChatModal = useModal();
 
   const [editCardId, setEditCardId] = useState<string | null>(null);
   const [editCard, setEditCard] = useState<Card | null>(null);
@@ -317,7 +322,10 @@ export default function CardManagement() {
           </div>
 
           <div className={styles.editSection}>
-            <h3 className={styles.editSectionTitle}>Card Content</h3>
+            <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+              <h3 className={styles.editSectionTitle}>Card Content</h3>
+              <NixButton onClick={aiChatModal.open} />
+            </div>
             <Tabs
               tabs={[
                 {
@@ -345,6 +353,17 @@ export default function CardManagement() {
           </div>
         </div>
       </Modal>
+
+      <AiChatModal
+        isOpen={aiChatModal.isOpen}
+        onClose={aiChatModal.close}
+        cardTopic={editTitle}
+        cardContent={editContent}
+        onContentChange={(topic, content) => {
+          setEditTitle(topic);
+          setEditContent(content);
+        }}
+      />
 
       <Modal
         isOpen={changeTagCardId !== null}

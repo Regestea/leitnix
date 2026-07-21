@@ -4,6 +4,7 @@ import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import MainContainer from "../../shared/components/MainContainer";
 import Topic from "../../shared/components/Topic";
 import { Button } from "../../shared/components/controls/Button";
+import { NixButton } from "../../shared/components/controls/NixButton";
 import TagSelect from "./components/TagSelect";
 import AiChatModal from "../../shared/components/AiChatModal";
 import useModal from "../../shared/hooks/useModal";
@@ -111,7 +112,7 @@ export default function LearnTopic() {
           >
             <FontAwesomeIcon icon={faArrowLeft} />
           </button>
-          <Button onClick={aiChatModal.open}>Ask AI</Button>
+          <NixButton onClick={aiChatModal.open} />
 
           <span className={styles.learnCardProgress}>
             {learnedLast24h} learned today

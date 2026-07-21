@@ -10,6 +10,7 @@ import type { ChatMessage, ToolCallConfig } from "../../services/aiChatService";
 import { cardRepository } from "../../repositories/CardRepository";
 import type { Card } from "../../db/entities";
 import type OpenAI from 'openai';
+import nixLogo from "../../assets/images/nix-logo.png";
 import styles from "./AiChatModal.module.css";
 
 interface AiChatModalProps {
@@ -208,7 +209,7 @@ export default function AiChatModal({
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Leitnix AI" size="lg" bodyClassName={styles.chatBody}>
+    <Modal isOpen={isOpen} onClose={onClose} title={<img style={{ display: "block", height: "2.5rem", width: "auto" }} src={nixLogo} alt="Nix" />} size="lg" bodyClassName={styles.chatBody}>
       <div className={styles.chatContainer}>
         <div className={styles.messagesList}>
           {messages.length === 0 && (

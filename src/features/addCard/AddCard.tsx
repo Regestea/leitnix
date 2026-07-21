@@ -2,6 +2,7 @@ import { useState, useCallback } from "react";
 import { useNavigate } from "react-router";
 import MainContainer from "../../shared/components/MainContainer";
 import { Button } from "../../shared/components/controls/Button";
+import { NixButton } from "../../shared/components/controls/NixButton";
 import AiChatModal from "../../shared/components/AiChatModal";
 import useModal from "../../shared/hooks/useModal";
 import { WizardTabs } from "./components/WizardTabs";
@@ -191,7 +192,7 @@ export default function AddCard() {
               width: "100%",
             }}
           >
-            <Button onClick={aiChatModal.open}>Edit By AI</Button>
+            <NixButton onClick={aiChatModal.open} />
             <Button
               label="Generate Questions"
               onClick={handleGenerateQuestions}

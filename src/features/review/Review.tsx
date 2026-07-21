@@ -5,6 +5,7 @@ import MainContainer from "../../shared/components/MainContainer";
 import Topic from "../../shared/components/Topic";
 import MarkdownRender from "../../shared/components/MarkdownRender";
 import { Button } from "../../shared/components/controls/Button";
+import { NixButton } from "../../shared/components/controls/NixButton";
 import AiChatModal from "../../shared/components/AiChatModal";
 import useModal from "../../shared/hooks/useModal";
 import FreeResponseQuestionCard from "./components/FreeResponseQuestionCard";
@@ -214,7 +215,7 @@ export default function Review() {
             <button onClick={() => setPhase("answered")} style={{ background: "none", border: "none", color: "inherit", cursor: "pointer", padding: "0.5rem" }}>
               <FontAwesomeIcon icon={faArrowLeft} />
             </button>
-            <Button onClick={aiChatModal.open}>Ask AI</Button>
+            <NixButton onClick={aiChatModal.open} />
           </div>
         }
         footer={footer()}
