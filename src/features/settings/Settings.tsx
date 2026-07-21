@@ -16,6 +16,7 @@ import type { CategoryTag } from "../../db/entities.ts";
 import styles from "./Settings.module.css";
 import BackupModal from "./BackupModal.tsx";
 import RestoreModal from "./RestoreModal.tsx";
+import DeleteLibraryModal from "./DeleteLibraryModal.tsx";
 
 const PUNISHMENT_OPTIONS = [
   { value: "None" as WrongAnswerPunishment, label: "None" },
@@ -63,6 +64,7 @@ export default function Settings() {
 
   const [availableTags, setAvailableTags] = useState<CategoryTag[]>([]);
   const [backupModalOpen, setBackupModalOpen] = useState(false);
+  const [deleteLibraryModalOpen, setDeleteLibraryModalOpen] = useState(false);
   const [restoreData, setRestoreData] = useState<BackupDataPerTable | null>(null);
   const [restoreModalOpen, setRestoreModalOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -192,7 +194,21 @@ export default function Settings() {
             onChange={handleFileChange}
           />
         </div>
+
+        <div className={styles.divider} />
+
+        <div className={styles.deleteSection}>
+          <div className={styles.sectionTitle}>Delete Library</div>
+          <button className={styles.deleteLibraryButton} onClick={() => setDeleteLibraryModalOpen(true)}>
+            Delete Library
+          </button>
+        </div>
       </div>
+
+      <DeleteLibraryModal
+        isOpen={deleteLibraryModalOpen}
+        onClose={() => setDeleteLibraryModalOpen(false)}
+      />
 
       <BackupModal
         isOpen={backupModalOpen}

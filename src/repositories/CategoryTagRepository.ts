@@ -86,6 +86,12 @@ async getReviewTags(): Promise<ReviewTagsDto[]> {
     const db = await getDb();
     await db.run("DELETE FROM CategoryTags WHERE Id = ?;", [id]);
   }
+
+  async deleteCascade(id: string): Promise<void> {
+    const db = await getDb();
+    await db.run("DELETE FROM Cards WHERE CategoryTagId = ?;", [id]);
+    await db.run("DELETE FROM CategoryTags WHERE Id = ?;", [id]);
+  }
 }
 
 export const categoryTagRepository: ICategoryTagRepository =

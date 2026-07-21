@@ -8,6 +8,7 @@ export interface ICategoryTagRepository {
   create(tag: CategoryTag): Promise<void>;
   update(tag: CategoryTag): Promise<void>;
   delete(id: string): Promise<void>;
+  deleteCascade(id: string): Promise<void>;
   getReviewTags(): Promise<ReviewTagsDto[]>;
   getNewTopicTags(): Promise<NewTopicTagsDto[]>;
   getTagsProgressWithCardCount(): Promise<TagProgressDto[]>;

@@ -170,6 +170,30 @@
   color: #ffffff;
 }
 
+.deleteSection {
+  margin-top: 0.5rem;
+}
+
+.deleteLibraryButton {
+  width: 100%;
+  background: rgba(239, 83, 80, 0.12);
+  border: 1px solid rgba(239, 83, 80, 0.4) !important;
+  color: #ef5350;
+  font-weight: 700;
+  padding: 0.6rem 1rem;
+  border-radius: 0.8rem;
+  cursor: pointer;
+  font-family: var(--app-font-family);
+  font-size: var(--app-font-size);
+  margin-top: 0.75rem;
+  transition: background 0.15s;
+}
+
+.deleteLibraryButton:hover {
+  background: rgba(239, 83, 80, 0.2);
+  border-color: rgba(239, 83, 80, 0.6) !important;
+}
+
 .tagFilterSection {
   margin-top: 0.75rem;
   padding: 0.75rem;
