@@ -18,6 +18,7 @@ import type {
   SaveCardRequest,
   QuestionType,
 } from "../features/addCard/types";
+import { isValidMultipleChoiceOption } from "../db/entities";
 import { cardRepository } from "../repositories/CardRepository";
 import type { ICardRepository } from "../iRepositories/ICardRepository.ts";
 import { questionRepository } from "../repositories/QuestionRepository";
@@ -33,7 +34,8 @@ function buildQuestionPrompt(questionTypes: readonly QuestionType[]): string {
   const typeDescriptions: Record<QuestionType, string> = {
     freeResponse: "free-response (question and answer pairs)",
     fillTheBlank: "fill-in-the-blank (question and answer pairs)",
-    multipleChoice: "multiple-choice (with 4 options A-D and the correct answer)",
+    multipleChoice:
+      "multiple-choice (exactly 4 options A, B, C, D; correctOption must be a single uppercase letter: 'A', 'B', 'C', or 'D')",
   };
 
   const count = questionTypes.length;
@@ -53,6 +55,8 @@ function buildQuestionPrompt(questionTypes: readonly QuestionType[]): string {
 
 Requirements:
 ${instructions}
+
+IMPORTANT: For multiple-choice questions, the correctOption field MUST be exactly one character: 'A', 'B', 'C', or 'D' (uppercase). Do NOT return full text, lowercase letters, or numbers.
 
 Return ALL three arrays in the response. For any question type not listed above, include an empty array.`;
 }
@@ -189,8 +193,13 @@ export class CardService implements ICardService {
         })),
       );
 
-      await this.questionRepo.createMultipleChoiceQuestions(
-        questions.multipleChoiceQuestions.map((q) => ({
+      const mcqRows = questions.multipleChoiceQuestions.map((q) => {
+        if (!isValidMultipleChoiceOption(q.correctOption)) {
+          throw new Error(
+            `Invalid CorrectOption value "${q.correctOption}" — must be one of A, B, C, or D`,
+          );
+        }
+        return {
           Id: crypto.randomUUID(),
           CardId: cardId,
           MarkdownQuestion: q.markdownQuestion,
@@ -199,9 +208,11 @@ export class CardService implements ICardService {
           MarkdownOptionC: q.markdownOptionC,
           MarkdownOptionD: q.markdownOptionD,
           CorrectOption: q.correctOption,
-          AskedTimes:0
-        })),
-      );
+          AskedTimes: 0,
+        };
+      });
+
+      await this.questionRepo.createMultipleChoiceQuestions(mcqRows);
 
       return cardId;
     } catch (err) {

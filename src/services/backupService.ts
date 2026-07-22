@@ -269,7 +269,7 @@ export async function importBackupZip(
   const db = await getDb();
 
   const DELETE_BATCH = 500;
-  const INSERT_BATCH = 50;
+  const INSERT_BATCH = 500;
 
   const tablesWithData: BackupTable[] = [];
   let totalRows = 0;
@@ -294,24 +294,34 @@ export async function importBackupZip(
     const ids = rows.map((r) => (r as Record<string, unknown>).Id as string).filter(Boolean);
     if (ids.length === 0) continue;
 
+    const deleteSet: { statement: string; values?: unknown[] }[] = [];
     const idChunks = chunkArray(ids, DELETE_BATCH);
     for (const chunk of idChunks) {
-      current += chunk.length;
-      emit(`Deleting ${chunk.length} rows from ${table}...`);
       const placeholders = chunk.map(() => "?").join(",");
       if (table === "Boxes") {
-        await db.run(`UPDATE Boxes SET NextBoxId=NULL, PreviousBoxId=NULL WHERE Id IN (${placeholders});`, chunk);
+        deleteSet.push({
+          statement: `UPDATE Boxes SET NextBoxId=NULL, PreviousBoxId=NULL WHERE Id IN (${placeholders});`,
+          values: chunk,
+        });
       }
-      await db.run(`DELETE FROM ${table} WHERE Id IN (${placeholders});`, chunk);
+      deleteSet.push({
+        statement: `DELETE FROM ${table} WHERE Id IN (${placeholders});`,
+        values: chunk,
+      });
     }
+    await db.executeSet(deleteSet);
   }
 
+  current = 0;
+
   // Phase 2: Insert backup data in FK-safe order, batched multi-row INSERTs
+  let lastEmitPct = -1;
   for (const table of tablesWithData) {
     const rows = tables[table]!;
     const columns = TABLE_COLUMNS[table];
     const rowBatches = chunkArray(rows, INSERT_BATCH);
 
+    const insertSet: { statement: string; values?: unknown[] }[] = [];
     for (const batch of rowBatches) {
       const rowPlaceholders = `(${columns.map(() => "?").join(",")})`;
       const allPlaceholders = Array(batch.length).fill(rowPlaceholders).join(",");
@@ -320,14 +330,22 @@ export async function importBackupZip(
       );
 
       current += batch.length;
-      emit(`Restoring ${table} (${current}/${totalRows})...`);
 
-      await db.run(
-        `INSERT OR REPLACE INTO ${table} (${columns.join(",")}) VALUES ${allPlaceholders};`,
+      const pct = Math.floor((current / totalRows) * 100);
+      if (pct !== lastEmitPct) {
+        lastEmitPct = pct;
+        emit(`Restoring ${table} (${current}/${totalRows})...`);
+      }
+
+      insertSet.push({
+        statement: `INSERT OR REPLACE INTO ${table} (${columns.join(",")}) VALUES ${allPlaceholders};`,
         values,
-      );
+      });
     }
+    await db.executeSet(insertSet);
   }
+
+  emit(`Restoring... (${current}/${totalRows})`);
 
   // Phase 3: Second pass for Boxes — restore self-referential FKs
   const boxRows = tables["Boxes"];

@@ -4,6 +4,7 @@ import { CREATE_TABLE_STATEMENTS } from "../src/db/schema";
 export interface MockDb {
   query: (sql: string, params?: unknown[]) => Promise<{ values: unknown[] }>;
   run: (sql: string, params?: unknown[]) => Promise<{ changes: number }>;
+  executeSet: (set: { statement: string; values?: unknown[] }[]) => Promise<{ changes: number }>;
 }
 
 export function createInMemoryDb(): MockDb {
@@ -30,6 +31,19 @@ export function createInMemoryDb(): MockDb {
         db.exec(sql);
       }
       return { changes: 0 };
+    },
+    executeSet: async (set) => {
+      const tx = db.transaction(() => {
+        for (const { statement, values } of set) {
+          if (values && values.length > 0) {
+            db.prepare(statement).run(...values);
+          } else {
+            db.exec(statement);
+          }
+        }
+      });
+      tx();
+      return { changes: set.length };
     },
   };
 }

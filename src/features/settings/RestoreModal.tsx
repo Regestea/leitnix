@@ -147,7 +147,7 @@ export default function RestoreModal({ isOpen, onClose, backupData }: RestoreMod
     <Modal isOpen={isOpen} onClose={handleClose} title="Restore" size="sm">
       {progress ? (
         <div className={styles.progressSection}>
-          <div className={styles.progressLabel}>{progress.message}</div>
+          <div className={styles.progressLabel}>{Math.floor((progress.current / progress.total) * 100)}%</div>
           <div className={styles.progressBar}>
             <div
               className={styles.progressFill}

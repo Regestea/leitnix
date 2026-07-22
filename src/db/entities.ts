@@ -86,6 +86,12 @@ export interface FillTheBlankQuestion {
 
 export type MultipleChoiceOption = "A" | "B" | "C" | "D";
 
+export const MULTIPLE_CHOICE_OPTIONS: readonly MultipleChoiceOption[] = ["A", "B", "C", "D"];
+
+export function isValidMultipleChoiceOption(value: string): value is MultipleChoiceOption {
+  return (MULTIPLE_CHOICE_OPTIONS as readonly string[]).includes(value);
+}
+
 export interface MultipleChoiceQuestion {
   Id: string;
   CardId: string;
