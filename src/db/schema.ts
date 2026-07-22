@@ -129,3 +129,12 @@ export const CREATE_TABLE_STATEMENTS = [
     );
   `,
 ];
+
+export const CREATE_INDEX_STATEMENTS = [
+  `CREATE INDEX IF NOT EXISTS IX_Cards_CatTagId_BoxId ON Cards(CategoryTagId, BoxId);`,
+  `CREATE INDEX IF NOT EXISTS IX_Cards_NextReviewUnixTime ON Cards(NextReviewUnixTime);`,
+  `CREATE INDEX IF NOT EXISTS IX_Cards_BoxId_LastReview ON Cards(BoxId, LastReviewUnixTime);`,
+  `CREATE INDEX IF NOT EXISTS IX_FreeResponseQuestions_CardId ON FreeResponseQuestions(CardId);`,
+  `CREATE INDEX IF NOT EXISTS IX_FillTheBlankQuestions_CardId ON FillTheBlankQuestions(CardId);`,
+  `CREATE INDEX IF NOT EXISTS IX_MultipleChoiceQuestions_CardId ON MultipleChoiceQuestions(CardId);`,
+];

@@ -3,7 +3,7 @@ import {
   SQLiteConnection,
   type SQLiteDBConnection,
 } from "@capacitor-community/sqlite";
-import { CREATE_TABLE_STATEMENTS } from "./schema.ts";
+import { CREATE_INDEX_STATEMENTS, CREATE_TABLE_STATEMENTS } from "./schema.ts";
 import { SeedDatabase } from "./SeedDatabase.ts";
 
 const sqlite = new SQLiteConnection(CapacitorSQLite);
@@ -61,6 +61,10 @@ export async function initializeDatabase(): Promise<void> {
     await db!.execute("PRAGMA foreign_keys = ON;");
 
     for (const statement of CREATE_TABLE_STATEMENTS) {
+      await db!.execute(statement);
+    }
+
+    for (const statement of CREATE_INDEX_STATEMENTS) {
       await db!.execute(statement);
     }
 
