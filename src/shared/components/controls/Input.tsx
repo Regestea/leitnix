@@ -14,6 +14,7 @@ interface InputProps {
   containerStyle?: React.CSSProperties
   labelClassName?: string
   labelStyle?: React.CSSProperties
+  onBlur?: () => void
 }
 
 export function Input({
@@ -30,6 +31,7 @@ export function Input({
   containerStyle,
   labelClassName,
   labelStyle,
+  onBlur,
 }: InputProps) {
   const [value, setValue] = useState(defaultValue)
   const inputId = id ?? (label
@@ -55,6 +57,7 @@ export function Input({
         placeholder={placeholder}
         onChange={handleChange}
         disabled={disabled}
+        onBlur={onBlur}
         className={className}
         style={style}
       />

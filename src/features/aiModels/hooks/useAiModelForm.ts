@@ -5,6 +5,11 @@ import type { AiModel } from "../../../db/entities.ts";
 import { resolveProviderBaseUrl } from "../../../services/aiProviderConfig.ts";
 import { testApi } from "../../../services/aiClient.ts";
 
+export interface GeminiModelOption {
+  value: string;
+  label: string;
+}
+
 export function useAiModelForm() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [formModel, setFormModel] = useState<AiModel>(EMPTY_MODEL);
@@ -14,16 +19,63 @@ export function useAiModelForm() {
   const [testApiError, setTestApiError] = useState<string | null>(null);
   const [formErrors, setFormErrors] = useState<AiModelFormErrors>({});
 
+  const [geminiModels, setGeminiModels] = useState<GeminiModelOption[]>([]);
+  const [isLoadingGeminiModels, setIsLoadingGeminiModels] = useState(false);
+  const [geminiModelsError, setGeminiModelsError] = useState<string | null>(null);
+
   const resetTestState = () => {
     setTestApiSuccess(false);
     setTestApiError(null);
     setFormErrors({});
   };
 
+  const fetchGeminiModels = async (apiKey: string) => {
+    if (!apiKey) {
+      setGeminiModels([]);
+      setGeminiModelsError(null);
+      return;
+    }
+
+    setIsLoadingGeminiModels(true);
+    setGeminiModelsError(null);
+
+    try {
+      const response = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch models. Please check your API key.");
+      }
+
+      const data = await response.json();
+      const models: GeminiModelOption[] = (data.models || [])
+        .filter(
+          (m: { supportedGenerationMethods?: string[] }) =>
+            m.supportedGenerationMethods?.includes("generateContent")
+        )
+        .map((m: { name: string; displayName?: string }) => ({
+          value: m.name.replace("models/", ""),
+          label: m.displayName || m.name.replace("models/", ""),
+        }));
+
+      setGeminiModels(models);
+    } catch (err) {
+      setGeminiModelsError(
+        err instanceof Error ? err.message : "Failed to fetch models"
+      );
+      setGeminiModels([]);
+    } finally {
+      setIsLoadingGeminiModels(false);
+    }
+  };
+
   const openAdd = () => {
     setEditingId(null);
     setFormModel(EMPTY_MODEL);
     resetTestState();
+    setGeminiModels([]);
+    setGeminiModelsError(null);
   };
 
   const openEdit = (model: AiModel) => {
@@ -32,12 +84,18 @@ export function useAiModelForm() {
     setTestApiSuccess(true);
     setTestApiError(null);
     setFormErrors({});
+
+    if (model.Provider === "GoogleGemini" && model.APIKey) {
+      fetchGeminiModels(model.APIKey);
+    }
   };
 
   const reset = () => {
     setEditingId(null);
     setFormModel(EMPTY_MODEL);
     resetTestState();
+    setGeminiModels([]);
+    setGeminiModelsError(null);
   };
 
   const handleFieldChange = (
@@ -120,12 +178,16 @@ export function useAiModelForm() {
     isTestingApi,
     testApiError,
     formErrors,
+    geminiModels,
+    isLoadingGeminiModels,
+    geminiModelsError,
     openAdd,
     openEdit,
     reset,
     handleFieldChange,
     handleProviderChange,
     testApiKey,
+    fetchGeminiModels,
     validate,
   };
 }

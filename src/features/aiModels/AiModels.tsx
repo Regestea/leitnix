@@ -84,10 +84,18 @@ export default function AiModels() {
         testApiSuccess={form.testApiSuccess}
         isTestingApi={form.isTestingApi}
         testApiError={form.testApiError}
+        geminiModels={form.geminiModels}
+        isLoadingGeminiModels={form.isLoadingGeminiModels}
+        geminiModelsError={form.geminiModelsError}
         onProviderChange={form.handleProviderChange}
         onFieldChange={form.handleFieldChange}
         onTestApiKey={form.testApiKey}
         onSave={handleSave}
+        onApiKeyBlur={() => {
+          if (form.formModel.Provider === "GoogleGemini" && form.formModel.APIKey) {
+            form.fetchGeminiModels(form.formModel.APIKey);
+          }
+        }}
       />
 
       <ConfirmModal
