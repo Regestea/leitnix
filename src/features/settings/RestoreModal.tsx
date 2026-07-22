@@ -2,6 +2,7 @@ import { useState, useMemo } from "react";
 import Modal from "../../shared/components/Modal";
 import { importBackupZip, resolveDependencies } from "../../services/backupService";
 import type { BackupTable, BackupDataPerTable } from "../../types/backup";
+import type { RestoreProgress } from "../../services/backupService";
 import styles from "./BackupModal.module.css";
 
 const TABLE_LABELS: Record<string, string> = {
@@ -41,6 +42,7 @@ export default function RestoreModal({ isOpen, onClose, backupData }: RestoreMod
   const [manualTables, setManualTables] = useState<Set<BackupTable>>(new Set(availableTables));
   const [selectedTagId, setSelectedTagId] = useState<string | "all">("all");
   const [status, setStatus] = useState<{ type: "success" | "error"; message: string } | null>(null);
+  const [progress, setProgress] = useState<RestoreProgress | null>(null);
 
   const effectiveTables = useMemo(() => {
     const resolved = resolveDependencies([...manualTables]);
@@ -119,13 +121,16 @@ export default function RestoreModal({ isOpen, onClose, backupData }: RestoreMod
 
   async function handleRestore() {
     setStatus(null);
+    setProgress(null);
     try {
       const filtered = getTableFilteredData();
       const tableList = Object.keys(filtered).join(", ");
       if (!window.confirm(`Restore backup? This will replace data in: ${tableList}`)) return;
-      await importBackupZip(filtered);
+      await importBackupZip(filtered, (p) => setProgress({ ...p }));
+      setProgress(null);
       setStatus({ type: "success", message: "Backup restored successfully." });
     } catch (err) {
+      setProgress(null);
       setStatus({ type: "error", message: `Restore failed: ${err instanceof Error ? err.message : "Unknown error"}` });
     }
   }
@@ -134,58 +139,73 @@ export default function RestoreModal({ isOpen, onClose, backupData }: RestoreMod
     setManualTables(new Set(availableTables));
     setSelectedTagId("all");
     setStatus(null);
+    setProgress(null);
     onClose();
   }
 
   return (
     <Modal isOpen={isOpen} onClose={handleClose} title="Restore" size="sm">
-      <p className={styles.restoreHint}>Select tables to restore:</p>
-
-      <div className={styles.tableGrid}>
-        {availableTables.map((table) => {
-          const checked = effectiveTables.has(table);
-          const forced = checked && !manualTables.has(table);
-          const rowCount = (backupData[table] ?? []).length;
-          return (
-            <label key={table} className={styles.tableCheckbox} style={{ opacity: forced ? 0.6 : 1 }}>
-              <input
-                type="checkbox"
-                checked={checked}
-                disabled={forced}
-                onChange={(e) => handleTableToggle(table, e.target.checked)}
-              />
-              {tableLabel(table)}
-              {forced && <span className={styles.requiredBadge}>(required)</span>}
-              <span className={styles.rowCount}>({rowCount})</span>
-            </label>
-          );
-        })}
-      </div>
-
-      {showTagFilter && (
-        <div className={styles.tagFilterSection}>
-          <div className={styles.tagFilterLabel}>Restore only cards for a specific tag</div>
-          <select
-            className={styles.tagSelect}
-            value={selectedTagId}
-            onChange={(e) => setSelectedTagId(e.target.value as string | "all")}
-          >
-            <option value="all">All tags</option>
-            {backupTags.map((tag) => (
-              <option key={tag.Id} value={tag.Id}>
-                {tag.Name}
-              </option>
-            ))}
-          </select>
+      {progress ? (
+        <div className={styles.progressSection}>
+          <div className={styles.progressLabel}>{progress.message}</div>
+          <div className={styles.progressBar}>
+            <div
+              className={styles.progressFill}
+              style={{ width: `${(progress.current / progress.total) * 100}%` }}
+            />
+          </div>
         </div>
-      )}
+      ) : (
+        <>
+          <p className={styles.restoreHint}>Select tables to restore:</p>
 
-      <div className={styles.buttonRow}>
-        <button className={styles.cancelButton} onClick={handleClose}>Cancel</button>
-        <button className={styles.primaryButton} disabled={restoreDisabled} onClick={handleRestore}>
-          Restore
-        </button>
-      </div>
+          <div className={styles.tableGrid}>
+            {availableTables.map((table) => {
+              const checked = effectiveTables.has(table);
+              const forced = checked && !manualTables.has(table);
+              const rowCount = (backupData[table] ?? []).length;
+              return (
+                <label key={table} className={styles.tableCheckbox} style={{ opacity: forced ? 0.6 : 1 }}>
+                  <input
+                    type="checkbox"
+                    checked={checked}
+                    disabled={forced}
+                    onChange={(e) => handleTableToggle(table, e.target.checked)}
+                  />
+                  {tableLabel(table)}
+                  {forced && <span className={styles.requiredBadge}>(required)</span>}
+                  <span className={styles.rowCount}>({rowCount})</span>
+                </label>
+              );
+            })}
+          </div>
+
+          {showTagFilter && (
+            <div className={styles.tagFilterSection}>
+              <div className={styles.tagFilterLabel}>Restore only cards for a specific tag</div>
+              <select
+                className={styles.tagSelect}
+                value={selectedTagId}
+                onChange={(e) => setSelectedTagId(e.target.value as string | "all")}
+              >
+                <option value="all">All tags</option>
+                {backupTags.map((tag) => (
+                  <option key={tag.Id} value={tag.Id}>
+                    {tag.Name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+
+          <div className={styles.buttonRow}>
+            <button className={styles.cancelButton} onClick={handleClose}>Cancel</button>
+            <button className={styles.primaryButton} disabled={restoreDisabled} onClick={handleRestore}>
+              Restore
+            </button>
+          </div>
+        </>
+      )}
 
       {status && (
         <div className={`${styles.statusMessage} ${status.type === "success" ? styles.statusSuccess : styles.statusError}`}>

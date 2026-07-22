@@ -4,6 +4,12 @@ import { Filesystem, Directory } from "@capacitor/filesystem";
 import JSZip from "jszip";
 import type { BackupTable, BackupOptions, BackupDataPerTable } from "../types/backup.ts";
 
+export interface RestoreProgress {
+  current: number;
+  total: number;
+  message: string;
+}
+
 const DEPENDENCIES: Record<BackupTable, BackupTable[]> = {
   AiModels: [],
   CustomPrompts: [],
@@ -236,14 +242,35 @@ export async function parseBackupZip(
   return tables;
 }
 
-export async function importBackupZip(tables: BackupDataPerTable): Promise<void> {
+export async function importBackupZip(
+  tables: BackupDataPerTable,
+  onProgress?: (progress: RestoreProgress) => void,
+): Promise<void> {
   const db = await getDb();
 
-  // Delete existing data from tables being restored, in reverse FK order
-  const reverseOrder = [...BACKUP_ORDER].reverse();
-  for (const table of reverseOrder) {
+  // Count total work
+  let totalSteps = 0;
+  const tablesWithData: { table: BackupTable; rows: number }[] = [];
+  for (const table of BACKUP_ORDER) {
     const rows = tables[table];
-    if (!rows || rows.length === 0) continue;
+    if (rows && rows.length > 0) {
+      tablesWithData.push({ table, rows: rows.length });
+      totalSteps += rows.length;
+    }
+  }
+  totalSteps += tablesWithData.length;
+  if (tables["Boxes"] && tables["Boxes"]!.length > 0) {
+    totalSteps += 1;
+  }
+
+  let currentStep = 0;
+
+  // Phase 1: Delete existing data in reverse FK order
+  const reverseOrder = [...tablesWithData.map((t) => t.table)].reverse();
+  for (const table of reverseOrder) {
+    const rows = tables[table]!;
+    currentStep++;
+    onProgress?.({ current: currentStep, total: totalSteps, message: `Deleting ${table}...` });
 
     const ids = rows.map((r) => (r as Record<string, unknown>).Id as string).filter(Boolean);
     if (ids.length === 0) continue;
@@ -255,14 +282,15 @@ export async function importBackupZip(tables: BackupDataPerTable): Promise<void>
     await db.run(`DELETE FROM ${table} WHERE Id IN (${placeholders});`, ids);
   }
 
-  // Insert backup data in FK-safe order, one row at a time
-  for (const table of BACKUP_ORDER) {
-    const rows = tables[table];
-    if (!rows || rows.length === 0) continue;
-
+  // Phase 2: Insert backup data in FK-safe order, one row at a time
+  for (const { table } of tablesWithData) {
+    const rows = tables[table]!;
     const columns = TABLE_COLUMNS[table];
 
     for (const row of rows) {
+      currentStep++;
+      onProgress?.({ current: currentStep, total: totalSteps, message: `Restoring ${table} (${currentStep}/${totalSteps})...` });
+
       let values: (string | number | boolean | null)[];
 
       if (table === "Boxes") {
@@ -283,9 +311,11 @@ export async function importBackupZip(tables: BackupDataPerTable): Promise<void>
     }
   }
 
-  // Second pass for Boxes: restore self-referential FKs
+  // Phase 3: Second pass for Boxes — restore self-referential FKs
   const boxRows = tables["Boxes"];
   if (boxRows && boxRows.length > 0) {
+    currentStep++;
+    onProgress?.({ current: currentStep, total: totalSteps, message: "Reconnecting box relationships..." });
     for (const row of boxRows) {
       const r = row as Record<string, unknown>;
       const id = r.Id as string;
