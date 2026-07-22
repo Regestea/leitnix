@@ -242,70 +242,88 @@ export async function parseBackupZip(
   return tables;
 }
 
+function getRowValues(row: Record<string, unknown>, columns: string[], table: BackupTable): (string | number | boolean | null)[] {
+  if (table === "Boxes") {
+    return columns.map((col) => {
+      if (col === "NextBoxId" || col === "PreviousBoxId") return null;
+      return (row as Record<string, unknown>)[col] as string | number | boolean | null ?? null;
+    });
+  }
+  return columns.map((col) => {
+    return (row as Record<string, unknown>)[col] as string | number | boolean | null ?? null;
+  });
+}
+
+function chunkArray<T>(arr: T[], size: number): T[][] {
+  const chunks: T[][] = [];
+  for (let i = 0; i < arr.length; i += size) {
+    chunks.push(arr.slice(i, i + size));
+  }
+  return chunks;
+}
+
 export async function importBackupZip(
   tables: BackupDataPerTable,
   onProgress?: (progress: RestoreProgress) => void,
 ): Promise<void> {
   const db = await getDb();
 
-  // Count total work
-  let totalSteps = 0;
-  const tablesWithData: { table: BackupTable; rows: number }[] = [];
+  const DELETE_BATCH = 500;
+  const INSERT_BATCH = 50;
+
+  const tablesWithData: BackupTable[] = [];
+  let totalRows = 0;
   for (const table of BACKUP_ORDER) {
     const rows = tables[table];
     if (rows && rows.length > 0) {
-      tablesWithData.push({ table, rows: rows.length });
-      totalSteps += rows.length;
+      tablesWithData.push(table);
+      totalRows += rows.length;
     }
   }
-  totalSteps += tablesWithData.length;
-  if (tables["Boxes"] && tables["Boxes"]!.length > 0) {
-    totalSteps += 1;
+
+  let current = 0;
+
+  function emit(msg: string) {
+    onProgress?.({ current, total: totalRows, message: msg });
   }
 
-  let currentStep = 0;
-
-  // Phase 1: Delete existing data in reverse FK order
-  const reverseOrder = [...tablesWithData.map((t) => t.table)].reverse();
+  // Phase 1: Delete existing data in reverse FK order, batched by ID chunk
+  const reverseOrder = [...tablesWithData].reverse();
   for (const table of reverseOrder) {
     const rows = tables[table]!;
-    currentStep++;
-    onProgress?.({ current: currentStep, total: totalSteps, message: `Deleting ${table}...` });
-
     const ids = rows.map((r) => (r as Record<string, unknown>).Id as string).filter(Boolean);
     if (ids.length === 0) continue;
 
-    const placeholders = ids.map(() => "?").join(",");
-    if (table === "Boxes") {
-      await db.run(`UPDATE Boxes SET NextBoxId=NULL, PreviousBoxId=NULL WHERE Id IN (${placeholders});`, ids);
+    const idChunks = chunkArray(ids, DELETE_BATCH);
+    for (const chunk of idChunks) {
+      current += chunk.length;
+      emit(`Deleting ${chunk.length} rows from ${table}...`);
+      const placeholders = chunk.map(() => "?").join(",");
+      if (table === "Boxes") {
+        await db.run(`UPDATE Boxes SET NextBoxId=NULL, PreviousBoxId=NULL WHERE Id IN (${placeholders});`, chunk);
+      }
+      await db.run(`DELETE FROM ${table} WHERE Id IN (${placeholders});`, chunk);
     }
-    await db.run(`DELETE FROM ${table} WHERE Id IN (${placeholders});`, ids);
   }
 
-  // Phase 2: Insert backup data in FK-safe order, one row at a time
-  for (const { table } of tablesWithData) {
+  // Phase 2: Insert backup data in FK-safe order, batched multi-row INSERTs
+  for (const table of tablesWithData) {
     const rows = tables[table]!;
     const columns = TABLE_COLUMNS[table];
+    const rowBatches = chunkArray(rows, INSERT_BATCH);
 
-    for (const row of rows) {
-      currentStep++;
-      onProgress?.({ current: currentStep, total: totalSteps, message: `Restoring ${table} (${currentStep}/${totalSteps})...` });
+    for (const batch of rowBatches) {
+      const rowPlaceholders = `(${columns.map(() => "?").join(",")})`;
+      const allPlaceholders = Array(batch.length).fill(rowPlaceholders).join(",");
+      const values = batch.flatMap((row) =>
+        getRowValues(row as Record<string, unknown>, columns, table),
+      );
 
-      let values: (string | number | boolean | null)[];
-
-      if (table === "Boxes") {
-        values = columns.map((col) => {
-          if (col === "NextBoxId" || col === "PreviousBoxId") return null;
-          return (row as Record<string, unknown>)[col] as string | number | boolean | null ?? null;
-        });
-      } else {
-        values = columns.map((col) => {
-          return (row as Record<string, unknown>)[col] as string | number | boolean | null ?? null;
-        });
-      }
+      current += batch.length;
+      emit(`Restoring ${table} (${current}/${totalRows})...`);
 
       await db.run(
-        `INSERT OR REPLACE INTO ${table} (${columns.join(", ")}) VALUES (${columns.map(() => "?").join(", ")});`,
+        `INSERT OR REPLACE INTO ${table} (${columns.join(",")}) VALUES ${allPlaceholders};`,
         values,
       );
     }
@@ -314,16 +332,16 @@ export async function importBackupZip(
   // Phase 3: Second pass for Boxes — restore self-referential FKs
   const boxRows = tables["Boxes"];
   if (boxRows && boxRows.length > 0) {
-    currentStep++;
-    onProgress?.({ current: currentStep, total: totalSteps, message: "Reconnecting box relationships..." });
     for (const row of boxRows) {
       const r = row as Record<string, unknown>;
       const id = r.Id as string;
       const nextBoxId = r.NextBoxId;
       const prevBoxId = r.PreviousBoxId;
       if (nextBoxId != null || prevBoxId != null) {
+        current++;
+        emit(`Reconnecting box relationships (${current}/${totalRows})...`);
         await db.run(
-          `UPDATE Boxes SET NextBoxId = ?, PreviousBoxId = ? WHERE Id = ?;`,
+          "UPDATE Boxes SET NextBoxId=?, PreviousBoxId=? WHERE Id=?;",
           [nextBoxId ?? null, prevBoxId ?? null, id],
         );
       }

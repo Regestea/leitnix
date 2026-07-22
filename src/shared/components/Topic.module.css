@@ -3,3 +3,33 @@
   font-weight: var(--app-font-weight, 600);
   color: var(--secondary);
 }
+
+.topicBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 0.5rem;
+  padding: 0.1rem 0.25rem;
+  border: none;
+  border-radius: 0.25rem;
+  color: #fff;
+  cursor: pointer;
+  font-size: 0.6rem;
+  opacity: 0.5;
+  vertical-align: middle;
+  transition: opacity 0.15s;
+}
+
+.topicBadge:hover {
+  opacity: 1;
+}
+
+.topicBadge:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.topicBadgeActive {
+  opacity: 1;
+  background: var(--secondary);
+}
