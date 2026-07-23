@@ -57,7 +57,6 @@
 }
 
 .translateButton:hover {
-  background: var(--secondary);
   color: #fff;
 }
 

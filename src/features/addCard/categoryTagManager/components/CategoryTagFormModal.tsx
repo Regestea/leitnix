@@ -40,7 +40,7 @@ export default function CategoryTagFormModal({
         </div>
       </div>
 
-      <div style={{ display: "flex", justifyContent: "center", gap: "0.5rem" }}>
+      <div style={{ display: "flex", justifyContent: "center", gap: "0.5rem", marginTop:"2rem" }}>
         <Button className="secondary" label="Cancel" onClick={onClose} />
         <Button label={isEditing ? "Save Changes" : "Save"} onClick={onSave} />
       </div>
