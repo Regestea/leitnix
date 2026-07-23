@@ -56,6 +56,10 @@
   --fs-x-large: 1.5rem;
   --fs-xx-large: 2rem;
   --fs-xxx-large: 3rem;
+  --fs-s-medium: 0.875rem;
+  --fs-l-x-large: 1.25rem;
+  --fs-xl-xx-large: 1.75rem;
+  --fs-xxl-xxx-large: 2.5rem;
   --fs-caption: var(--fs-x-small);
   --fs-label: var(--fs-small);
   --fs-body: var(--fs-medium);

@@ -53,10 +53,14 @@ const FONT_SIZE_OPTIONS = [
   { value: "xx-small", label: "XX-Small (8px)" },
   { value: "x-small", label: "X-Small (10px)" },
   { value: "small", label: "Small (12px)" },
+  { value: "s-medium", label: "S-Medium (14px)" },
   { value: "medium", label: "Medium (16px) — default" },
   { value: "large", label: "Large (18px)" },
+  { value: "l-x-large", label: "L-X-Large (20px)" },
   { value: "x-large", label: "X-Large (24px)" },
+  { value: "xl-xx-large", label: "XL-XX-Large (28px)" },
   { value: "xx-large", label: "XX-Large (32px)" },
+  { value: "xxl-xxx-large", label: "XXL-XXX-Large (40px)" },
   { value: "xxx-large", label: "XXX-Large (48px)" },
 ] satisfies { value: FontSize; label: string }[];
 

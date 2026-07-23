@@ -48,20 +48,28 @@ export type FontSize =
   | "xx-small"
   | "x-small"
   | "small"
+  | "s-medium"
   | "medium"
   | "large"
+  | "l-x-large"
   | "x-large"
+  | "xl-xx-large"
   | "xx-large"
+  | "xxl-xxx-large"
   | "xxx-large";
 
 const FONT_SIZE_VAR: Record<FontSize, string> = {
   "xx-small": "--fs-xx-small",
   "x-small": "--fs-x-small",
   small: "--fs-small",
+  "s-medium": "--fs-s-medium",
   medium: "--fs-medium",
   large: "--fs-large",
+  "l-x-large": "--fs-l-x-large",
   "x-large": "--fs-x-large",
+  "xl-xx-large": "--fs-xl-xx-large",
   "xx-large": "--fs-xx-large",
+  "xxl-xxx-large": "--fs-xxl-xxx-large",
   "xxx-large": "--fs-xxx-large",
 };
 
