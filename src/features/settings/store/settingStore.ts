@@ -17,6 +17,9 @@ interface SettingState {
   notificationMinute: number | null;
   isShowTranslationControl: boolean;
   defaultTranslationTarget: string;
+  easyReadMode: boolean;
+  easyReadBackgroundColor: string;
+  easyReadTextColor: string;
 
   setWrongAnswerPunishment: (value: WrongAnswerPunishment) => void;
   setReadAloudBadge: (value: boolean) => void;
@@ -25,6 +28,9 @@ interface SettingState {
   setNotificationMinute: (value: number | null) => void;
   setIsShowTranslationControl: (value: boolean) => void;
   setDefaultTranslationTarget: (value: string) => void;
+  setEasyReadMode: (value: boolean) => void;
+  setEasyReadBackgroundColor: (value: string) => void;
+  setEasyReadTextColor: (value: string) => void;
 }
 
 const sqliteStorage: StateStorage = {
@@ -39,6 +45,9 @@ const sqliteStorage: StateStorage = {
       notificationMinute: row.NotificationMinute,
       isShowTranslationControl: !!row.IsShowTranslationControl,
       defaultTranslationTarget: row.DefaultTranslationTarget,
+      easyReadMode: !!row.EasyReadMode,
+      easyReadBackgroundColor: row.EasyReadBackgroundColor,
+      easyReadTextColor: row.EasyReadTextColor,
     };
 
     return JSON.stringify({ state, version: 0 });
@@ -57,6 +66,9 @@ const sqliteStorage: StateStorage = {
       NotificationMinute: state.notificationMinute,
       IsShowTranslationControl: state.isShowTranslationControl,
       DefaultTranslationTarget: state.defaultTranslationTarget,
+      EasyReadMode: state.easyReadMode,
+      EasyReadBackgroundColor: state.easyReadBackgroundColor,
+      EasyReadTextColor: state.easyReadTextColor,
     });
   },
 
@@ -73,6 +85,9 @@ export const useSettingStore = create<SettingState>()(
       notificationMinute: null,
       isShowTranslationControl: false,
       defaultTranslationTarget: "fa",
+      easyReadMode: false,
+      easyReadBackgroundColor: "#1e1e1e",
+      easyReadTextColor: "#dcdcdc",
 
       setWrongAnswerPunishment: (wrongAnswerPunishment) =>
         set({ wrongAnswerPunishment }),
@@ -91,6 +106,14 @@ export const useSettingStore = create<SettingState>()(
 
       setDefaultTranslationTarget: (defaultTranslationTarget) =>
         set({ defaultTranslationTarget }),
+
+      setEasyReadMode: (easyReadMode) => set({ easyReadMode }),
+
+      setEasyReadBackgroundColor: (easyReadBackgroundColor) =>
+        set({ easyReadBackgroundColor }),
+
+      setEasyReadTextColor: (easyReadTextColor) =>
+        set({ easyReadTextColor }),
     }),
     {
       name: "leitnix-settings",

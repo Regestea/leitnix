@@ -170,6 +170,23 @@
   color: #ffffff;
 }
 
+.easyReadSection {
+  margin-top: 0.5rem;
+}
+
+.colorPickers {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 0.75rem;
+}
+
+.colorField {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
 .deleteSection {
   margin-top: 0.5rem;
 }

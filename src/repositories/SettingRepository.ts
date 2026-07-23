@@ -20,7 +20,10 @@ export class SettingRepository implements ISettingRepository {
            NotificationHour          = ?,
            NotificationMinute        = ?,
            IsShowTranslationControl  = ?,
-           DefaultTranslationTarget  = ?;`,
+           DefaultTranslationTarget  = ?,
+           EasyReadMode              = ?,
+           EasyReadBackgroundColor   = ?,
+           EasyReadTextColor         = ?;`,
       [
         setting.WrongAnswerPunishment,
         setting.ReadAloudBadge ? 1 : 0,
@@ -29,6 +32,9 @@ export class SettingRepository implements ISettingRepository {
         setting.NotificationMinute,
         setting.IsShowTranslationControl ? 1 : 0,
         setting.DefaultTranslationTarget,
+        setting.EasyReadMode ? 1 : 0,
+        setting.EasyReadBackgroundColor,
+        setting.EasyReadTextColor,
       ],
     );
   }
@@ -40,6 +46,7 @@ export class SettingRepository implements ISettingRepository {
         ...existing,
         ReadAloudBadge: !!existing.ReadAloudBadge,
         Notification: !!existing.Notification,
+        EasyReadMode: !!existing.EasyReadMode,
       };
     }
 
@@ -51,6 +58,9 @@ export class SettingRepository implements ISettingRepository {
       NotificationMinute: null,
       IsShowTranslationControl: false,
       DefaultTranslationTarget: "fa",
+      EasyReadMode: false,
+      EasyReadBackgroundColor: "#1e1e1e",
+      EasyReadTextColor: "#dcdcdc",
     };
   }
 }

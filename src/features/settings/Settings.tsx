@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { Checkbox } from "../../shared/components/controls/CheckBox";
+import { ColorPicker } from "../../shared/components/controls/ColorPicker";
 import { Select } from "../../shared/components/controls/Select";
 import MainContainer from "../../shared/components/MainContainer";
 import { useSettingStore } from "./store/settingStore";
@@ -52,6 +53,12 @@ export default function Settings() {
     setIsShowTranslationControl,
     defaultTranslationTarget,
     setDefaultTranslationTarget,
+    easyReadMode,
+    setEasyReadMode,
+    easyReadBackgroundColor,
+    setEasyReadBackgroundColor,
+    easyReadTextColor,
+    setEasyReadTextColor,
   } = useSettingStore();
 
   useEffect(() => {
@@ -169,6 +176,35 @@ export default function Settings() {
               items={LANGUAGE_OPTIONS}
               onChange={setDefaultTranslationTarget}
             />
+          )}
+        </div>
+
+        <div className={styles.divider} />
+
+        <div className={styles.easyReadSection}>
+          <div className={styles.sectionTitle}>Easy Read Mode</div>
+          <Checkbox
+            label="Enable easy read mode button"
+            defaultChecked={easyReadMode}
+            onChange={setEasyReadMode}
+          />
+          {easyReadMode && (
+            <div className={styles.colorPickers}>
+              <div className={styles.colorField}>
+                <ColorPicker
+                  label="Background color"
+                  value={easyReadBackgroundColor}
+                  onChange={setEasyReadBackgroundColor}
+                />
+              </div>
+              <div className={styles.colorField}>
+                <ColorPicker
+                  label="Text color"
+                  value={easyReadTextColor}
+                  onChange={setEasyReadTextColor}
+                />
+              </div>
+            </div>
           )}
         </div>
 

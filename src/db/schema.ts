@@ -20,7 +20,10 @@ export const CREATE_TABLE_STATEMENTS = [
           NotificationMinute IS NULL OR (NotificationMinute >= 0 AND NotificationMinute <= 59)
         ),
       IsShowTranslationControl BOOLEAN DEFAULT FALSE,
-      DefaultTranslationTarget TEXT DEFAULT 'fa'
+      DefaultTranslationTarget TEXT DEFAULT 'fa',
+      EasyReadMode BOOLEAN DEFAULT FALSE,
+      EasyReadBackgroundColor TEXT DEFAULT '#1e1e1e',
+      EasyReadTextColor TEXT DEFAULT '#dcdcdc'
     );
   `,
   `

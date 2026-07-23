@@ -11,6 +11,9 @@ export interface Setting {
   NotificationMinute: number | null;
   IsShowTranslationControl: boolean;
   DefaultTranslationTarget: string;
+  EasyReadMode: boolean;
+  EasyReadBackgroundColor: string;
+  EasyReadTextColor: string;
 }
 
 export interface Theme {

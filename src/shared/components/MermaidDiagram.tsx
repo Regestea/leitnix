@@ -179,6 +179,7 @@ function MermaidDiagram({ chart }: { chart: string }) {
 
   return (
     <div
+      data-mermaid="true"
       style={containerStyle}
       onWheel={handleWheel}
       onMouseDown={handleMouseDown}
