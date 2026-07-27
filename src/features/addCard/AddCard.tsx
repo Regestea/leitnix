@@ -42,6 +42,8 @@ export default function AddCard() {
 
   // ── Review-step state (lifted from StepReview) ────────────────────
   const [card, setCard] = useState<GeneratedCardData | null>(null);
+  const [prevMarkdownContent, setPrevMarkdownContent] = useState("");
+  const [nixChangedContent, setNixChangedContent] = useState(false);
   const [isGeneratingQuestions, setIsGeneratingQuestions] = useState(false);
   const [questionError, setQuestionError] = useState<string | null>(null);
   const [questionTypes, setQuestionTypes] = useState<readonly QuestionType[]>([
@@ -100,6 +102,8 @@ export default function AddCard() {
         images: images.length > 0 ? images : undefined,
       });
       setCard(generated);
+      setPrevMarkdownContent(generated.markdownContent);
+      setNixChangedContent(false);
       setFormStateSaved(formState);
       setCurrentStep(AddCardWizardStep.Review);
     } catch (err) {
@@ -118,6 +122,12 @@ export default function AddCard() {
     },
     [],
   );
+
+  const handleNixRollback = useCallback(() => {
+    if (!card) return;
+    setCard((prev) => prev ? { ...prev, markdownContent: prevMarkdownContent } : prev);
+    setNixChangedContent(false);
+  }, [card, prevMarkdownContent]);
 
   const handleGenerateQuestions = useCallback(async () => {
     if (!card || !formStateSaved) return;
@@ -192,7 +202,7 @@ export default function AddCard() {
               width: "100%",
             }}
           >
-            <NixButton onClick={aiChatModal.open} />
+            <NixButton onClick={aiChatModal.open} showRollback={nixChangedContent} onRollback={handleNixRollback} />
             <Button
               label="Generate Questions"
               onClick={handleGenerateQuestions}
@@ -252,6 +262,7 @@ export default function AddCard() {
           onContentChange={(topic, content) => {
             handleCardChange("topic", topic);
             handleCardChange("markdownContent", content);
+            setNixChangedContent(content !== prevMarkdownContent);
           }}
         />
       )}

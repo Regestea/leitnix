@@ -6,6 +6,7 @@ import {
   faRotateLeft,
   faTag,
   faTrashCan,
+  faCircleInfo,
 } from "@fortawesome/free-solid-svg-icons";
 import MainContainer from "../../shared/components/MainContainer";
 import Modal from "../../shared/components/Modal";
@@ -28,15 +29,23 @@ import styles from "./CardManagement.module.css";
 const PAGE_SIZE = 20;
 
 export default function CardManagement() {
+  const handleRollbackClick = () => {
+    setEditTitle(editCard?.Topic ?? "");
+    setEditContent(prevContent);
+    setNixChanged(false);
+  };
+
   const [cards, setCards] = useState<CardPreviewDto[]>([]);
   const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(false);
+  const [searchInput, setSearchInput] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTagId, setSelectedTagId] = useState("");
   const [selectedBoxId, setSelectedBoxId] = useState("");
   const [tags, setTags] = useState<CategoryTag[]>([]);
   const [boxes, setBoxes] = useState<Box[]>([]);
   const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
+  const [infoCardId, setInfoCardId] = useState<string | null>(null);
   const sentinelRef = useRef<HTMLDivElement>(null);
   const pageRef = useRef(1);
 
@@ -46,6 +55,8 @@ export default function CardManagement() {
   const [editCard, setEditCard] = useState<Card | null>(null);
   const [editTitle, setEditTitle] = useState("");
   const [editContent, setEditContent] = useState("");
+  const [prevContent, setPrevContent] = useState("");
+  const [nixChanged, setNixChanged] = useState(false);
   const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
   const [changeTagCardId, setChangeTagCardId] = useState<string | null>(null);
   const [changeTagNewId, setChangeTagNewId] = useState("");
@@ -54,6 +65,11 @@ export default function CardManagement() {
     categoryTagRepository.getAll().then(setTags);
     boxRepository.getChainOrdered().then(setBoxes);
   }, []);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setSearchQuery(searchInput), 300);
+    return () => clearTimeout(timer);
+  }, [searchInput]);
 
   useEffect(() => {
     pageRef.current = 1;
@@ -98,18 +114,21 @@ export default function CardManagement() {
   }, [hasMore, loading, selectedTagId, selectedBoxId]);
 
   useEffect(() => {
-    if (!openDropdownId) return;
+    if (!openDropdownId && !infoCardId) return;
 
     const handleClick = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
-      if (!target.closest(`.${styles.dropdownContainer}`)) {
+      if (openDropdownId && !target.closest(`.${styles.dropdownContainer}`)) {
         setOpenDropdownId(null);
+      }
+      if (infoCardId && !target.closest(`.${styles.infoIconContainer}`)) {
+        setInfoCardId(null);
       }
     };
 
     document.addEventListener("mousedown", handleClick);
     return () => document.removeEventListener("mousedown", handleClick);
-  }, [openDropdownId]);
+  }, [openDropdownId, infoCardId]);
 
   const openEdit = async (cardId: string) => {
     setOpenDropdownId(null);
@@ -118,6 +137,8 @@ export default function CardManagement() {
     setEditCard(card);
     setEditTitle(card.Topic);
     setEditContent(card.MarkdownContent);
+    setPrevContent(card.MarkdownContent);
+    setNixChanged(false);
     setEditCardId(cardId);
   };
 
@@ -204,35 +225,37 @@ export default function CardManagement() {
           type="search"
           className={styles.searchInput}
           placeholder="Search by title..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
+          value={searchInput}
+          onChange={(e) => setSearchInput(e.target.value)}
         />
 
-        <select
-          className={styles.filterSelect}
-          value={selectedTagId}
-          onChange={(e) => setSelectedTagId(e.target.value)}
-        >
-          <option value="">All Tags</option>
-          {tags.map((tag) => (
-            <option key={tag.Id} value={tag.Id}>
-              {tag.Name}
-            </option>
-          ))}
-        </select>
+        <div className={styles.filterSelectRow}>
+          <select
+            className={styles.filterSelect}
+            value={selectedTagId}
+            onChange={(e) => setSelectedTagId(e.target.value)}
+          >
+            <option value="">All Tags</option>
+            {tags.map((tag) => (
+              <option key={tag.Id} value={tag.Id}>
+                {tag.Name}
+              </option>
+            ))}
+          </select>
 
-        <select
-          className={styles.filterSelect}
-          value={selectedBoxId}
-          onChange={(e) => setSelectedBoxId(e.target.value)}
-        >
-          <option value="">All Boxes</option>
-          {boxes.map((box) => (
-            <option key={box.Id} value={box.Id}>
-              {box.Name}
-            </option>
-          ))}
-        </select>
+          <select
+            className={styles.filterSelect}
+            value={selectedBoxId}
+            onChange={(e) => setSelectedBoxId(e.target.value)}
+          >
+            <option value="">All Boxes</option>
+            {boxes.map((box) => (
+              <option key={box.Id} value={box.Id}>
+                {box.Name}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
 
       <div className={styles.cardList}>
@@ -244,8 +267,22 @@ export default function CardManagement() {
               <div className={styles.cardInfo}>
                 <h4 className={styles.cardTitle}>{card.topic}</h4>
                 <div className={styles.cardMeta}>
-                  <span className={styles.tagBadge}>{card.tagName || "null"}</span>
-                  <span className={styles.boxBadge}>{card.boxName || "null"}</span>
+                  <div className={styles.infoIconContainer}>
+                    <button
+                      className={styles.infoButton}
+                      onClick={() =>
+                        setInfoCardId(infoCardId === card.id ? null : card.id)
+                      }
+                    >
+                      <FontAwesomeIcon icon={faCircleInfo} />
+                    </button>
+                    {infoCardId === card.id && (
+                      <div className={styles.infoPopup}>
+                        <div>Tag: {card.tagName || "null"}</div>
+                        <div>Box: {card.boxName || "null"}</div>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
 
@@ -324,7 +361,7 @@ export default function CardManagement() {
           <div className={styles.editSection}>
             <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
               <h3 className={styles.editSectionTitle}>Card Content</h3>
-              <NixButton onClick={aiChatModal.open} />
+              <NixButton onClick={aiChatModal.open} showRollback={nixChanged} onRollback={handleRollbackClick} />
             </div>
             <Tabs
               tabs={[
@@ -362,6 +399,7 @@ export default function CardManagement() {
         onContentChange={(topic, content) => {
           setEditTitle(topic);
           setEditContent(content);
+          setNixChanged(content !== prevContent);
         }}
       />
 

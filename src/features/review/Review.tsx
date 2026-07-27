@@ -41,6 +41,8 @@ export default function Review() {
   const [phase, setPhase] = useState<Phase>("tag-select");
   const [tagId, setTagId] = useState<string | null>(null);
   const [card, setCard] = useState<Card | null>(null);
+  const [prevMarkdownContent, setPrevMarkdownContent] = useState("");
+  const [nixChangedContent, setNixChangedContent] = useState(false);
   const [question, setQuestion] = useState<Question | null>(null);
   const [showAnswer, setShowAnswer] = useState(false);
   const [selectedOption, setSelectedOption] =
@@ -71,6 +73,8 @@ export default function Review() {
       return;
     }
     setCard(cardResult);
+    setPrevMarkdownContent(cardResult.MarkdownContent);
+    setNixChangedContent(false);
 
     const questionResult = await questionRepository.getRandomQuestion(
       cardResult.Id,
@@ -89,6 +93,17 @@ export default function Review() {
     setSelectedOption(null);
     setPhase("question");
   }, [goToTagSelect]);
+
+  const handleNixRollback = async () => {
+    if (!card) return;
+    setCard((prev) => prev ? { ...prev, MarkdownContent: prevMarkdownContent } : prev);
+    await cardRepository.update({
+      Id: card.Id,
+      Topic: card.Topic,
+      MarkdownContent: prevMarkdownContent,
+    } as Card);
+    setNixChangedContent(false);
+  };
 
   const handleTagSelect = async (selectedTagId: string) => {
     setTagId(selectedTagId);
@@ -215,7 +230,7 @@ export default function Review() {
             <button onClick={() => setPhase("answered")} style={{ background: "none", border: "none", color: "inherit", cursor: "pointer", padding: "0.5rem" }}>
               <FontAwesomeIcon icon={faArrowLeft} />
             </button>
-            <NixButton onClick={aiChatModal.open} />
+            <NixButton onClick={aiChatModal.open} showRollback={nixChangedContent} onRollback={handleNixRollback} />
           </div>
         }
         footer={footer()}
@@ -229,9 +244,10 @@ export default function Review() {
           cardId={card.Id}
           cardTopic={card.Topic ?? ""}
           cardContent={card.MarkdownContent ?? ""}
-          onContentChange={(topic, content) =>
-            setCard((prev) => prev ? { ...prev, Topic: topic, MarkdownContent: content } : prev)
-          }
+          onContentChange={(topic, content) => {
+            setCard((prev) => prev ? { ...prev, Topic: topic, MarkdownContent: content } : prev);
+            setNixChangedContent(content !== prevMarkdownContent);
+          }}
         />
       </MainContainer>
     );

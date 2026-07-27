@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, startTransition } from "react";
+import { useState, useRef, useEffect, startTransition, memo } from "react";
 import { Textarea } from "./controls/Textarea";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPaperPlane } from "@fortawesome/free-solid-svg-icons";
@@ -79,6 +79,54 @@ const tools: OpenAI.ChatCompletionTool[] = [
   },
 ];
 
+const ChatMessagesList = memo(function ChatMessagesList({
+  messages,
+  loading,
+}: {
+  messages: ChatMessage[];
+  loading: boolean;
+}) {
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
+
+  return (
+    <div className={styles.messagesList}>
+      {messages.length === 0 && (
+        <div className={styles.emptyState}>
+          Ask a question about this card or anything else you'd like help
+          with.
+        </div>
+      )}
+      {messages.map((msg, i) => (
+        <div key={i} className={`${styles.message} ${styles[msg.role]}`}>
+          <div className={styles.messageBubble}>
+            {msg.role === "assistant" ? (
+              <MarkdownRender markdown={msg.content} isDisableGlobalTranslate isShowTranslationControl={false} isShowReadBadge={false} />
+            ) : (
+              msg.content
+            )}
+          </div>
+        </div>
+      ))}
+      {loading && (
+        <div className={`${styles.message} ${styles.assistant}`}>
+          <div className={styles.messageBubble}>
+            <div className={styles.thinkingDots}>
+              <span className={styles.dot}><ThinkingSphere size={30} /></span>
+              <span className={styles.dot}><ThinkingSphere size={30} /></span>
+              <span className={styles.dot}><ThinkingSphere size={30} /></span>
+            </div>
+          </div>
+        </div>
+      )}
+      <div ref={messagesEndRef} />
+    </div>
+  );
+});
+
 export default function AiChatModal({
   isOpen,
   onClose,
@@ -91,7 +139,6 @@ export default function AiChatModal({
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [modelId, setModelId] = useState<string | null>(null);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const cardDataRef = useRef({ topic: cardTopic, content: cardContent });
 
@@ -112,10 +159,6 @@ export default function AiChatModal({
       );
     }
   }, [isOpen]);
-
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
 
   useEffect(() => {
     if (!isOpen) {
@@ -211,37 +254,7 @@ export default function AiChatModal({
   return (
     <Modal isOpen={isOpen} onClose={onClose} title={<img style={{ display: "block", height: "2.5rem", width: "auto" }} src={nixLogo} alt="Nix" />} size="lg" bodyClassName={styles.chatBody}>
       <div className={styles.chatContainer}>
-        <div className={styles.messagesList}>
-          {messages.length === 0 && (
-            <div className={styles.emptyState}>
-              Ask a question about this card or anything else you'd like help
-              with.
-            </div>
-          )}
-          {messages.map((msg, i) => (
-            <div key={i} className={`${styles.message} ${styles[msg.role]}`}>
-              <div className={styles.messageBubble}>
-                {msg.role === "assistant" ? (
-                  <MarkdownRender markdown={msg.content} isDisableGlobalTranslate isShowTranslationControl={false} isShowReadBadge={false} />
-                ) : (
-                  msg.content
-                )}
-              </div>
-            </div>
-          ))}
-          {loading && (
-            <div className={`${styles.message} ${styles.assistant}`}>
-              <div className={styles.messageBubble}>
-                <div className={styles.thinkingDots}>
-                  <span className={styles.dot}><ThinkingSphere size={30} /></span>
-                  <span className={styles.dot}><ThinkingSphere size={30} /></span>
-                  <span className={styles.dot}><ThinkingSphere size={30} /></span>
-                </div>
-              </div>
-            </div>
-          )}
-          <div ref={messagesEndRef} />
-        </div>
+        <ChatMessagesList messages={messages} loading={loading} />
 
         <div className={styles.inputArea}>
           <Textarea
