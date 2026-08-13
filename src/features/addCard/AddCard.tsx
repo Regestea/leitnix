@@ -140,6 +140,7 @@ export default function AddCard() {
         formStateSaved.aiModelId,
         card,
         questionTypes,
+        formStateSaved.topicType,
       );
 
       await service.saveCard({
@@ -147,6 +148,7 @@ export default function AddCard() {
         categoryTagId: formStateSaved.categoryTagId,
         card,
         questions,
+        topicType: formStateSaved.topicType,
       });
 
       setCurrentStep(AddCardWizardStep.Complete);
@@ -202,7 +204,7 @@ export default function AddCard() {
               width: "100%",
             }}
           >
-            <NixButton onClick={aiChatModal.open} showRollback={nixChangedContent} onRollback={handleNixRollback} />
+            <NixButton style={{width:"100%"}}  onClick={aiChatModal.open} showRollback={nixChangedContent} onRollback={handleNixRollback} />
             <Button
               label="Generate Questions"
               onClick={handleGenerateQuestions}

@@ -1,3 +1,4 @@
+import type { CSSProperties } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faRotateLeft } from "@fortawesome/free-solid-svg-icons";
 import nixLogo from "../../../assets/images/nix-logo.png";
@@ -6,13 +7,16 @@ interface NixButtonProps {
   onClick?: () => void;
   showRollback?: boolean;
   onRollback?: () => void;
+  className?: string;
+  style?: CSSProperties;
 }
 
-export function NixButton({ onClick, showRollback, onRollback }: NixButtonProps) {
+export function NixButton({ onClick, showRollback, onRollback, className, style }: NixButtonProps) {
   return (
-    <span style={{ display: "inline-flex", alignItems: "center", gap: "0.25rem" }}>
+    <>
       <button
         onClick={onClick}
+        className={className}
         style={{
           display: "flex",
           alignItems: "center",
@@ -21,6 +25,7 @@ export function NixButton({ onClick, showRollback, onRollback }: NixButtonProps)
           color: "inherit",
           cursor: "pointer",
           padding: "0",
+          ...style,
         }}
       >
         <img style={{ display: "block", maxHeight: "30px" }} src={nixLogo} alt="Nix" />
@@ -43,6 +48,6 @@ export function NixButton({ onClick, showRollback, onRollback }: NixButtonProps)
           <FontAwesomeIcon icon={faRotateLeft} />
         </button>
       )}
-    </span>
+    </>
   );
 }

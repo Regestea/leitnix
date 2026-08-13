@@ -141,43 +141,146 @@ describe("CardService", () => {
   describe("generateQuestions", () => {
     const card = { topic: "Algebra", markdownContent: "x + y = z" };
 
-    it("returns structured questions from AI response", async () => {
-      const aiResponse = {
+    it("calls the AI once per selected type and merges results", async () => {
+      mockFetchStructuredAIByModelId
+        .mockResolvedValueOnce({
+          questions: [{ markdownQuestion: "What is x?", markdownAnswer: "A variable" }],
+        })
+        .mockResolvedValueOnce({
+          questions: [{ markdownQuestion: "x + _____ = z", markdownAnswer: "y" }],
+        });
+
+      const result = await service.generateQuestions(
+        "m1",
+        card,
+        ["freeResponse", "fillTheBlank"],
+        TopicType.Science,
+      );
+
+      expect(mockFetchStructuredAIByModelId).toHaveBeenCalledTimes(2);
+      expect(result).toEqual({
         freeResponseQuestions: [
           { markdownQuestion: "What is x?", markdownAnswer: "A variable" },
         ],
-        fillTheBlankQuestions: [],
+        fillTheBlankQuestions: [
+          { markdownQuestion: "x + _____ = z", markdownAnswer: "y" },
+        ],
         multipleChoiceQuestions: [],
-      };
-      mockFetchStructuredAIByModelId.mockResolvedValue(aiResponse);
+      });
+    });
 
-      const result = await service.generateQuestions("m1", card, [
-        "freeResponse",
-      ]);
+    it("uses a dedicated prompt per question type", async () => {
+      mockFetchStructuredAIByModelId
+        .mockResolvedValueOnce({ questions: [] })
+        .mockResolvedValueOnce({ questions: [] });
 
-      expect(result).toEqual(aiResponse);
+      await service.generateQuestions(
+        "m1",
+        card,
+        ["freeResponse", "multipleChoice"],
+        TopicType.Science,
+      );
+
+      const firstSystemPrompt =
+        mockFetchStructuredAIByModelId.mock.calls[0][0].systemPrompt;
+      const secondSystemPrompt =
+        mockFetchStructuredAIByModelId.mock.calls[1][0].systemPrompt;
+      expect(firstSystemPrompt).toContain("Free Response");
+      expect(secondSystemPrompt).toContain("Multiple Choice");
+      expect(firstSystemPrompt).not.toContain("Multiple Choice");
+    });
+
+    it("includes a topic-specific focus block per prompt", async () => {
+      mockFetchStructuredAIByModelId
+        .mockResolvedValueOnce({ questions: [] })
+        .mockResolvedValueOnce({ questions: [] });
+
+      await service.generateQuestions(
+        "m1",
+        card,
+        ["freeResponse", "multipleChoice"],
+        TopicType.Medicine,
+      );
+
+      const firstSystemPrompt =
+        mockFetchStructuredAIByModelId.mock.calls[0][0].systemPrompt;
+      const secondSystemPrompt =
+        mockFetchStructuredAIByModelId.mock.calls[1][0].systemPrompt;
+      expect(firstSystemPrompt).toContain("<topic_focus>");
+      expect(firstSystemPrompt).toContain("pathophysiology");
+      expect(secondSystemPrompt).toContain("clinically plausible");
+    });
+
+    it("varies the focus block by topic", async () => {
+      mockFetchStructuredAIByModelId
+        .mockResolvedValueOnce({ questions: [] })
+        .mockResolvedValueOnce({ questions: [] });
+
+      await service.generateQuestions(
+        "m1",
+        card,
+        ["freeResponse", "freeResponse"],
+        TopicType.ComputerScience,
+      );
+
+      const computerSciencePrompt =
+        mockFetchStructuredAIByModelId.mock.calls[0][0].systemPrompt;
+      expect(computerSciencePrompt).toContain("algorithm behavior");
+
+      mockFetchStructuredAIByModelId
+        .mockResolvedValueOnce({ questions: [] })
+        .mockResolvedValueOnce({ questions: [] });
+      await service.generateQuestions(
+        "m1",
+        card,
+        ["freeResponse", "freeResponse"],
+        TopicType.Humanities,
+      );
+      const humanitiesPrompt =
+        mockFetchStructuredAIByModelId.mock.calls[2][0].systemPrompt;
+      expect(humanitiesPrompt).toContain("interpretation");
+      expect(humanitiesPrompt).not.toContain("algorithm behavior");
+    });
+
+    it("requests the full count when a single type is selected", async () => {
+      mockFetchStructuredAIByModelId.mockResolvedValue({ questions: [] });
+
+      await service.generateQuestions(
+        "m1",
+        card,
+        ["multipleChoice"],
+        TopicType.Science,
+      );
+
+      const systemPrompt =
+        mockFetchStructuredAIByModelId.mock.calls[0][0].systemPrompt;
+      expect(systemPrompt).toContain("18");
     });
 
     it("re-throws AI error with original message", async () => {
       mockFetchStructuredAIByModelId.mockRejectedValue(new Error("API error"));
 
       await expect(
-        service.generateQuestions("m1", card, ["freeResponse"]),
+        service.generateQuestions("m1", card, ["freeResponse"], TopicType.Science),
       ).rejects.toThrow("API error");
     });
 
-    it("includes card content in the prompt", async () => {
-      mockFetchStructuredAIByModelId.mockResolvedValue({
-        freeResponseQuestions: [],
-        fillTheBlankQuestions: [],
-        multipleChoiceQuestions: [],
-      });
+    it("includes card content in every prompt", async () => {
+      mockFetchStructuredAIByModelId
+        .mockResolvedValueOnce({ questions: [] })
+        .mockResolvedValueOnce({ questions: [] });
 
-      await service.generateQuestions("m1", card, ["freeResponse"]);
+      await service.generateQuestions(
+        "m1",
+        card,
+        ["freeResponse", "multipleChoice"],
+        TopicType.Science,
+      );
 
-      const prompt = mockFetchStructuredAIByModelId.mock.calls[0][0].prompt;
-      expect(prompt).toContain("Algebra");
-      expect(prompt).toContain("x + y = z");
+      for (const call of mockFetchStructuredAIByModelId.mock.calls) {
+        expect(call[0].prompt).toContain("Algebra");
+        expect(call[0].prompt).toContain("x + y = z");
+      }
     });
   });
 
@@ -185,6 +288,7 @@ describe("CardService", () => {
     const saveRequest = {
       aiModelId: "m1",
       categoryTagId: "tag-1",
+      topicType: TopicType.Science,
       card: { topic: "T", markdownContent: "C" },
       questions: {
         freeResponseQuestions: [
@@ -275,6 +379,7 @@ describe("CardService", () => {
       aiModelId: "m1",
       categoryTagId: "tag-1",
       card: { topic: "T", markdownContent: "C" },
+      topicType: TopicType.Science,
       questions: {
         freeResponseQuestions: [],
         fillTheBlankQuestions: [],
@@ -284,11 +389,7 @@ describe("CardService", () => {
 
     it("generates questions then saves", async () => {
       const aiResponse = {
-        freeResponseQuestions: [
-          { markdownQuestion: "Q?", markdownAnswer: "A" },
-        ],
-        fillTheBlankQuestions: [],
-        multipleChoiceQuestions: [],
+        questions: [{ markdownQuestion: "Q?", markdownAnswer: "A" }],
       };
       mockFetchStructuredAIByModelId.mockResolvedValue(aiResponse);
       mockCardRepo.create.mockResolvedValue(undefined);

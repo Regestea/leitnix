@@ -8,17 +8,23 @@ import {
 } from "../topicPrompts";
 import {
   cardNotesResponseSchema,
-  questionsResponseSchema,
+  freeResponseQuestionsSchema,
+  fillTheBlankQuestionsSchema,
+  multipleChoiceQuestionsSchema,
 } from "../types";
 import type {
   CardNotesResponse,
   QuestionsResponse,
+  FreeResponseQuestionsResponse,
+  FillTheBlankQuestionsResponse,
+  MultipleChoiceQuestionsResponse,
   GeneratedCardData,
   GenerateCardRequest,
   SaveCardRequest,
   QuestionType,
 } from "../types";
 import { isValidMultipleChoiceOption } from "../../../db/entities";
+import { buildQuestionCounts, buildQuestionPrompt } from "../questionPrompts";
 import { cardRepository } from "../../../repositories/CardRepository";
 import type { ICardRepository } from "../../../repositories/CardRepository.ts";
 import { questionRepository } from "../../../repositories/QuestionRepository";
@@ -28,37 +34,6 @@ import type { ICustomPromptRepository } from "../../../repositories/CustomPrompt
 
 function buildCardPrompt(card: GeneratedCardData): string {
   return `Topic:\n${card.topic}\n\nContent:\n${card.markdownContent}`;
-}
-
-function buildQuestionPrompt(questionTypes: readonly QuestionType[]): string {
-  const typeDescriptions: Record<QuestionType, string> = {
-    freeResponse: "free-response (question and answer pairs)",
-    fillTheBlank: "fill-in-the-blank (question and answer pairs)",
-    multipleChoice:
-      "multiple-choice (exactly 4 options A, B, C, D; correctOption must be a single uppercase letter: 'A', 'B', 'C', or 'D')",
-  };
-
-  const count = questionTypes.length;
-  let instructions: string;
-
-  if (count === 3) {
-    instructions = questionTypes
-      .map((t) => `- 6 ${typeDescriptions[t]}`)
-      .join("\n");
-  } else if (count === 2) {
-    instructions = `- 5 ${typeDescriptions[questionTypes[0]]}\n- 4 ${typeDescriptions[questionTypes[1]]}`;
-  } else {
-    instructions = `- 18 ${typeDescriptions[questionTypes[0]]}`;
-  }
-
-  return `You are an expert question generator. Given a flashcard topic and its study content, generate assessment questions.
-
-Requirements:
-${instructions}
-
-IMPORTANT: For multiple-choice questions, the correctOption field MUST be exactly one character: 'A', 'B', 'C', or 'D' (uppercase). Do NOT return full text, lowercase letters, or numbers.
-
-Return ALL three arrays in the response. For any question type not listed above, include an empty array.`;
 }
 
 function getErrorMessage(err: unknown, fallback: string): string {
@@ -134,24 +109,56 @@ export class CardService implements ICardService {
     }
   }
 
-  /** Step 2: generate questions from an existing card. */
+  /** Step 2: generate questions from an existing card, one dedicated AI call per type. */
   async generateQuestions(
     aiModelId: string,
     card: GeneratedCardData,
     questionTypes: readonly QuestionType[],
+    topicType: TopicType,
   ): Promise<QuestionsResponse> {
+    const counts = buildQuestionCounts(questionTypes);
+    const cardPrompt = buildCardPrompt(card);
+    const results: QuestionsResponse = {
+      freeResponseQuestions: [],
+      fillTheBlankQuestions: [],
+      multipleChoiceQuestions: [],
+    };
+
     try {
-      return await fetchStructuredAIByModelId<QuestionsResponse>({
-        modelId: aiModelId,
-        schema: questionsResponseSchema,
-        prompt: buildCardPrompt(card),
-        systemPrompt: buildQuestionPrompt(questionTypes),
-      });
+      for (const type of questionTypes) {
+        if (type === "freeResponse") {
+          const response = await fetchStructuredAIByModelId<FreeResponseQuestionsResponse>({
+            modelId: aiModelId,
+            schema: freeResponseQuestionsSchema,
+            prompt: cardPrompt,
+            systemPrompt: buildQuestionPrompt(topicType, type, counts[type]),
+          });
+          results.freeResponseQuestions = response.questions;
+        } else if (type === "fillTheBlank") {
+          const response = await fetchStructuredAIByModelId<FillTheBlankQuestionsResponse>({
+            modelId: aiModelId,
+            schema: fillTheBlankQuestionsSchema,
+            prompt: cardPrompt,
+            systemPrompt: buildQuestionPrompt(topicType, type, counts[type]),
+          });
+          results.fillTheBlankQuestions = response.questions;
+        } else {
+          const response = await fetchStructuredAIByModelId<MultipleChoiceQuestionsResponse>({
+            modelId: aiModelId,
+            schema: multipleChoiceQuestionsSchema,
+            prompt: cardPrompt,
+            systemPrompt: buildQuestionPrompt(topicType, type, counts[type]),
+          });
+          results.multipleChoiceQuestions = response.questions;
+        }
+      }
     } catch (err) {
       throw new Error(getErrorMessage(err, "Failed to generate questions"), {
         cause: err,
       });
     }
+
+    return results;
   }
 
   /** Persist the card and all generated questions. Returns the card Id. */
@@ -226,6 +233,7 @@ export class CardService implements ICardService {
       request.aiModelId,
       request.card,
       questionTypes,
+      request.topicType,
     );
     return this.saveCard({ ...request, questions });
   }
