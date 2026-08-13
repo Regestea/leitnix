@@ -1,18 +1,18 @@
 import { useEffect, useState, useRef } from "react";
 import { Checkbox } from "../../shared/components/controls/CheckBox";
-import { ColorPicker } from "../../shared/components/controls/ColorPicker";
+import { ColorPicker } from "../../shared/components/controls/colorPicker/ColorPicker";
 import { Select } from "../../shared/components/controls/Select";
-import MainContainer from "../../shared/components/MainContainer";
-import { useSettingStore } from "./store/settingStore";
-import type { WrongAnswerPunishment } from "./store/settingStore";
+import MainContainer from "../../shared/components/mainContainer/MainContainer";
+import { useSettingStore } from "../../stores/settingStore";
+import type { WrongAnswerPunishment } from "../../stores/settingStore";
 import {
   scheduleNotification,
   cancelDailyNotification,
 } from "../../services/notificationService.ts";
 import { LANGUAGES } from "../../shared/constants/languages";
 import { categoryTagRepository } from "../../repositories/CategoryTagRepository.ts";
-import { parseBackupZip } from "../../services/backupService.ts";
-import type { BackupDataPerTable } from "../../types/backup.ts";
+import { parseBackupZip } from "./backupService.ts";
+import type { BackupDataPerTable } from "./backupTypes.ts";
 import type { CategoryTag } from "../../db/entities.ts";
 import styles from "./Settings.module.css";
 import BackupModal from "./BackupModal.tsx";

@@ -1,6 +1,11 @@
 import { getDb } from "../db/connection";
 import type { Setting } from "../db/entities.ts";
-import type { ISettingRepository } from "../iRepositories/ISettingRepository.ts";
+
+export interface ISettingRepository {
+  get(): Promise<Setting | null>;
+  update(setting: Setting): Promise<void>;
+  getOrCreateDefaults(): Promise<Setting>;
+}
 
 export class SettingRepository implements ISettingRepository {
   async get(): Promise<Setting | null> {

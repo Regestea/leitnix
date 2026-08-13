@@ -1,28 +1,26 @@
 import { useEffect, useState, useCallback } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft} from "@fortawesome/free-solid-svg-icons";
-import MainContainer from "../../shared/components/MainContainer";
-import Topic from "../../shared/components/Topic";
-import MarkdownRender from "../../shared/components/MarkdownRender";
+import MainContainer from "../../shared/components/mainContainer/MainContainer";
+import Topic from "../../shared/components/topic/Topic";
+import MarkdownRender from "../../shared/components/markdownRender/MarkdownRender";
 import { Button } from "../../shared/components/controls/Button";
 import { NixButton } from "../../shared/components/controls/NixButton";
-import AiChatModal from "../../shared/components/AiChatModal";
+import AiChatModal from "../aiChat/AiChatModal";
 import useModal from "../../shared/hooks/useModal";
-import FreeResponseQuestionCard from "./components/FreeResponseQuestionCard";
-import FillTheBlankQuestionCard from "./components/FillTheBlankQuestionCard";
-import MultipleChoiceQuestionCard from "./components/MultipleChoiceQuestionCard";
-import type { ReviewTagsDto } from "../../dtos/reviewTagsDto";
+import FreeResponseQuestionCard from "./components/freeResponseQuestionCard/FreeResponseQuestionCard";
+import FillTheBlankQuestionCard from "./components/fillTheBlankQuestionCard/FillTheBlankQuestionCard";
+import MultipleChoiceQuestionCard from "./components/multipleChoiceQuestionCard/MultipleChoiceQuestionCard";
+import type { ReviewTagsDto } from "../../dtos/ReviewTagsDto";
 import type {
   Card,
   FillTheBlankQuestion,
   FreeResponseQuestion,
   MultipleChoiceOption,
   MultipleChoiceQuestion,
-} from "../../db/entities";
-import type {
   Question,
-  QuestionType,
-} from "../../iRepositories/IQuestionRepository";
+  QuestionTableName,
+} from "../../db/entities";
 import { categoryTagRepository } from "../../repositories/CategoryTagRepository";
 import { cardRepository } from "../../repositories/CardRepository";
 import { questionRepository } from "../../repositories/QuestionRepository";
@@ -47,7 +45,7 @@ export default function Review() {
   const [showAnswer, setShowAnswer] = useState(false);
   const [selectedOption, setSelectedOption] =
     useState<MultipleChoiceOption | null>(null);
-  const [questionType, setQuestionType] = useState<QuestionType | null>(null);
+  const [questionType, setQuestionType] = useState<QuestionTableName | null>(null);
   const [questionId, setQuestionId] = useState<string | null>(null);
   const aiChatModal = useModal();
 
@@ -86,7 +84,7 @@ export default function Review() {
         ? "FreeResponseQuestions"
         : q.Type === "FillTheBlank"
           ? "FillTheBlankQuestions"
-          : "MultipleChoiceQuestions") as QuestionType,
+          : "MultipleChoiceQuestions") as QuestionTableName,
     );
     setQuestionId(q.Id);
     setShowAnswer(false);

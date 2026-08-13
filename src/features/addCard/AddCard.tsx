@@ -1,16 +1,16 @@
 import { useState, useCallback } from "react";
 import { useNavigate } from "react-router";
-import MainContainer from "../../shared/components/MainContainer";
+import MainContainer from "../../shared/components/mainContainer/MainContainer";
 import { Button } from "../../shared/components/controls/Button";
 import { NixButton } from "../../shared/components/controls/NixButton";
-import AiChatModal from "../../shared/components/AiChatModal";
+import AiChatModal from "../aiChat/AiChatModal";
 import useModal from "../../shared/hooks/useModal";
 import { WizardTabs } from "./components/WizardTabs";
 import StepGenerate from "./components/StepGenerate";
 import StepReview from "./components/StepReview";
 import StepComplete from "./components/StepComplete";
-import { cardService } from "../../services/CardService";
-import type { ICardService } from "../../services/ICardService";
+import { cardService } from "./services/CardService";
+import type { ICardService } from "./services/ICardService";
 import {
   AddCardWizardStep,
   EMPTY_FORM_STATE,

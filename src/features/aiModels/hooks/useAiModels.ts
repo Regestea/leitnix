@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import type { AiModel } from "../../../db/entities";
 import { aiModelRepository } from "../../../repositories/AiModelRepository";
-import type { IAiModelRepository } from "../../../iRepositories/IAiModelRepository";
+import type { IAiModelRepository } from "../../../repositories/AiModelRepository";
 
 export function useAiModels() {
   const repository: IAiModelRepository = aiModelRepository;

@@ -1,5 +1,5 @@
 import { Button } from "./controls/Button";
-import Modal from "./Modal";
+import Modal from "./modal/Modal";
 
 interface ConfirmModalProps {
   isOpen: boolean;

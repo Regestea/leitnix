@@ -1,7 +1,7 @@
 import { Outlet } from "react-router";
-import Nav from "../shared/components/Nav.tsx";
-import { useThemeStore } from "../features/theme/store/themeStore.ts";
-import { useSettingStore } from "../features/settings/store/settingStore.ts";
+import Nav from "../shared/components/nav/Nav.tsx";
+import { useThemeStore } from "../stores/themeStore.ts";
+import { useSettingStore } from "../stores/settingStore.ts";
 import { useEffect, useState, useRef } from "react";
 import { initializeDatabase } from "../db/connection.ts";
 import { rescheduleDailyNotification } from "../services/notificationService.ts";

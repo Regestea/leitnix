@@ -1,5 +1,5 @@
-import type { ReviewTagsDto } from "../../../dtos/reviewTagsDto";
-import styles from "../learnTopic.module.css";
+import type { ReviewTagsDto } from "../../../dtos/ReviewTagsDto";
+import styles from "../LearnTopic.module.css";
 
 interface TagSelectProps {
   tags: ReviewTagsDto[];

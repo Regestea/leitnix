@@ -2,8 +2,8 @@ import { useState, useMemo } from "react";
 import { Button } from "../../../../shared/components/controls/Button";
 import { Select } from "../../../../shared/components/controls/Select";
 import ConfirmModal from "../../../../shared/components/ConfirmModal";
-import Modal from "../../../../shared/components/Modal";
-import { CardRepository } from "../../../../repositories/CardRepository";
+import Modal from "../../../../shared/components/modal/Modal";
+import { cardRepository } from "../../../../repositories/CardRepository";
 import { useCategoryTags } from "../hooks/useCategoryTags";
 import { useCategoryTagForm } from "../hooks/useCategoryTagForm";
 import CategoryTagList from "./CategoryTagList";
@@ -59,8 +59,7 @@ export default function CategoryTagManagerModal({
   // ── Delete flow ───────────────────────────────────────────────────
 
   const handleDeleteClick = async (id: string) => {
-    const cardRepo = new CardRepository();
-    const cards = await cardRepo.getByCategoryTagId(id);
+    const cards = await cardRepository.getByCategoryTagId(id);
     // Default the reassignment target to the first remaining tag so the
     // Select's controlled value matches an actual option. Otherwise the
     // visually-preselected first option never fires a `change` event,

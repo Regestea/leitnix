@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import type { CustomPrompt } from "../../../db/entities";
 import { customPromptRepository } from "../../../repositories/CustomPromptRepository";
-import type { ICustomPromptRepository } from "../../../iRepositories/ICustomPromptRepository";
+import type { ICustomPromptRepository } from "../../../repositories/CustomPromptRepository";
 
 export function useCustomPrompts() {
   const repository: ICustomPromptRepository = customPromptRepository;

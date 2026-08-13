@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { cardRepository } from "../../../repositories/CardRepository";
-import type { ICardRepository } from "../../../iRepositories/ICardRepository";
+import type { ICardRepository } from "../../../repositories/CardRepository";
 
 export function useHome() {
   const repository: ICardRepository = cardRepository;

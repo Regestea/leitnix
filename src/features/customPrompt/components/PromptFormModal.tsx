@@ -1,7 +1,7 @@
 import { Button } from "../../../shared/components/controls/Button";
 import { Input } from "../../../shared/components/controls/Input";
 import { Textarea } from "../../../shared/components/controls/Textarea";
-import Modal from "../../../shared/components/Modal";
+import Modal from "../../../shared/components/modal/Modal";
 
 interface PromptFormModalProps {
   isOpen: boolean;

@@ -106,3 +106,13 @@ export interface MultipleChoiceQuestion {
   CorrectOption: MultipleChoiceOption | null;
   AskedTimes: number;
 }
+
+export type Question =
+  | FreeResponseQuestion
+  | FillTheBlankQuestion
+  | MultipleChoiceQuestion;
+
+export type QuestionTableName =
+  | "FreeResponseQuestions"
+  | "FillTheBlankQuestions"
+  | "MultipleChoiceQuestions";

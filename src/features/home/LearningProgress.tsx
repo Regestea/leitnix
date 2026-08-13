@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import type { TagProgressDto } from "../../dtos/tagProgressDto";
+import type { TagProgressDto } from "../../dtos/TagProgressDto";
 import { categoryTagRepository } from "../../repositories/CategoryTagRepository";
 import styles from "./LearningProgress.module.css";
 

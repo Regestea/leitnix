@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import type { Box } from "../../../db/entities";
 import { boxRepository } from "../../../repositories/BoxRepository";
-import type { IBoxRepository } from "../../../iRepositories/IBoxRepository";
+import type { IBoxRepository } from "../../../repositories/BoxRepository";
 
 export function useBoxes() {
   const repository: IBoxRepository = boxRepository;

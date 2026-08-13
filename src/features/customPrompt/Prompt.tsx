@@ -1,5 +1,5 @@
 import { useState } from "react";
-import MainContainer from "../../shared/components/MainContainer";
+import MainContainer from "../../shared/components/mainContainer/MainContainer";
 import ConfirmModal from "../../shared/components/ConfirmModal";
 import { Button } from "../../shared/components/controls/Button";
 import { useCustomPrompts } from "./hooks/useCustomPrompts";

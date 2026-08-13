@@ -1,7 +1,8 @@
 import { z } from "zod";
-import { NONE_PROMPT_VALUE } from "../../statics/prompts";
-import { TopicType } from "../../statics/topicPrompts";
-import { TOPIC_OPTIONS } from "../../statics/topicPrompts";
+import { TopicType } from "./topicPrompts";
+import { TOPIC_OPTIONS } from "./topicPrompts";
+
+export const NONE_PROMPT_VALUE = "none";
 
 // ─── Wizard Steps ───────────────────────────────────────────────────
 // Const object drives which step tab is rendered.

@@ -1,6 +1,13 @@
 import { getDb } from "../db/connection";
 import type { CustomPrompt } from "../db/entities.ts";
-import type { ICustomPromptRepository } from "../iRepositories/ICustomPromptRepository.ts";
+
+export interface ICustomPromptRepository {
+  getAll(): Promise<CustomPrompt[]>;
+  getById(id: string): Promise<CustomPrompt | null>;
+  create(prompt: CustomPrompt): Promise<void>;
+  update(prompt: CustomPrompt): Promise<void>;
+  delete(id: string): Promise<void>;
+}
 
 export class CustomPromptRepository implements ICustomPromptRepository {
   async getAll(): Promise<CustomPrompt[]> {

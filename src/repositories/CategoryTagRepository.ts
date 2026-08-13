@@ -1,10 +1,20 @@
 import { getDb } from "../db/connection";
 import type { CategoryTag } from "../db/entities.ts";
-import type { NewTopicTagsDto } from "../dtos/newTopicTagsDto.ts";
-import type { ReviewTagsDto } from "../dtos/reviewTagsDto.ts";
-import type { TagProgressDto } from "../dtos/tagProgressDto.ts";
+import type { NewTopicTagsDto } from "../dtos/NewTopicTagsDto.ts";
+import type { ReviewTagsDto } from "../dtos/ReviewTagsDto.ts";
+import type { TagProgressDto } from "../dtos/TagProgressDto.ts";
 import { unixTimeNow } from "../extensions/timeExtension.ts";
-import type { ICategoryTagRepository } from "../iRepositories/ICategoryTagRepository.ts";
+
+export interface ICategoryTagRepository {
+  getAll(): Promise<CategoryTag[]>;
+  create(tag: CategoryTag): Promise<void>;
+  update(tag: CategoryTag): Promise<void>;
+  delete(id: string): Promise<void>;
+  deleteCascade(id: string): Promise<void>;
+  getReviewTags(): Promise<ReviewTagsDto[]>;
+  getNewTopicTags(): Promise<NewTopicTagsDto[]>;
+  getTagsProgressWithCardCount(): Promise<TagProgressDto[]>;
+}
 
 export class CategoryTagRepository implements ICategoryTagRepository {
   async getTagsProgressWithCardCount(): Promise<TagProgressDto[]> {

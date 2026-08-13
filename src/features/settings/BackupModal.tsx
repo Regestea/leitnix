@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
-import Modal from "../../shared/components/Modal";
-import { exportTables, resolveDependencies, createBackupZip, saveBackupBlob } from "../../services/backupService";
-import type { BackupTable } from "../../types/backup";
+import Modal from "../../shared/components/modal/Modal";
+import { exportTables, resolveDependencies, createBackupZip, saveBackupBlob } from "./backupService";
+import type { BackupTable } from "./backupTypes";
 import type { CategoryTag } from "../../db/entities";
 import styles from "./BackupModal.module.css";
 

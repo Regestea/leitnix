@@ -8,21 +8,21 @@ import {
   faTrashCan,
   faCircleInfo,
 } from "@fortawesome/free-solid-svg-icons";
-import MainContainer from "../../shared/components/MainContainer";
-import Modal from "../../shared/components/Modal";
+import MainContainer from "../../shared/components/mainContainer/MainContainer";
+import Modal from "../../shared/components/modal/Modal";
 import ConfirmModal from "../../shared/components/ConfirmModal";
-import Tabs from "../../shared/components/Tabs";
-import MarkdownRender from "../../shared/components/MarkdownRender";
-import MarkdownEditor from "../../shared/components/MarkdownEditor";
+import Tabs from "../../shared/components/tabs/Tabs";
+import MarkdownRender from "../../shared/components/markdownRender/MarkdownRender";
+import MarkdownEditor from "../../shared/components/markdownEditor/MarkdownEditor";
 import { Input } from "../../shared/components/controls/Input";
 import { Button } from "../../shared/components/controls/Button";
 import { NixButton } from "../../shared/components/controls/NixButton";
-import AiChatModal from "../../shared/components/AiChatModal";
+import AiChatModal from "../aiChat/AiChatModal";
 import useModal from "../../shared/hooks/useModal";
 import { cardRepository } from "../../repositories/CardRepository";
 import { categoryTagRepository } from "../../repositories/CategoryTagRepository";
 import { boxRepository } from "../../repositories/BoxRepository";
-import type { CardPreviewDto } from "../../dtos/cardPreviewDto";
+import type { CardPreviewDto } from "../../dtos/CardPreviewDto";
 import type { Card, CategoryTag, Box } from "../../db/entities";
 import styles from "./CardManagement.module.css";
 

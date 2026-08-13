@@ -1,21 +1,21 @@
 import { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
-import MainContainer from "../../shared/components/MainContainer";
-import Topic from "../../shared/components/Topic";
+import MainContainer from "../../shared/components/mainContainer/MainContainer";
+import Topic from "../../shared/components/topic/Topic";
 import { Button } from "../../shared/components/controls/Button";
 import { NixButton } from "../../shared/components/controls/NixButton";
 import TagSelect from "./components/TagSelect";
-import AiChatModal from "../../shared/components/AiChatModal";
+import AiChatModal from "../aiChat/AiChatModal";
 import useModal from "../../shared/hooks/useModal";
-import styles from "./learnTopic.module.css";
-import type { ICategoryTagRepository } from "../../iRepositories/ICategoryTagRepository";
+import styles from "./LearnTopic.module.css";
+import type { ICategoryTagRepository } from "../../repositories/CategoryTagRepository";
 import { categoryTagRepository } from "../../repositories/CategoryTagRepository";
-import type { NewTopicTagsDto } from "../../dtos/newTopicTagsDto.ts";
+import type { NewTopicTagsDto } from "../../dtos/NewTopicTagsDto.ts";
 import type { Card } from "../../db/entities";
-import type { ICardRepository } from "../../iRepositories/ICardRepository";
+import type { ICardRepository } from "../../repositories/CardRepository";
 import { cardRepository } from "../../repositories/CardRepository";
-import MarkdownRender from "../../shared/components/MarkdownRender.tsx";
+import MarkdownRender from "../../shared/components/markdownRender/MarkdownRender.tsx";
 
 export default function LearnTopic() {
   const [showTopic, setShowTopic] = useState(true);

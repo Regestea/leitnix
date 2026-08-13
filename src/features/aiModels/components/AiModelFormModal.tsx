@@ -1,7 +1,7 @@
 import { Button } from "../../../shared/components/controls/Button";
 import { Input } from "../../../shared/components/controls/Input";
 import { Select } from "../../../shared/components/controls/Select";
-import Modal from "../../../shared/components/Modal";
+import Modal from "../../../shared/components/modal/Modal";
 import type { AiProvider } from "../../../db/entities";
 import type { GeminiModelOption } from "../hooks/useAiModelForm";
 

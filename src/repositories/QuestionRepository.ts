@@ -1,16 +1,31 @@
 import { getDb } from "../db/connection";
-import type { IQuestionRepository, Question, QuestionType } from "../iRepositories/IQuestionRepository.ts";
 import { calculateNextReviewTime, unixTimeNow } from "../extensions/timeExtension.ts";
 import type {
   FillTheBlankQuestion,
   FreeResponseQuestion,
   MultipleChoiceQuestion,
+  Question,
+  QuestionTableName,
 } from "../db/entities.ts";
 import { settingRepository } from "./SettingRepository.ts";
 
+export interface IQuestionRepository {
+  createFreeResponseQuestions(questions: FreeResponseQuestion[]): Promise<void>;
+  createFillTheBlankQuestions(questions: FillTheBlankQuestion[]): Promise<void>;
+  createMultipleChoiceQuestions(
+    questions: MultipleChoiceQuestion[],
+  ): Promise<void>;
+  getRandomQuestion(cardId: string): Promise<Question>;
+  markQuestionAsReviewed(
+    questionType: QuestionTableName,
+    questionId: string,
+    isCorrect: boolean
+  ): Promise<void>;
+}
+
 export class QuestionRepository implements IQuestionRepository {
   async markQuestionAsReviewed(
-    questionType: QuestionType,
+    questionType: QuestionTableName,
     questionId: string,
     isCorrect: boolean,
   ): Promise<void> {

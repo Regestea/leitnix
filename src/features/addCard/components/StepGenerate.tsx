@@ -3,14 +3,14 @@ import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Select } from "../../../shared/components/controls/Select";
 import { Textarea } from "../../../shared/components/controls/Textarea";
-import ImageUpload from "../../../shared/components/controls/ImageUpload";
+import ImageUpload from "../../../shared/components/controls/imageUpload/ImageUpload";
 import ThinkingSphere from "../../../shared/components/thinkingSphere/ThinkingSphere";
-import { AiModelRepository } from "../../../repositories/AiModelRepository";
-import { CustomPromptRepository } from "../../../repositories/CustomPromptRepository";
-import { CategoryTagRepository } from "../../../repositories/CategoryTagRepository";
+import { aiModelRepository } from "../../../repositories/AiModelRepository";
+import { customPromptRepository } from "../../../repositories/CustomPromptRepository";
+import { categoryTagRepository } from "../../../repositories/CategoryTagRepository";
 import CategoryTagManagerModal from "../categoryTagManager/components/CategoryTagManagerModal";
-import { NONE_PROMPT_VALUE } from "../../../statics/prompts";
-import { TOPIC_OPTIONS } from "../../../statics/topicPrompts";
+import { NONE_PROMPT_VALUE } from "../types";
+import { TOPIC_OPTIONS } from "../topicPrompts";
 import { Checkbox } from "../../../shared/components/controls/CheckBox";
 import { QUESTION_TYPES, QUESTION_TYPE_LABELS } from "../types";
 import type {
@@ -91,16 +91,16 @@ export default function StepGenerate({
   const [isTagManagerOpen, setIsTagManagerOpen] = useState(false);
 
   const loadCategoryTags = async () => {
-    const cats = await new CategoryTagRepository().getAll();
+    const cats = await categoryTagRepository.getAll();
     setCategoryTags([PLACEHOLDER_TAG, ...toOptions(cats)]);
   };
 
   useEffect(() => {
     const loadOptions = async () => {
       const [cats, models, prompts] = await Promise.all([
-        new CategoryTagRepository().getAll(),
-        new AiModelRepository().getAll(),
-        new CustomPromptRepository().getAll(),
+        categoryTagRepository.getAll(),
+        aiModelRepository.getAll(),
+        customPromptRepository.getAll(),
       ]);
       setCategoryTags([PLACEHOLDER_TAG, ...toOptions(cats)]);
       setAiModels([PLACEHOLDER_MODEL, ...toOptions(models)]);

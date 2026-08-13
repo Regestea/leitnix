@@ -1,13 +1,13 @@
 import { Checkbox } from "../../shared/components/controls/CheckBox";
 import { Select } from "../../shared/components/controls/Select";
-import MainContainer from "../../shared/components/MainContainer";
+import MainContainer from "../../shared/components/mainContainer/MainContainer";
 import {
   useThemeStore,
   type FontFamily,
   type FontSize,
   type FontWeight,
   type ThemeName,
-} from "./store/themeStore";
+} from "../../stores/themeStore";
 
 const THEME_OPTIONS = [
   { value: "Dark", label: "Dark" },

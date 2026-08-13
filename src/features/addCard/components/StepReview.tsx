@@ -1,7 +1,7 @@
 import ThinkingSphere from "../../../shared/components/thinkingSphere/ThinkingSphere";
-import Tabs from "../../../shared/components/Tabs";
-import MarkdownRender from "../../../shared/components/MarkdownRender";
-import MarkdownEditor from "../../../shared/components/MarkdownEditor";
+import Tabs from "../../../shared/components/tabs/Tabs";
+import MarkdownRender from "../../../shared/components/markdownRender/MarkdownRender";
+import MarkdownEditor from "../../../shared/components/markdownEditor/MarkdownEditor";
 import { Input } from "../../../shared/components/controls/Input";
 import type { GeneratedCardData } from "../types";
 import styles from "../AddCard.module.css";

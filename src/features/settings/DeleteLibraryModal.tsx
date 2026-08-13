@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
-import Modal from "../../shared/components/Modal";
+import Modal from "../../shared/components/modal/Modal";
 import { categoryTagRepository } from "../../repositories/CategoryTagRepository";
-import type { TagProgressDto } from "../../dtos/tagProgressDto";
+import type { TagProgressDto } from "../../dtos/TagProgressDto";
 import styles from "./DeleteLibraryModal.module.css";
 
 interface DeleteLibraryModalProps {

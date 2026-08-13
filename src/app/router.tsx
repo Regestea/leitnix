@@ -2,7 +2,7 @@ import { createBrowserRouter } from "react-router";
 import App from "./App.tsx";
 import NotFound from "../features/notFound/NotFound.tsx";
 import Home from "../features/home/Home.tsx";
-import StudyTopic from "../features/learnTopic/learnTopic.tsx";
+import StudyTopic from "../features/learnTopic/LearnTopic.tsx";
 import Theme from "../features/theme/Theme.tsx";
 import AiModels from "../features/aiModels/AiModels.tsx";
 import Prompt from "../features/customPrompt/Prompt.tsx";

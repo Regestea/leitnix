@@ -1,6 +1,10 @@
 import { getDb } from "../db/connection";
 import type { Theme } from "../db/entities.ts";
-import type { IThemeRepository } from "../iRepositories/IThemeRepository.ts";
+
+export interface IThemeRepository {
+  upsert(theme: Omit<Theme, "Id">): Promise<void>;
+  getOrCreateDefaults(): Promise<Theme>;
+}
 
 const Theme_ID = "app-theme";
 

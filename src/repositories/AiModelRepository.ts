@@ -1,6 +1,13 @@
 import { getDb } from "../db/connection";
 import type { AiModel } from "../db/entities.ts";
-import type { IAiModelRepository } from "../iRepositories/IAiModelRepository.ts";
+
+export interface IAiModelRepository {
+  getAll(): Promise<AiModel[]>;
+  getById(id: string): Promise<AiModel | null>;
+  create(model: AiModel): Promise<void>;
+  update(model: AiModel): Promise<void>;
+  delete(id: string): Promise<void>;
+}
 
 export class AiModelRepository implements IAiModelRepository {
   async getAll(): Promise<AiModel[]> {

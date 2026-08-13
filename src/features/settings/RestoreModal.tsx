@@ -1,8 +1,8 @@
 import { useState, useMemo } from "react";
-import Modal from "../../shared/components/Modal";
-import { importBackupZip, resolveDependencies } from "../../services/backupService";
-import type { BackupTable, BackupDataPerTable } from "../../types/backup";
-import type { RestoreProgress } from "../../services/backupService";
+import Modal from "../../shared/components/modal/Modal";
+import { importBackupZip, resolveDependencies } from "./backupService";
+import type { BackupTable, BackupDataPerTable } from "./backupTypes";
+import type { RestoreProgress } from "./backupService";
 import styles from "./BackupModal.module.css";
 
 const TABLE_LABELS: Record<string, string> = {

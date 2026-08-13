@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import type { CategoryTag } from "../../../../db/entities";
 import { categoryTagRepository } from "../../../../repositories/CategoryTagRepository";
 import { cardRepository } from "../../../../repositories/CardRepository";
-import type { ICardRepository } from "../../../../iRepositories/ICardRepository";
-import type { ICategoryTagRepository } from "../../../../iRepositories/ICategoryTagRepository";
+import type { ICardRepository } from "../../../../repositories/CardRepository";
+import type { ICategoryTagRepository } from "../../../../repositories/CategoryTagRepository";
 
 export function useCategoryTags() {
   const tagRepo: ICategoryTagRepository = categoryTagRepository;
