@@ -55,7 +55,7 @@ jobs:
           LATEST="${LATEST#v}"
           IFS='.' read -r MAJOR MINOR PATCH <<< "$LATEST"
           NEXT="$MAJOR.$MINOR.$((PATCH + 1))"
-          CODE=$((MAJOR * 10000 + MINOR * 100 + PATCH))
+          CODE=$((MAJOR * 10000 + MINOR * 100 + PATCH + 1))
           echo "version=$NEXT" >> "$GITHUB_OUTPUT"
           echo "version_code=$CODE" >> "$GITHUB_OUTPUT"
           echo "tag=v$NEXT" >> "$GITHUB_OUTPUT"
