@@ -42,6 +42,7 @@
     "zustand": "^5.0.14"
   },
   "devDependencies": {
+    "@capacitor/assets": "^3.0.5",
     "@eslint/js": "^10.0.1",
     "@types/better-sqlite3": "^7.6.13",
     "@types/node": "^24.12.3",

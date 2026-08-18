@@ -46,6 +46,9 @@ jobs:
           npx cap add android
           npx cap sync android
 
+      - name: Generate app icons & splash
+        run: npx capacitor-assets generate --android
+
       - name: Compute next version
         id: version
         env:
