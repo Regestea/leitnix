@@ -7,6 +7,7 @@
     "live": "adb reverse tcp:5173 tcp:5173 && tsc -b && vite build && npx cap sync android && concurrently \"vite --host 0.0.0.0\" \"npx cap run android -l --host localhost --port 5173 --forwardPorts 5173:5173 --target Samsung_A15\"",
     "dev": "tsc -b && vite build && npx cap sync android && npx cap run android",
     "find-unused-css": "node find-unused-css.mjs",
+    "build": "tsc -b && vite build",
     "test": "vitest run",
     "lint": "eslint .",
     "preview": "vite preview"
