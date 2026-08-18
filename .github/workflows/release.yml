@@ -77,23 +77,22 @@ jobs:
           if [ -n "$KEYSTORE_BASE64" ] && [ -n "$KEYSTORE_PASSWORD" ] && [ -n "$KEYSTORE_ALIAS" ] && [ -n "$KEY_PASSWORD" ]; then
             echo "$KEYSTORE_BASE64" | base64 -d > android/app/keystore.jks
             cat >> android/app/build.gradle <<'EOF'
-
-            android {
-                signingConfigs {
-                    release {
-                        storeFile file('keystore.jks')
-                        storePassword System.getenv("KEYSTORE_PASSWORD")
-                        keyAlias System.getenv("KEYSTORE_ALIAS")
-                        keyPassword System.getenv("KEY_PASSWORD")
-                    }
-                }
-                buildTypes {
-                    release {
-                        signingConfig signingConfigs.release
-                    }
-                }
-            }
-            EOF
+          android {
+              signingConfigs {
+                  release {
+                      storeFile file('keystore.jks')
+                      storePassword System.getenv("KEYSTORE_PASSWORD")
+                      keyAlias System.getenv("KEYSTORE_ALIAS")
+                      keyPassword System.getenv("KEY_PASSWORD")
+                  }
+              }
+              buildTypes {
+                  release {
+                      signingConfig signingConfigs.release
+                  }
+              }
+          }
+          EOF
             echo "signed=true" >> "$GITHUB_OUTPUT"
           else
             echo "Signing secrets not set — building unsigned (debug) APK only"
