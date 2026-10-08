@@ -9,9 +9,10 @@ interface NixButtonProps {
   onRollback?: () => void;
   className?: string;
   style?: CSSProperties;
+  rollbackStyle?: CSSProperties;
 }
 
-export function NixButton({ onClick, showRollback, onRollback, className, style }: NixButtonProps) {
+export function NixButton({ onClick, showRollback, onRollback, className, style, rollbackStyle }: NixButtonProps) {
   return (
     <>
       <button
@@ -42,6 +43,7 @@ export function NixButton({ onClick, showRollback, onRollback, className, style 
             cursor: "pointer",
             padding: "0.25rem",
             background: "none",
+            ...rollbackStyle,
           }}
           title="Rollback to previous content"
         >

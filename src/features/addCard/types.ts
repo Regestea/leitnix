@@ -4,6 +4,24 @@ import { TOPIC_OPTIONS } from "./topicPrompts";
 
 export const NONE_PROMPT_VALUE = "none";
 
+// ─── Topic Mode ─────────────────────────────────────────────────────
+
+export const TOPIC_MODES = ["single", "multiple"] as const;
+export type TopicMode = (typeof TOPIC_MODES)[number];
+
+export const TOPIC_MODE_LABELS: Record<TopicMode, string> = {
+  single: "Single Topic",
+  multiple: "Multiple Topics",
+};
+
+/** Splits the textarea content into topics — one non-empty trimmed line per topic. */
+export function parseTopics(topicText: string): string[] {
+  return topicText
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter((line) => line.length > 0);
+}
+
 // ─── Wizard Steps ───────────────────────────────────────────────────
 // Const object drives which step tab is rendered.
 
@@ -95,6 +113,7 @@ export interface GeneratedCardData {
 // ─── Form State & Validation ────────────────────────────────────────
 
 export interface AddCardFormState {
+  topicMode: TopicMode;
   topicType: TopicType;
   categoryTagId: string;
   aiModelId: string;
@@ -111,7 +130,7 @@ export const addCardFormSchema = z.object({
 });
 
 export type AddCardFormErrors = Partial<
-  Record<keyof z.infer<typeof addCardFormSchema>, string>
+  Record<keyof AddCardFormState, string>
 >;
 
 export function validateAddCardForm(form: AddCardFormState): {
@@ -133,6 +152,7 @@ export function validateAddCardForm(form: AddCardFormState): {
 }
 
 export const EMPTY_FORM_STATE: AddCardFormState = {
+  topicMode: "single",
   topicType: TopicType.Science,
   categoryTagId: "",
   aiModelId: "",

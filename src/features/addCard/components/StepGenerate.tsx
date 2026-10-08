@@ -12,12 +12,13 @@ import CategoryTagManagerModal from "../categoryTagManager/components/CategoryTa
 import { NONE_PROMPT_VALUE } from "../types";
 import { TOPIC_OPTIONS } from "../topicPrompts";
 import { Checkbox } from "../../../shared/components/controls/CheckBox";
-import { QUESTION_TYPES, QUESTION_TYPE_LABELS } from "../types";
+import { QUESTION_TYPES, QUESTION_TYPE_LABELS, parseTopics } from "../types";
 import type {
   AddCardFormState,
   AddCardFormErrors,
   SelectOption,
   QuestionType,
+  TopicMode,
 } from "../types";
 import styles from "../AddCard.module.css";
 
@@ -42,6 +43,11 @@ const PLACEHOLDER_MODEL: SelectOption = {
   label: "Select AI model...",
 };
 const NONE_PROMPT: SelectOption = { value: NONE_PROMPT_VALUE, label: "None" };
+
+const TOPIC_MODE_OPTIONS = [
+  { value: "single", label: "Single Topic" },
+  { value: "multiple", label: "Multiple Topics" },
+] satisfies { value: TopicMode; label: string }[];
 
 type Optionable = {
   Id: string;
@@ -123,6 +129,15 @@ export default function StepGenerate({
       <div className={styles.stepForm}>
         <div>
           <Select
+            label="Mode"
+            value={formState.topicMode}
+            items={TOPIC_MODE_OPTIONS}
+            onChange={(value) => onFieldChange("topicMode", value)}
+          />
+        </div>
+
+        <div>
+          <Select
             label="Topic"
             value={formState.topicType}
             items={TOPIC_OPTIONS}
@@ -181,18 +196,29 @@ export default function StepGenerate({
         <div>
           <Textarea
             label="Topic"
-            placeholder="Explain the topic you want to learn..."
+            placeholder={
+              formState.topicMode === "multiple"
+                ? "Enter one topic per line..."
+                : "Explain the topic you want to learn..."
+            }
             defaultValue={formState.topicText}
             rows={6}
             style={{ width: "100%" }}
             onChange={(value) => onFieldChange("topicText", value)}
           />
+          {formState.topicMode === "multiple" && (
+            <p className={styles.topicCountHint}>
+              {parseTopics(formState.topicText).length} topic(s) detected — one per line
+            </p>
+          )}
           {formErrors.topicText && (
             <p className="field-error">{formErrors.topicText}</p>
           )}
         </div>
 
-        <ImageUpload images={images} onChange={onImagesChange} />
+        {formState.topicMode !== "multiple" && (
+          <ImageUpload images={images} onChange={onImagesChange} />
+        )}
 
         <div>
           <h3 className={styles.questionTypesLabel}>Question Types</h3>

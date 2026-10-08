@@ -9,6 +9,7 @@ import { WizardTabs } from "./components/WizardTabs";
 import StepGenerate from "./components/StepGenerate";
 import StepReview from "./components/StepReview";
 import StepComplete from "./components/StepComplete";
+import BatchProgress from "./components/BatchProgress";
 import { cardService } from "./services/CardService";
 import type { ICardService } from "./services/ICardService";
 import {
@@ -16,6 +17,7 @@ import {
   EMPTY_FORM_STATE,
   validateAddCardForm,
   QUESTION_TYPES,
+  parseTopics,
 } from "./types";
 import type {
   AddCardFormState,
@@ -50,6 +52,18 @@ export default function AddCard() {
     ...QUESTION_TYPES,
   ]);
 
+  // ── Multiple-topic batch state ─────────────────────────────────────
+  // `batch.index` is the topic currently being processed; `completed`
+  // counts topics already generated AND saved. Each topic is persisted
+  // immediately, so a failure only pauses the remaining topics.
+  const [batch, setBatch] = useState<{
+    topics: string[];
+    index: number;
+    completed: number;
+  } | null>(null);
+  const [isBatchRunning, setIsBatchRunning] = useState(false);
+  const [batchError, setBatchError] = useState<string | null>(null);
+
   // Snapshot of the form at generation time — the saved card/questions
   // must use the category tag + AI model that were active when "Generate"
   // was clicked, even if the user later edits the form on a re-run.
@@ -83,10 +97,89 @@ export default function AddCard() {
     setImages(next);
   }, []);
 
+  // ── Multiple-topic batch runner ─────────────────────────────────────
+  const runBatchFrom = useCallback(
+    async (topics: string[], startIndex: number) => {
+      const service: ICardService = cardService;
+      const { topicType, categoryTagId, aiModelId, customPromptId } = formState;
+
+      setIsBatchRunning(true);
+      setIsGeneratingCard(true);
+      setBatchError(null);
+      setBatch({ topics, index: startIndex, completed: startIndex });
+
+      try {
+        for (let i = startIndex; i < topics.length; i++) {
+          setBatch({ topics, index: i, completed: i });
+
+          const batchCard = await service.generateCard({
+            topicType,
+            aiModelId,
+            customPromptId,
+            topicText: topics[i],
+          });
+
+          const questions = await service.generateQuestions(
+            aiModelId,
+            batchCard,
+            questionTypes,
+            topicType,
+          );
+
+          // Persist immediately — finished topics must survive a later failure.
+          await service.saveCard({
+            aiModelId,
+            categoryTagId,
+            card: batchCard,
+            questions,
+            topicType,
+          });
+
+          setBatch((prev) =>
+            prev && prev.topics === topics
+              ? { ...prev, index: i + 1, completed: i + 1 }
+              : prev,
+          );
+        }
+
+        setBatch(null);
+        setIsBatchRunning(false);
+        setIsGeneratingCard(false);
+        setCurrentStep(AddCardWizardStep.Complete);
+      } catch (err) {
+        // Pause the batch — `batch` keeps pointing at the failed topic so
+        // Retry resumes from there.
+        setIsBatchRunning(false);
+        setIsGeneratingCard(false);
+        setBatchError(
+          err instanceof Error ? err.message : "Failed to process topic",
+        );
+      }
+    },
+    [formState, questionTypes],
+  );
+
+  const handleBatchRetry = useCallback(() => {
+    if (!batch) return;
+    void runBatchFrom(batch.topics, batch.index);
+  }, [batch, runBatchFrom]);
+
   const handleGenerate = useCallback(async () => {
     const { success, errors } = validateAddCardForm(formState);
     if (!success) {
       setFormErrors(errors);
+      return;
+    }
+
+    if (formState.topicMode === "multiple") {
+      const topics = parseTopics(formState.topicText);
+      if (topics.length === 0) {
+        setFormErrors({
+          topicText: "Please enter at least one topic (one per line).",
+        });
+        return;
+      }
+      void runBatchFrom(topics, 0);
       return;
     }
 
@@ -113,7 +206,7 @@ export default function AddCard() {
     } finally {
       setIsGeneratingCard(false);
     }
-  }, [formState, images]);
+  }, [formState, images, runBatchFrom]);
 
   // ── Review handlers ───────────────────────────────────────────────
   const handleCardChange = useCallback(
@@ -173,12 +266,16 @@ export default function AddCard() {
     setIsGeneratingQuestions(false);
     setFormStateSaved(null);
     setQuestionTypes([...QUESTION_TYPES]);
+    setBatch(null);
+    setIsBatchRunning(false);
+    setBatchError(null);
     setCurrentStep(AddCardWizardStep.Generate);
   }, []);
 
   const handleDone = useCallback(() => navigate("/"), [navigate]);
 
-  const isThinking = isGeneratingCard || isGeneratingQuestions;
+  // Batch view (running or paused) replaces everything else, including the footer.
+  const isThinking = isGeneratingCard || isGeneratingQuestions || batch !== null;
 
   // ── Footer (no button while a thinking view is shown) ─────────────
   let footer = null;
@@ -199,12 +296,30 @@ export default function AddCard() {
           <div
             style={{
               display: "grid",
-              gridTemplateColumns: "1fr 1fr",
+              gridTemplateColumns: nixChangedContent ? "1fr 1fr 1fr" : "1fr 1fr",
               gap: "0.5rem",
               width: "100%",
             }}
           >
-            <NixButton style={{width:"100%"}}  onClick={aiChatModal.open} showRollback={nixChangedContent} onRollback={handleNixRollback} />
+            <NixButton
+              style={{
+                width: "100%",
+                padding: "0.5rem 1rem",
+                border: "1px solid rgba(255, 255, 255, 0.55)",
+                borderRadius: "0.8rem",
+                background: "rgba(255, 255, 255, 0.1)",
+              }}
+              rollbackStyle={{
+                width: "100%",
+                padding: "0.5rem 1rem",
+                border: "1px solid rgba(255, 255, 255, 0.55)",
+                borderRadius: "0.8rem",
+                background: "rgba(255, 255, 255, 0.1)",
+              }}
+              onClick={aiChatModal.open}
+              showRollback={nixChangedContent}
+              onRollback={handleNixRollback}
+            />
             <Button
               label="Generate Questions"
               onClick={handleGenerateQuestions}
@@ -228,19 +343,29 @@ export default function AddCard() {
         <WizardTabs currentStep={currentStep} onTabClick={handleTabClick} />
 
         <div className={styles.wizardContent}>
-          {currentStep === AddCardWizardStep.Generate && (
-            <StepGenerate
-              formState={formState}
-              formErrors={formErrors}
-              images={images}
-              isGenerating={isGeneratingCard}
-              error={cardError}
-              questionTypes={questionTypes}
-              onFieldChange={handleFieldChange}
-              onImagesChange={handleImagesChange}
-              onQuestionTypesChange={setQuestionTypes}
-            />
-          )}
+          {currentStep === AddCardWizardStep.Generate &&
+            (batch ? (
+              <BatchProgress
+                currentTopic={batch.topics[batch.index]}
+                completed={batch.completed}
+                total={batch.topics.length}
+                isPaused={!isBatchRunning}
+                error={batchError}
+                onRetry={handleBatchRetry}
+              />
+            ) : (
+              <StepGenerate
+                formState={formState}
+                formErrors={formErrors}
+                images={images}
+                isGenerating={isGeneratingCard}
+                error={cardError}
+                questionTypes={questionTypes}
+                onFieldChange={handleFieldChange}
+                onImagesChange={handleImagesChange}
+                onQuestionTypesChange={setQuestionTypes}
+              />
+            ))}
 
           {currentStep === AddCardWizardStep.Review && card && (
             <StepReview

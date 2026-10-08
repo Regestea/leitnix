@@ -2,4 +2,53 @@
   overflow-x: auto;
   width: 100%;
   margin: 1rem 0;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 1rem;
+  background: rgba(80, 105, 135, 0.1);
+  backdrop-filter: blur(12px);
+  -webkit-overflow-scrolling: touch;
+}
+
+.table {
+  width: 100%;
+  min-width: 320px;
+  border-collapse: collapse;
+}
+
+/* The app's global `th, td` rule draws a solid white border on every cell;
+ * override it here so the table reads as one surface instead of a grid of
+ * boxes, and let the row rules do the separating. */
+.table th,
+.table td {
+  padding: 0.6rem 0.85rem;
+  border: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 0.9em;
+  vertical-align: top;
+}
+
+.table th {
+  font-weight: var(--app-font-weight);
+  color: var(--secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 0.75em;
+  white-space: nowrap;
+}
+
+.table td {
+  color: var(--text);
+  opacity: 0.92;
+}
+
+.table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.table tbody tr {
+  transition: background-color 0.2s ease;
+}
+
+.table tbody tr:hover {
+  background: rgba(255, 255, 255, 0.04);
 }

@@ -1,0 +1,65 @@
+.host {
+  position: relative;
+  width: 100%;
+  margin: 1rem 0;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 1rem;
+  background: rgba(80, 105, 135, 0.1);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+}
+
+/* Latin stays monospace; Persian/Arabic glyphs fall through to an
+   Arabic-capable font (the browser picks per-glyph from the stack), so a
+   Persian comment inside a code sample is readable instead of tofu. */
+.host :global(pre),
+.host :global(code) {
+  font-family: var(--font-mono) !important;
+  direction: ltr;
+  text-align: left;
+}
+
+.toolbar {
+  position: absolute;
+  top: 0.4rem;
+  inset-inline-end: 0.4rem;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.language {
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.6);
+  color: rgba(255, 255, 255, 0.6);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  text-transform: lowercase;
+}
+
+.toolButton {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  border-radius: 50%;
+  background: rgba(15, 23, 42, 0.6);
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.75rem;
+  box-shadow: none !important;
+}
+
+.toolButton:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+  box-shadow: none !important;
+}
+
+.toolButtonDone {
+  color: #4ade80;
+}
