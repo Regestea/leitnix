@@ -1,8 +1,6 @@
 name: Build & Release
 
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -69,18 +67,21 @@ jobs:
           sed -i "s/versionCode [0-9]*/versionCode ${{ steps.version.outputs.version_code }}/" android/app/build.gradle
           sed -i "s/versionName \"[^\"]*\"/versionName \"${{ steps.version.outputs.version }}\"/" android/app/build.gradle
 
-      # امضای release — فقط وقتی همه secrets کیستور تنظیم شده باشند
+      # امضای release اجباری است. بدون کیستور پایدار، امضای هر بیلد عوض میشود
+      # و اندروید اجازه نصب آپدیت روی نسخه قبلی را نمیدهد؛ پس بدون secrets بیلد نکن
       - name: Configure release signing
-        id: signing
         env:
           KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEYSTORE_ALIAS: ${{ secrets.KEYSTORE_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: |
-          if [ -n "$KEYSTORE_BASE64" ] && [ -n "$KEYSTORE_PASSWORD" ] && [ -n "$KEYSTORE_ALIAS" ] && [ -n "$KEY_PASSWORD" ]; then
-            echo "$KEYSTORE_BASE64" | base64 -d > android/app/keystore.jks
-            cat >> android/app/build.gradle <<'EOF'
+          if [ -z "$KEYSTORE_BASE64" ] || [ -z "$KEYSTORE_PASSWORD" ] || [ -z "$KEYSTORE_ALIAS" ] || [ -z "$KEY_PASSWORD" ]; then
+            echo "::error::Signing secrets missing (KEYSTORE_BASE64 / KEYSTORE_PASSWORD / KEYSTORE_ALIAS / KEY_PASSWORD) — an unsigned build could never update over an installed one."
+            exit 1
+          fi
+          echo "$KEYSTORE_BASE64" | base64 -d > android/app/keystore.jks
+          cat >> android/app/build.gradle <<'EOF'
           android {
               signingConfigs {
                   release {
@@ -97,32 +98,23 @@ jobs:
               }
           }
           EOF
-            echo "signed=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "Signing secrets not set — building unsigned (debug) APK only"
-          fi
 
-      - name: Build APKs
+      # فقط APK امضاشده ساخته میشود؛ APK امضای debug روی CI هر بیلد یک کلید
+      # تصادفی میگیرد و آپدیت آن روی نسخه قبلی همیشه شکست میخورد
+      - name: Build release APK
         env:
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEYSTORE_ALIAS: ${{ secrets.KEYSTORE_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: |
           cd android
-          ./gradlew assembleDebug
-          if [ "${{ steps.signing.outputs.signed }}" = "true" ]; then
-            ./gradlew assembleRelease
-          fi
+          ./gradlew assembleRelease
 
       - name: Collect artifacts
         run: |
           mkdir -p release-artifacts
-          cp android/app/build/outputs/apk/debug/app-debug.apk \
-             "release-artifacts/leitnix-${{ steps.version.outputs.version }}-debug.apk"
-          if [ -f android/app/build/outputs/apk/release/app-release.apk ]; then
-            cp android/app/build/outputs/apk/release/app-release.apk \
-               "release-artifacts/leitnix-${{ steps.version.outputs.version }}-release.apk"
-          fi
+          cp android/app/build/outputs/apk/release/app-release.apk \
+             "release-artifacts/leitnix-${{ steps.version.outputs.version }}-release.apk"
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2

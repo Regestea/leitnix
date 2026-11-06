@@ -34,3 +34,6 @@ android/
 # Local tool state
 .mimosa/
 .v2c/
+
+# Local signing material (never commit)
+.secrets/
