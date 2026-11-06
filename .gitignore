@@ -30,3 +30,7 @@ android/
 *.sln
 *.sw?
 .env
+
+# Local tool state
+.mimosa/
+.v2c/
