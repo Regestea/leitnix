@@ -326,16 +326,42 @@ ol.list ol ol {
 
 /* Translation bar ------------------------------------------------------- */
 
+/* Two stacked rows: the method + language selects share the top row and each
+   flexes to half of it, so neither can push the other past the card edge, and
+   the translate button spans underneath. */
 .translateBar {
   display: flex;
-  align-items: center;
+  flex-direction: column;
   gap: 0.5rem;
   margin-bottom: 0.75rem;
+}
+
+.translateBarRow {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.translateSelect {
+  flex: 1;
+  min-width: 0;
+  padding: 0.4rem 0.8rem;
+  border: 1px solid var(--secondary);
+  border-radius: 0.5rem;
+  background: transparent;
+  color: var(--secondary);
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.translateSelect:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .translateButton {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 0.5rem;
   padding: 0.4rem 0.8rem;
   border: 1px solid var(--secondary);
@@ -404,20 +430,4 @@ ol.list ol ol {
 .sectionTtsBadge:hover,
 .sectionTranslateBadge:hover {
   opacity: 1;
-}
-
-.langSelect {
-  padding: 0.4rem 0.8rem;
-  border: 1px solid var(--secondary);
-  border-radius: 0.5rem;
-  background: transparent;
-  color: var(--secondary);
-  font-size: 0.85rem;
-  cursor: pointer;
-  width: 120px;
-}
-
-.langSelect:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
 }

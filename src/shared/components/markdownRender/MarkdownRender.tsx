@@ -498,6 +498,7 @@ export default function MarkdownRender({
   const [translated, setTranslated] = useState<string | null>(null);
   const [translationSource, setTranslationSource] = useState<"google" | "ai" | null>(null);
   const [translating, setTranslating] = useState(false);
+  const [translationMethod, setTranslationMethod] = useState<"google" | "ai">("google");
   const [targetLang, setTargetLang] = useState(defaultTranslationTarget);
 
   async function handleTranslate(source: "google" | "ai") {
@@ -590,43 +591,45 @@ export default function MarkdownRender({
     <>
       {showControl && !isDisableGlobalTranslate && (
         <div className={styles.translateBar}>
+          <div className={styles.translateBarRow}>
+            <select
+              className={styles.translateSelect}
+              value={translationMethod}
+              onChange={(e) => setTranslationMethod(e.target.value as "google" | "ai")}
+              disabled={translating}
+              aria-label="Translation method"
+            >
+              <option value="google">Google Translate</option>
+              <option value="ai">AI Translate</option>
+            </select>
+            <select
+              className={styles.translateSelect}
+              value={targetLang}
+              onChange={(e) => setTargetLang(e.target.value)}
+              disabled={translating}
+              aria-label="Translation target language"
+            >
+              {LANGUAGES.map(([code, name]) => (
+                <option key={code} value={code}>
+                  {name}
+                </option>
+              ))}
+            </select>
+          </div>
           <button
             className={styles.translateButton}
-            onClick={() => handleTranslate("google")}
+            onClick={() => handleTranslate(translationMethod)}
             disabled={translating}
           >
-            <FontAwesomeIcon icon={faLanguage} />
-            {translating && translationSource === "google"
+            <FontAwesomeIcon
+              icon={translationMethod === "ai" ? faWandMagicSparkles : faLanguage}
+            />
+            {translating
               ? " Translating..."
-              : translated && translationSource === "google"
+              : translated && translationSource === translationMethod
                 ? " Show Original"
                 : " Translate"}
           </button>
-          <button
-            className={styles.translateButton}
-            onClick={() => handleTranslate("ai")}
-            disabled={translating}
-          >
-            <FontAwesomeIcon icon={faWandMagicSparkles} />
-            {translating && translationSource === "ai"
-              ? " AI Translating..."
-              : translated && translationSource === "ai"
-                ? " Show Original"
-                : " AI Translate"}
-          </button>
-          <select
-            className={styles.langSelect}
-            value={targetLang}
-            onChange={(e) => setTargetLang(e.target.value)}
-            disabled={translating}
-            aria-label="Translation target language"
-          >
-            {LANGUAGES.map(([code, name]) => (
-              <option key={code} value={code}>
-                {name}
-              </option>
-            ))}
-          </select>
         </div>
       )}
       {showSource ? (
