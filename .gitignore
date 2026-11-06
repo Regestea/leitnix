@@ -11,7 +11,8 @@ node_modules
 dist
 dist-ssr
 *.local
-android/
+# generated Capacitor android project lives only at the repo root
+/android/
 .env
 
 # Android keystores (never commit signing keys)
@@ -34,6 +35,7 @@ android/
 # Local tool state
 .mimosa/
 .v2c/
+out/
 
 # Local signing material (never commit)
 .secrets/
