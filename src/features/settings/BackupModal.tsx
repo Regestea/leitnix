@@ -26,6 +26,7 @@ export default function BackupModal({ isOpen, onClose, availableTags }: BackupMo
   const [manualTables, setManualTables] = useState<Set<BackupTable>>(new Set());
   const [selectedTagId, setSelectedTagId] = useState<string | "all">("all");
   const [status, setStatus] = useState<{ type: "success" | "error"; message: string } | null>(null);
+  const [progress, setProgress] = useState<{ percent: number; message: string } | null>(null);
 
   const effectiveTables = useMemo(() => new Set(resolveDependencies([...manualTables])), [manualTables]);
   const showTagFilter = effectiveTables.has("CategoryTags") || effectiveTables.has("Cards");
@@ -46,19 +47,32 @@ export default function BackupModal({ isOpen, onClose, availableTags }: BackupMo
 
   async function handleBackup() {
     setStatus(null);
+    setProgress({ percent: 0, message: "Starting backup..." });
     try {
       const tagFilter = selectedTagId === "all" ? "all" : [selectedTagId];
-      const tables = await exportTables({ tables: [...effectiveTables], categoryTagFilter: tagFilter });
-      const zipData = await createBackupZip(tables);
+      const tables = await exportTables(
+        { tables: [...effectiveTables], categoryTagFilter: tagFilter },
+        (percent, message) => setProgress({ percent, message }),
+      );
+      const zipData = await createBackupZip(tables, (percent, message) =>
+        setProgress({ percent, message }),
+      );
       const fileName = `leitnix-backup-${new Date().toISOString().slice(0, 10)}.leitnix`;
-      await saveBackupBlob(zipData, fileName);
+      await saveBackupBlob(zipData, fileName, (percent, message) =>
+        setProgress({ percent, message }),
+      );
       setStatus({ type: "success", message: "Backup saved successfully." });
     } catch (err) {
       setStatus({ type: "error", message: `Backup failed: ${err instanceof Error ? err.message : "Unknown error"}` });
+    } finally {
+      setProgress(null);
     }
   }
 
   function handleClose() {
+    // A running backup must not be abandoned mid-write — the close affordances
+    // (ESC, backdrop, X) all funnel through here, so a simple guard covers all.
+    if (progress) return;
     setManualTables(new Set());
     setSelectedTagId("all");
     setStatus(null);
@@ -67,49 +81,62 @@ export default function BackupModal({ isOpen, onClose, availableTags }: BackupMo
 
   return (
     <Modal isOpen={isOpen} onClose={handleClose} title="Backup" size="sm">
-      <div className={styles.tableGrid}>
-        {TABLE_INFOS.map(({ key, label }) => {
-          const checked = effectiveTables.has(key);
-          const forced = checked && !manualTables.has(key);
-          return (
-            <label key={key} className={styles.tableCheckbox} style={{ opacity: forced ? 0.6 : 1 }}>
-              <input
-                type="checkbox"
-                checked={checked}
-                disabled={forced}
-                onChange={(e) => handleTableToggle(key, e.target.checked)}
-              />
-              {label}
-              {forced && <span className={styles.requiredBadge}>(required)</span>}
-            </label>
-          );
-        })}
-      </div>
-
-      {showTagFilter && availableTags.length > 0 && (
-        <div className={styles.tagFilterSection}>
-          <div className={styles.tagFilterLabel}>Category tag filter</div>
-          <select
-            className={styles.tagSelect}
-            value={selectedTagId}
-            onChange={(e) => handleTagChange(e.target.value as string | "all")}
-          >
-            <option value="all">All tags</option>
-            {availableTags.map((tag) => (
-              <option key={tag.Id} value={tag.Id}>
-                {tag.Name}
-              </option>
-            ))}
-          </select>
+      {progress ? (
+        <div className={styles.progressSection}>
+          <div className={styles.progressLabel}>
+            {progress.message} ({Math.floor(progress.percent)}%)
+          </div>
+          <div className={styles.progressBar}>
+            <div className={styles.progressFill} style={{ width: `${progress.percent}%` }} />
+          </div>
         </div>
-      )}
+      ) : (
+        <>
+          <div className={styles.tableGrid}>
+            {TABLE_INFOS.map(({ key, label }) => {
+              const checked = effectiveTables.has(key);
+              const forced = checked && !manualTables.has(key);
+              return (
+                <label key={key} className={styles.tableCheckbox} style={{ opacity: forced ? 0.6 : 1 }}>
+                  <input
+                    type="checkbox"
+                    checked={checked}
+                    disabled={forced}
+                    onChange={(e) => handleTableToggle(key, e.target.checked)}
+                  />
+                  {label}
+                  {forced && <span className={styles.requiredBadge}>(required)</span>}
+                </label>
+              );
+            })}
+          </div>
 
-      <div className={styles.buttonRow}>
-        <button className={styles.cancelButton} onClick={handleClose}>Cancel</button>
-        <button className={styles.primaryButton} disabled={backupDisabled} onClick={handleBackup}>
-          Backup
-        </button>
-      </div>
+          {showTagFilter && availableTags.length > 0 && (
+            <div className={styles.tagFilterSection}>
+              <div className={styles.tagFilterLabel}>Category tag filter</div>
+              <select
+                className={styles.tagSelect}
+                value={selectedTagId}
+                onChange={(e) => handleTagChange(e.target.value as string | "all")}
+              >
+                <option value="all">All tags</option>
+                {availableTags.map((tag) => (
+                  <option key={tag.Id} value={tag.Id}>
+                    {tag.Name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+
+          <div className={styles.buttonRow}>
+            <button className={styles.cancelButton} onClick={handleClose}>Cancel</button>
+            <button className={styles.primaryButton} disabled={backupDisabled} onClick={handleBackup}>
+              Backup
+            </button>
+          </div>
+        </>
+      )}
 
       {status && (
         <div className={`${styles.statusMessage} ${status.type === "success" ? styles.statusSuccess : styles.statusError}`}>

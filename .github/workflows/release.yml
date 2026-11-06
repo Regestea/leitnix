@@ -44,6 +44,13 @@ jobs:
           npx cap add android
           npx cap sync android
 
+      # android/ هر بیلد از نو ساخته میشود؛ پلاگین محلی "Save to..." را
+      # همینجا داخل پروژه اندروید تزریق میکنیم
+      - name: Install native SaveFile plugin
+        run: |
+          cp native/android/SaveFilePlugin.java android/app/src/main/java/com/leitnix/app/
+          cp native/android/MainActivity.java android/app/src/main/java/com/leitnix/app/
+
       - name: Generate app icons & splash
         run: npx capacitor-assets generate --android
 

@@ -2,6 +2,7 @@ import { getDb } from "../../db/connection";
 import { Capacitor } from "@capacitor/core";
 import { Filesystem, Directory } from "@capacitor/filesystem";
 import JSZip from "jszip";
+import { SaveFilePlugin } from "../../plugins/saveFile";
 import type { BackupTable, BackupOptions, BackupDataPerTable } from "./backupTypes.ts";
 
 export interface RestoreProgress {
@@ -85,7 +86,15 @@ export function resolveDependencies(tables: BackupTable[]): BackupTable[] {
   return BACKUP_ORDER.filter((t) => resolved.has(t));
 }
 
-export async function exportTables(options: BackupOptions): Promise<BackupDataPerTable> {
+/** Overall backup progress, reported across the whole pipeline: reading the
+ *  tables maps to 0-50%, packing the zip to 50-80%, writing the file to
+ *  80-100%. */
+export type BackupProgressCallback = (percent: number, message: string) => void;
+
+export async function exportTables(
+  options: BackupOptions,
+  onProgress?: BackupProgressCallback,
+): Promise<BackupDataPerTable> {
   const db = await getDb();
   const resolved = resolveDependencies(options.tables);
   const tables: BackupDataPerTable = {};
@@ -95,7 +104,7 @@ export async function exportTables(options: BackupOptions): Promise<BackupDataPe
     options.categoryTagFilter !== "all" &&
     options.categoryTagFilter.length > 0;
 
-  for (const table of resolved) {
+  for (const [index, table] of resolved.entries()) {
     switch (table) {
       case "AiModels": {
         tables.AiModels = ((await db.query("SELECT * FROM AiModels;")).values ?? []);
@@ -189,12 +198,16 @@ export async function exportTables(options: BackupOptions): Promise<BackupDataPe
         break;
       }
     }
+    onProgress?.(Math.floor(((index + 1) / resolved.length) * 50), `Reading ${table}...`);
   }
 
   return tables;
 }
 
-export async function createBackupZip(tables: BackupDataPerTable): Promise<Uint8Array> {
+export async function createBackupZip(
+  tables: BackupDataPerTable,
+  onProgress?: BackupProgressCallback,
+): Promise<Uint8Array> {
   const zip = new JSZip();
 
   zip.file(
@@ -212,7 +225,11 @@ export async function createBackupZip(tables: BackupDataPerTable): Promise<Uint8
     }
   }
 
-  return await zip.generateAsync({ type: "uint8array" });
+  /* JSZip compresses in chunks and reports real percentage here, so the bar
+   * moves continuously even on a large backup. */
+  return await zip.generateAsync({ type: "uint8array" }, (metadata) =>
+    onProgress?.(Math.floor(50 + metadata.percent * 0.3), "Packing backup..."),
+  );
 }
 
 export async function parseBackupZip(
@@ -367,31 +384,108 @@ export async function importBackupZip(
   }
 }
 
+/** Raw bytes handed to the bridge per write. A whole backup must not cross
+ *  the Capacitor bridge in one message: a multi-megabyte base64 string
+ *  OOMs/crashes the Android WebView, which is exactly the "app dies a few
+ *  seconds after Backup" failure. Fixed-size chunks keep every message small. */
+const NATIVE_WRITE_CHUNK_BYTES = 256 * 1024;
+
+/** Base64 of one slice of `data`, built incrementally so no step ever holds
+ *  the whole payload (Blob → readAsDataURL → split() made three full copies
+ *  of the backup at once before the first byte reached disk). */
+function toBase64Slice(data: Uint8Array, start: number, end: number): string {
+  let binary = "";
+  const step = 0x8000; // stay under String.fromCharCode's argument limit
+  for (let i = start; i < end; i += step) {
+    const sliceEnd = Math.min(i + step, end);
+    binary += String.fromCharCode.apply(
+      null,
+      data.subarray(i, sliceEnd) as unknown as number[],
+    );
+  }
+  return btoa(binary);
+}
+
+/** Writes `data` to `path` with bridge-safe chunked writes, reporting each
+ *  finished chunk. Each `appendFile` call base64-decodes its own chunk
+ *  independently, so the chunks need no 3-byte alignment — the decoded pieces
+ *  concatenate back to the exact bytes. */
+async function writeChunked(
+  data: Uint8Array,
+  path: string,
+  directory: Directory,
+  onChunk: (done: number, total: number) => void,
+): Promise<void> {
+  const totalChunks = Math.max(1, Math.ceil(data.length / NATIVE_WRITE_CHUNK_BYTES));
+  let wroteChunks = 0;
+  for (let start = 0; start < data.length; start += NATIVE_WRITE_CHUNK_BYTES) {
+    const end = Math.min(start + NATIVE_WRITE_CHUNK_BYTES, data.length);
+    const chunk = toBase64Slice(data, start, end);
+    if (!wroteChunks) {
+      await Filesystem.writeFile({ path, data: chunk, directory, recursive: true });
+    } else {
+      await Filesystem.appendFile({ path, data: chunk, directory });
+    }
+    wroteChunks++;
+    onChunk(wroteChunks, totalChunks);
+  }
+  if (!wroteChunks) {
+    await Filesystem.writeFile({ path, data: "", directory, recursive: true });
+    onChunk(1, 1);
+  }
+}
+
+function chunkProgress(onProgress?: BackupProgressCallback, message = "Saving file...") {
+  return (done: number, total: number) =>
+    onProgress?.(Math.floor(80 + (done / total) * 20), message);
+}
+
 export async function saveBackupBlob(
   data: Uint8Array,
   suggestedName: string,
+  onProgress?: BackupProgressCallback,
 ): Promise<void> {
   const isCapacitor = Capacitor.isNativePlatform();
 
   if (isCapacitor) {
-    const blob = new Blob([data.buffer as ArrayBuffer], { type: "application/zip" });
-    const reader = new FileReader();
-    const base64 = await new Promise<string>((resolve, reject) => {
-      reader.onload = () => {
-        const result = reader.result as string;
-        resolve(result.split(",")[1]);
-      };
-      reader.onerror = () => reject(new Error("Failed to read blob"));
-      reader.readAsDataURL(blob);
-    });
+    if (Capacitor.getPlatform() === "android") {
+      /* Stage the zip in the app-private cache (bridge-safe chunked writes),
+       * then hand the choice of destination to the user via the system
+       * "Save to..." dialog — it opens in Downloads but every folder the
+       * device offers is reachable. The staged file is copied natively, so
+       * no payload ever crosses the bridge at full size. If the user backs
+       * out, fall back to the app Documents folder so nothing is lost. */
+      const stagedName = `${suggestedName}.staging`;
+      await writeChunked(data, stagedName, Directory.Cache, chunkProgress(onProgress));
+      onProgress?.(100, "Choose where to save...");
 
-    await Filesystem.writeFile({
-      path: suggestedName,
-      data: base64,
-      directory: Directory.Documents,
-      recursive: true,
-    });
+      let savedToChoice = false;
+      try {
+        const stagedUri = await Filesystem.getUri({
+          path: stagedName,
+          directory: Directory.Cache,
+        });
+        const result = await SaveFilePlugin.saveAs({
+          srcPath: stagedUri.uri,
+          fileName: suggestedName,
+          mimeType: "application/zip",
+        });
+        savedToChoice = !result.cancelled;
+      } catch (err) {
+        console.error("Save dialog failed", err);
+      } finally {
+        await Filesystem.deleteFile({ path: stagedName, directory: Directory.Cache });
+      }
 
+      if (!savedToChoice) {
+        await writeChunked(data, suggestedName, Directory.Documents, chunkProgress(onProgress));
+      }
+      return;
+    }
+
+    /* iOS: the share sheet's "Save to Files" already lets the user pick any
+     * folder, so the file lands in Documents and the sheet offers the rest. */
+    await writeChunked(data, suggestedName, Directory.Documents, chunkProgress(onProgress));
     try {
       const { Share } = await import("@capacitor/share");
       const fileUri = await Filesystem.getUri({
@@ -409,6 +503,9 @@ export async function saveBackupBlob(
     }
     return;
   }
+
+  // Web: the file lands in one step, so just show the save phase started.
+  onProgress?.(80, "Saving file...");
 
   const blob = new Blob([data.buffer as ArrayBuffer], { type: "application/zip" });
 
